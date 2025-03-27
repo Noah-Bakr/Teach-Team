@@ -1,0 +1,16 @@
+.header {
+    background: linear-gradient(to right, #F2CE16, #F2A30F);
+    color: #593C19;
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-bottom: 3px solid #D97904;
+}
+
+.header .site-title {
+    font-size: 2rem;
+    font-weight: bold;
+    margin: 0;
+}
+
