@@ -7,6 +7,9 @@
     align-items: center;
     border-bottom: 3px solid #D97904;
     margin-bottom: 1rem;
+    position: sticky;
+    top: 0;
+
 }
 
 .header-container {

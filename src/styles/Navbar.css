@@ -21,7 +21,7 @@
     transition: color 0.2s ease, text-shadow 0.2s ease;
 }
 .nav-list li a:hover {
-    color: #D97904;
+    color: #120B07;
     text-shadow: 0 0 3px rgba(217, 121, 4, 0.4);
     text-decoration: underline;
 }
