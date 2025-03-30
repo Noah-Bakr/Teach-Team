@@ -10,5 +10,5 @@ export interface Applicant {
     // Optional based on lecturers preference
     rank?: number;
     // Optional comments left by lecturer
-    comments?: string[];
+    comment?: string[];
 }

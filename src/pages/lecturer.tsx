@@ -1,10 +1,38 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, Flex, Heading, Input, Button, Text, Textarea, Table } from '@chakra-ui/react';
-import { Applicant } from '../types';
-import { dummyApplicants } from "../data/dummyApplicants";
+import { Applicant } from '@/types';
+import { dummyApplicants } from "@/data/dummyApplicants";
+
+interface CustomFormControlProps {
+    error?: string;
+    children: React.ReactNode;
+}
+const CustomFormControl: React.FC<CustomFormControlProps> = ({ error, children }) => (
+    <Box>
+        {children}
+        {error && <Text color="red.500" fontSize="sm">{error}</Text>}
+    </Box>
+);
 
 const LecturerPage: React.FC = () => {
-    const [applicants, setApplicants] = useState<Applicant[]>(dummyApplicants);
+    // Try loading saved applicants from localStorage, if not then use dummy data
+    const [applicants, setApplicants] = useState<Applicant[]>(() => {
+        if (typeof window !== 'undefined') {
+            const saved = localStorage.getItem('applicants');
+            return saved ? JSON.parse(saved) : dummyApplicants;
+        }
+        return dummyApplicants;
+    });
+
+    // State to track validation errors for applicants by id
+    const [errors, setErrors] = useState<{
+        [id: number]: { rank?: string; comment?: string };
+    }>({});
+
+    // Save applicants state to localStorage when it changes
+    useEffect(() => {
+        localStorage.setItem('applicants', JSON.stringify(applicants));
+    }, [applicants]);
 
 
     // Toggle Selection for Applicant
@@ -17,7 +45,12 @@ const LecturerPage: React.FC = () => {
     };
 
     /* Update rank and comments for selected applicants
-       Overloaded functions to enforce types for rank and comments */
+       Overloaded functions to enforce types for rank and comments
+
+       Validation:
+            Rank: Must be a positive number.
+            Comments: Must not exceed 200 characters.
+     */
     function updateApplicantDetails(id: number, key: "rank", value: number): void;
     function updateApplicantDetails(id: number, key: "comment", value: string): void;
     function updateApplicantDetails(
@@ -26,9 +59,48 @@ const LecturerPage: React.FC = () => {
         value: number | string
     ): void {
         setApplicants((prev) =>
-            prev.map((app) => (app.id === id ? { ...app, [key]: value } : app))
+            prev.map((app) =>
+                app.id === id ? { ...app, [key]: value } : app
+            )
         );
     }
+
+    // Handle rank changes with validation
+    const handleRankChange = (id: number, newValue: string) => {
+        const rank = Number(newValue);
+        if (rank > 0) {
+            // Clear any rank error if valid.
+            setErrors((prev) => ({
+                ...prev,
+                [id]: { ...prev[id], rank: '' }
+            }));
+            updateApplicantDetails(id, "rank", rank);
+        } else {
+            // Set error message for invalid rank.
+            setErrors((prev) => ({
+                ...prev,
+                [id]: { ...prev[id], rank: 'Rank must be greater than 0' }
+            }));
+        }
+    };
+
+    // Handle comment changes with validation.
+    const handleCommentChange = (id: number, newValue: string) => {
+        if (newValue.length <= 200) {
+            // Clear any comment error if valid.
+            setErrors((prev) => ({
+                ...prev,
+                [id]: { ...prev[id], comment: '' }
+            }));
+            updateApplicantDetails(id, "comment", newValue);
+        } else {
+            // Set error message for too long comment.
+            setErrors((prev) => ({
+                ...prev,
+                [id]: { ...prev[id], comment: 'Comment cannot exceed 200 characters' }
+            }));
+        }
+    };
 
     return(
         <Box p={4}>
@@ -78,38 +150,39 @@ const LecturerPage: React.FC = () => {
                     applicants
                         .filter((app) => app.selected)
                         .map((applicant) => (
-                            <Box key={applicant.id}
-                                 p={4}
-                                 border="1px solid"
-                                 borderColor="grey.200"
-                                 mb={4}
+                            <Box
+                                key={applicant.id}
+                                p={4}
+                                border="1px solid"
+                                borderColor="gray.200"
+                                borderRadius="md"
+                                mb={4}
                             >
                                 <Heading size="sm" mb={2}>
                                     {applicant.name} - {applicant.course}
                                 </Heading>
                                 <Flex align="center" mb={2}>
                                     <Text mr={2}>Rank:</Text>
-                                    <Input type="number"
-                                           value={applicant.rank || ""}
-                                           onChange={(e) =>
-                                               updateApplicantDetails(
-                                                   applicant.id,
-                                                   "rank",
-                                                   Number(e.target.value)
-                                               )
-                                            }
-                                           maxW="80px"
-                                    />
+                                    <CustomFormControl error={errors[applicant.id]?.rank}>
+                                        <Input
+                                            type="number"
+                                            value={applicant.rank || ""}
+                                            onChange={(e) => handleRankChange(applicant.id, e.target.value)}
+                                            maxW="80px"
+                                        />
+                                    </CustomFormControl>
                                 </Flex>
-                                <Textarea placeholder="Enter Applicant comments..."
-                                          value={applicant.comments || ""}
-                                          onChange={(e) =>
-                                              updateApplicantDetails(applicant.id, "comment", e.target.value)
-                                          }
-                                          size="sm"
-                                />
+                                <CustomFormControl error={errors[applicant.id]?.comment}>
+                                    <Textarea
+                                        placeholder="Enter Applicant comments..."
+                                        value={applicant.comment || ""}
+                                        onChange={(e) => handleCommentChange(applicant.id, e.target.value)}
+                                        size="sm"
+                                    />
+                                </CustomFormControl>
                             </Box>
-                        )))}
+                        ))
+                )}
             </Box>
         </Box>
     );
