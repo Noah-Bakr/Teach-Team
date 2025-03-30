@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Flex, Heading, Input, Select, Button, Stack, Text, Textarea, Table } from '@chakra-ui/react';
+import { Box, Flex, Heading, Input, Button, Text, Textarea, Table } from '@chakra-ui/react';
 import { Applicant } from '../types';
 import { dummyApplicants } from "../data/dummyApplicants";
 
@@ -11,10 +11,24 @@ const LecturerPage: React.FC = () => {
     const toggleSelect = (id: number) => {
         setApplicants((prev) =>
             prev.map((app) =>
-                app.id === id ? { ...app, selected: !app.selected } : app
+                app.id === id ? {...app, selected: !app.selected} : app
             )
         );
     };
+
+    /* Update rank and comments for selected applicants
+       Overloaded functions to enforce types for rank and comments */
+    function updateApplicantDetails(id: number, key: "rank", value: number): void;
+    function updateApplicantDetails(id: number, key: "comment", value: string): void;
+    function updateApplicantDetails(
+        id: number,
+        key: "rank" | "comment",
+        value: number | string
+    ): void {
+        setApplicants((prev) =>
+            prev.map((app) => (app.id === id ? { ...app, [key]: value } : app))
+        );
+    }
 
     return(
         <Box p={4}>
@@ -54,8 +68,51 @@ const LecturerPage: React.FC = () => {
                     </Table.Body>
                 </Table.Root>
             </Box>
+
+            {/* Applicants Ranking and Comments */}
+            <Box>
+                <Heading size="md" mb={2}>Selected Applicants</Heading>
+                {applicants.filter((app) => app.selected).length === 0 ? (
+                    <Text>No Applicants Selected, Please choose to proceed.</Text>
+                ) : (
+                    applicants
+                        .filter((app) => app.selected)
+                        .map((applicant) => (
+                            <Box key={applicant.id}
+                                 p={4}
+                                 border="1px solid"
+                                 borderColor="grey.200"
+                                 mb={4}
+                            >
+                                <Heading size="sm" mb={2}>
+                                    {applicant.name} - {applicant.course}
+                                </Heading>
+                                <Flex align="center" mb={2}>
+                                    <Text mr={2}>Rank:</Text>
+                                    <Input type="number"
+                                           value={applicant.rank || ""}
+                                           onChange={(e) =>
+                                               updateApplicantDetails(
+                                                   applicant.id,
+                                                   "rank",
+                                                   Number(e.target.value)
+                                               )
+                                            }
+                                           maxW="80px"
+                                    />
+                                </Flex>
+                                <Textarea placeholder="Enter Applicant comments..."
+                                          value={applicant.comments || ""}
+                                          onChange={(e) =>
+                                              updateApplicantDetails(applicant.id, "comment", e.target.value)
+                                          }
+                                          size="sm"
+                                />
+                            </Box>
+                        )))}
+            </Box>
         </Box>
-    )
+    );
 };
 
 export default LecturerPage;
