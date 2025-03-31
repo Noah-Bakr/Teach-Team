@@ -1,4 +1,4 @@
-import { Applicant } from '../types';
+import { Applicant } from '../types/types';
 
 export const dummyApplicants: Applicant[] = [
     {
