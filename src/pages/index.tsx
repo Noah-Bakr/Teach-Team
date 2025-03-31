@@ -5,6 +5,13 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
 
   return (
+    /*
+    * every input has a form variable. on change update variable. onlick compare to localstorage
+    * if they are the same, set loading to true and redirect to /dashboard
+    * if they are not the same, set loading to false and show error message
+    * will turn this into a component later
+    */
+
     <AbsoluteCenter>
       <Box position="relative" color={"white"} bg="white" p={4} borderRadius="md">
         <VStack>
