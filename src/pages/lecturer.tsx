@@ -15,25 +15,35 @@ const CustomFormControl: React.FC<CustomFormControlProps> = ({ error, children }
 );
 
 const LecturerPage: React.FC = () => {
-    // Try loading saved applicants from localStorage, if not then use dummy data
-    const [applicants, setApplicants] = useState<Applicant[]>(() => {
-        if (typeof window !== 'undefined') {
-            const saved = localStorage.getItem('applicants');
-            return saved ? JSON.parse(saved) : dummyApplicants;
-        }
-        return dummyApplicants;
-    });
+    // Use dummy applicants for intial state
+    const [applicants, setApplicants] = useState<Applicant[]>(dummyApplicants);
+
+    // // Try loading saved applicants from localStorage, if not then use dummy data
+    // const [applicants, setApplicants] = useState<Applicant[]>(() => {
+    //     if (typeof window !== 'undefined') {
+    //         const saved = localStorage.getItem('applicants');
+    //         return saved ? JSON.parse(saved) : dummyApplicants;
+    //     }
+    //     return dummyApplicants;
+    // });
 
     // State to track validation errors for applicants by id
     const [errors, setErrors] = useState<{
         [id: number]: { rank?: string; comment?: string };
     }>({});
 
-    // Save applicants state to localStorage when it changes
+    // Load saved applicants from localStorage
+    useEffect(() => {
+        const saved = localStorage.getItem('applicants');
+        if (saved) {
+            setApplicants(JSON.parse(saved));
+        }
+    }, []);
+
+    // Save applicants state to localStorage when it changes.
     useEffect(() => {
         localStorage.setItem('applicants', JSON.stringify(applicants));
     }, [applicants]);
-
 
     // Toggle Selection for Applicant
     const toggleSelect = (id: number) => {
