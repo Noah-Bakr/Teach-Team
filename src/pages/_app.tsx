@@ -4,6 +4,7 @@ import type { AppProps } from "next/app";
 import { Provider } from '@/components/ui/provider';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { Toaster, toaster } from "@/components/ui/toaster"
 
 export default function App({ Component, pageProps }: AppProps) {
   return(
@@ -11,6 +12,7 @@ export default function App({ Component, pageProps }: AppProps) {
         <Header />
         <main className="main-content">
             <Component {...pageProps} />
+            <Toaster />
         </main>
         <Footer />
     </Provider>
