@@ -15,17 +15,8 @@ const CustomFormControl: React.FC<CustomFormControlProps> = ({ error, children }
 );
 
 const LecturerPage: React.FC = () => {
-    // Use dummy applicants for intial state
+    // Use dummy applicants for initial state
     const [applicants, setApplicants] = useState<Applicant[]>(dummyApplicants);
-
-    // // Try loading saved applicants from localStorage, if not then use dummy data
-    // const [applicants, setApplicants] = useState<Applicant[]>(() => {
-    //     if (typeof window !== 'undefined') {
-    //         const saved = localStorage.getItem('applicants');
-    //         return saved ? JSON.parse(saved) : dummyApplicants;
-    //     }
-    //     return dummyApplicants;
-    // });
 
     // State to track validation errors for applicants by id
     const [errors, setErrors] = useState<{
