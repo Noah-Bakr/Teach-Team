@@ -44,4 +44,10 @@ body {
   }
 }
 
+@media (prefers-color-scheme: light) {
+  :root {
+    --background: #ededed;
+    --foreground: #1E1E1E;
+  }
+}
 
