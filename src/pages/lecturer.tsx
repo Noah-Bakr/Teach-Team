@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Flex, Heading, Input, Button, Text, Textarea, Table } from '@chakra-ui/react';
-import { Applicant } from '@/types/types';
+import { Applicant } from '@/testData/types';
 import { dummyApplicants } from "@/data/dummyApplicants";
 
 interface CustomFormControlProps {

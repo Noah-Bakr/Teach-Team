@@ -1,7 +1,7 @@
 import { Button, AbsoluteCenter, Box, ButtonGroup, VStack, Input, Field, IconButton, Heading, Text, CloseButton, Presence, useDisclosure } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
 import { useRouter } from 'next/router';
-import { DEFAULT_USERS, User } from '@/types/user';
+import { DEFAULT_USERS, User } from '@/testData/user';
 import { PasswordInput } from "@/components/ui/password-input";
 import { toaster } from "@/components/ui/toaster"
 import { LuX } from "react-icons/lu";

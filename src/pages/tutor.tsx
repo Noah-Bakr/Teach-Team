@@ -5,4 +5,6 @@ const TutorPage: React.FC = () => {
             <p>Welcome to the Tutor page!</p>
         </div>
     );
-}
+};
+
+export default TutorPage;
