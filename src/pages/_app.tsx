@@ -2,19 +2,23 @@ import * as React from 'react';
 import "@/styles/globals.css";
 import type { AppProps } from "next/app";
 import { Provider } from '@/components/ui/provider';
+import { Toaster, toaster } from "@/components/ui/toaster"
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { Toaster, toaster } from "@/components/ui/toaster"
+import { AuthProvider } from "../context/AuthContext";
 
 export default function App({ Component, pageProps }: AppProps) {
   return(
-    <Provider>
-        <Header />
-        <main className="main-content">
-            <Component {...pageProps} />
-            <Toaster />
-        </main>
-        <Footer />
-    </Provider>
+    <AuthProvider>
+        <Provider>
+            <Header />
+            <main className="main-content">
+                <Toaster />
+                <Component {...pageProps} />
+            </main>
+            <Footer />
+        </Provider>
+    </AuthProvider>
+    
     ); 
 }
