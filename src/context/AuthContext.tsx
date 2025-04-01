@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { DEFAULT_USERS, User  } from "../types/user";
+import { DEFAULT_USERS, User  } from "../testData/user";
 
 interface AuthContextType {
   currentUser: User | null;
