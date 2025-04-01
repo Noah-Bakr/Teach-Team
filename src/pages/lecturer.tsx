@@ -14,6 +14,8 @@ const CustomFormControl: React.FC<CustomFormControlProps> = ({ error, children }
     </Box>
 );
 
+
+
 const LecturerPage: React.FC = () => {
     // Use dummy applicants for initial state
     const [applicants, setApplicants] = useState<Applicant[]>(dummyApplicants);
@@ -102,6 +104,7 @@ const LecturerPage: React.FC = () => {
             }));
         }
     };
+
 
     return(
         <Box p={4}>
