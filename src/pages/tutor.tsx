@@ -25,7 +25,6 @@ const TutorPage: React.FC = () => {
 
             <Stack p={4} m={4} gap={4} direction="column" wrap="wrap">
                 {courses.map((course) => (
-                    <Skeleton asChild loading={false} >
                     <Card.Root colorPalette="yellow" flexDirection="row" overflow="hidden" maxW="xl" key={course.id} variant="outline" size="sm">
                         <Box>
                             <Card.Body>
@@ -45,7 +44,6 @@ const TutorPage: React.FC = () => {
                             </Card.Footer>
                         </Box>
                     </Card.Root>
-                    </Skeleton>
                 ))}
             </Stack>
         </div>
