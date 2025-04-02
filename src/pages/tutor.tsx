@@ -41,7 +41,7 @@ const TutorPage: React.FC = () => {
                                 </HStack>
                             </Card.Body>
                             <Card.Footer>
-                                <Button>Buy Latte</Button>
+                                <Button>Apply</Button>
                             </Card.Footer>
                         </Box>
                     </Card.Root>
