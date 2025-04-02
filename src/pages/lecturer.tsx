@@ -1,19 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Flex, Heading, Input, Button, Text, Textarea, Table } from '@chakra-ui/react';
+import { Box, Heading, Text } from '@chakra-ui/react';
 import { Applicant } from '@/testData/types';
 import { dummyApplicants } from "@/testData/dummyApplicants";
-import NativeSortSelect from '../components/NativeSortSelect';
+import SearchAndSortBar from "@/components/SearchAndSortBar";
+import SelectedApplicantCard from "@/components/SelectedApplicantCard";
+import ApplicantsTable from "@/components/ApplicantsTable";
 
-interface CustomFormControlProps {
-    error?: string;
-    children: React.ReactNode;
-}
-const CustomFormControl: React.FC<CustomFormControlProps> = ({ error, children }) => (
-    <Box>
-        {children}
-        {error && <Text color="red.500" fontSize="sm">{error}</Text>}
-    </Box>
-);
 
 const LecturerPage: React.FC = () => {
     // Use dummy applicants for initial state
@@ -133,51 +125,12 @@ const LecturerPage: React.FC = () => {
             <Heading mb={4}>Lecturer Dashboard</Heading>
 
             {/* Search & Sort */}
-            <Flex mb={4} align="center" wrap="wrap">
-                {/* Search Input */}
-                <Input placeholder="Search by name, course, availability, or skills"
-                       value={search}
-                       onChange={(e) => setSearch(e.target.value)}
-                       maxW="300px"
-                       mr={4}
-                       />
-                {/* Native Select for sorting */}
-                <NativeSortSelect value={sortBy} onChange={setSortBy} />
-            </Flex>
+            <SearchAndSortBar search={search} setSearch={setSearch} sortBy={sortBy} setSortBy={setSortBy} />
 
             {/* Applicants List */}
             <Box mb={8}>
                 <Heading size="md" mb={2}>Applicants</Heading>
-                <Table.Root size="sm">
-                    <Table.Header>
-                        <Table.Row>
-                            <Table.ColumnHeader>Name</Table.ColumnHeader>
-                            <Table.ColumnHeader>Course</Table.ColumnHeader>
-                            <Table.ColumnHeader>Availability</Table.ColumnHeader>
-                            <Table.ColumnHeader>Skills</Table.ColumnHeader>
-                            <Table.ColumnHeader>Credentials</Table.ColumnHeader>
-                            <Table.ColumnHeader>Action</Table.ColumnHeader>
-                        </Table.Row>
-                    </Table.Header>
-                    <Table.Body>
-                        {sortedApplicants.map((applicant) => (
-                            <Table.Row key={applicant.id}>
-                                <Table.Cell>{applicant.name}</Table.Cell>
-                                <Table.Cell>{applicant.course}</Table.Cell>
-                                <Table.Cell>{applicant.availability}</Table.Cell>
-                                <Table.Cell>{applicant.skills.join(", ")}</Table.Cell>
-                                <Table.Cell>{applicant.academicCredentials}</Table.Cell>
-                                <Table.Cell>
-                                    <Button size="sm"
-                                            colorScheme={applicant.selected ? 'red' : 'green'}
-                                            onClick={() => toggleSelect(applicant.id)}>
-                                        {applicant.selected ? 'Deselect' : 'Select'}
-                                    </Button>
-                                </Table.Cell>
-                            </Table.Row>
-                        ))}
-                    </Table.Body>
-                </Table.Root>
+                <ApplicantsTable applicants={sortedApplicants} toggleSelect={toggleSelect} />
             </Box>
 
             {/* Applicants Ranking and Comments */}
@@ -189,37 +142,13 @@ const LecturerPage: React.FC = () => {
                     applicants
                         .filter((app) => app.selected)
                         .map((applicant) => (
-                            <Box
+                            <SelectedApplicantCard
                                 key={applicant.id}
-                                p={4}
-                                border="1px solid"
-                                borderColor="gray.200"
-                                borderRadius="md"
-                                mb={4}
-                            >
-                                <Heading size="sm" mb={2}>
-                                    {applicant.name} - {applicant.course}
-                                </Heading>
-                                <Flex align="center" mb={2}>
-                                    <Text mr={2}>Rank:</Text>
-                                    <CustomFormControl error={errors[applicant.id]?.rank}>
-                                        <Input
-                                            type="number"
-                                            value={applicant.rank || ""}
-                                            onChange={(e) => handleRankChange(applicant.id, e.target.value)}
-                                            maxW="80px"
-                                        />
-                                    </CustomFormControl>
-                                </Flex>
-                                <CustomFormControl error={errors[applicant.id]?.comment}>
-                                    <Textarea
-                                        placeholder="Enter Applicant comments..."
-                                        value={applicant.comment || ""}
-                                        onChange={(e) => handleCommentChange(applicant.id, e.target.value)}
-                                        size="sm"
-                                    />
-                                </CustomFormControl>
-                            </Box>
+                                applicant={applicant}
+                                error={errors[applicant.id]}
+                                handleRankChange={handleRankChange}
+                                handleCommentChange={handleCommentChange}
+                            />
                         ))
                 )}
             </Box>
