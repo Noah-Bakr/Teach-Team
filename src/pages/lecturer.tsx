@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Box, Flex, Heading, Input, Button, Text, Textarea, Table } from '@chakra-ui/react';
 import { Applicant } from '@/testData/types';
 import { dummyApplicants } from "@/testData/dummyApplicants";
+import NativeSortSelect from '../components/NativeSortSelect';
 
 interface CustomFormControlProps {
     error?: string;
@@ -14,8 +15,6 @@ const CustomFormControl: React.FC<CustomFormControlProps> = ({ error, children }
     </Box>
 );
 
-
-
 const LecturerPage: React.FC = () => {
     // Use dummy applicants for initial state
     const [applicants, setApplicants] = useState<Applicant[]>(dummyApplicants);
@@ -24,6 +23,10 @@ const LecturerPage: React.FC = () => {
     const [errors, setErrors] = useState<{
         [id: number]: { rank?: string; comment?: string };
     }>({});
+
+    // State for search & sort
+    const [search, setSearch] = useState<string>('');
+    const [sortBy, setSortBy] = useState<string>('');
 
     // Load saved applicants from localStorage
     useEffect(() => {
@@ -105,10 +108,42 @@ const LecturerPage: React.FC = () => {
         }
     };
 
+    // Filter -Combine Applicants field into a searchable string
+    const filteredApplicants = applicants.filter((applicant) => {
+        const lowercaseSearch = search.toLowerCase();
+        return (
+            applicant.name.toLowerCase().includes(lowercaseSearch) ||
+                applicant.course.toLowerCase().includes(lowercaseSearch) ||
+                applicant.availability.toLowerCase().includes(lowercaseSearch) ||
+                applicant.skills.join(' ').toLowerCase().includes(lowercaseSearch));
+    });
+
+    // Sort - If sortBy options selected, sort by filteredApplicants
+    const sortedApplicants = sortBy ? [...filteredApplicants].sort((a, b) => {
+        if(sortBy === 'course') {
+            return a.course.localeCompare(b.course);
+        } else if (sortBy === 'availability') {
+            return a.availability.localeCompare(b.availability);
+        }
+        return 0;
+    }) : filteredApplicants;
 
     return(
         <Box p={4}>
             <Heading mb={4}>Lecturer Dashboard</Heading>
+
+            {/* Search & Sort */}
+            <Flex mb={4} align="center" wrap="wrap">
+                {/* Search Input */}
+                <Input placeholder="Search by name, course, availability, or skills"
+                       value={search}
+                       onChange={(e) => setSearch(e.target.value)}
+                       maxW="300px"
+                       mr={4}
+                       />
+                {/* Native Select for sorting */}
+                <NativeSortSelect value={sortBy} onChange={setSortBy} />
+            </Flex>
 
             {/* Applicants List */}
             <Box mb={8}>
@@ -125,7 +160,7 @@ const LecturerPage: React.FC = () => {
                         </Table.Row>
                     </Table.Header>
                     <Table.Body>
-                        {applicants.map((applicant) => (
+                        {sortedApplicants.map((applicant) => (
                             <Table.Row key={applicant.id}>
                                 <Table.Cell>{applicant.name}</Table.Cell>
                                 <Table.Cell>{applicant.course}</Table.Cell>
