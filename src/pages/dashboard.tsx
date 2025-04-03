@@ -1,4 +1,5 @@
 import LecturerPage from "@/pages/lecturer";
+import TutorPage from "@/pages/tutor";
 import { useAuth } from "@/context/AuthContext";
 
 const DashboardPage: React.FC = () => {
@@ -10,6 +11,10 @@ const DashboardPage: React.FC = () => {
 
     if (currentUser.role === "lecturer") {
         return (<LecturerPage />);
+    }
+
+    if (currentUser.role === "tutor") {
+        return (<TutorPage />);
     }
 
     return (
