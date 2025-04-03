@@ -9,22 +9,21 @@ import { LuX, LuExternalLink } from "react-icons/lu";
 import { on } from "events";
 import { useAuth } from "../context/AuthContext";
 import { log } from "console";
+import "../styles/LoginForm.css";
 
 const LoginForm: React.FC = () => {
     const [users, setUsers] = useState<User[]>(DEFAULT_USERS);
     
     const [loading, setLoading] = useState(false);
-
     const [error, setError] = useState('');
+
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
     const [emailError, setEmailError] = useState(false);
     const [passwordError, setPasswordError] = useState(false);
 
     const router = useRouter();
-
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
     const { login, currentUser } = useAuth();
-
     const { open, onToggle } = useDisclosure();
 
   //---testing purposes---
@@ -70,27 +69,27 @@ const LoginForm: React.FC = () => {
       animationStyle={{ _open: "scale-fade-in", _closed: "scale-fade-out" }}
       animationDuration="moderate">
       <AbsoluteCenter>
-        <Box position="relative" color={"white"} bg="white" p={4} borderRadius={5} boxShadow="lg" minWidth="300px" width="auto" maxWidth="400px" height="auto" maxHeight="400px" >
-          <VStack alignItems={"center"} justifyContent={"center"} >
-            <CloseButton variant="ghost" colorPalette="black" fill="black" position="absolute" top={2} right={2} onClick={() => { onToggle(); }}/>
-            <Heading as="h1" color="black" textAlign={"center"}>Login</Heading>
-            <Text as="p" color="black" width={"300px"} textAlign={"center"}>Please enter your email and password to login.</Text>
-            <VStack gap={4} justifyContent={"center"} alignItems={"center"} width="100%">
-              <Field.Root width="300px" color={"black"} invalid={emailError} required>
+        <Box className="LoginContainer">
+          <VStack className="LoginFormStack">
+            <CloseButton className="CloseButton" variant="ghost" colorPalette="black" onClick={() => { onToggle(); }}/>
+            <Heading className="LoginHeader" as="h1">Login</Heading>
+            <Text className="LoginText" as="p">Please enter your email and password to login.</Text>
+            <VStack className="LoginInputStack">
+              <Field.Root className="LoginInputFieldRoot" invalid={emailError} required>
                 <Field.Label>Email <Field.RequiredIndicator /></Field.Label>
-                <Input placeholder="name@example.com" variant={"outline"} size="md" color={"black"} focusRingColor={"yellow.500"} value={email} onChange={(e) => setEmail(e.target.value)}/>
+                <Input className="LoginInput" placeholder="name@example.com" variant="outline" value={email} onChange={(e) => setEmail(e.target.value)}/>
                 <Field.ErrorText>This field is required</Field.ErrorText>
               </Field.Root>
-              <Field.Root color={"black"} invalid={passwordError} required>
+              <Field.Root className="LoginInputFieldRoot" invalid={passwordError} required>
                 <Field.Label>Password <Field.RequiredIndicator /></Field.Label>
-                <PasswordInput placeholder="Password" variant={"outline"} size="md" color={"black"} focusRingColor={"yellow.500"} value={password} onChange={(e) => setPassword(e.target.value)}/>
+                <PasswordInput className="LoginInput" placeholder="Password" variant={"outline"} value={password} onChange={(e) => setPassword(e.target.value)}/>
                 <Field.ErrorText>This field is required</Field.ErrorText>
               </Field.Root>
-              <ButtonGroup size="md" colorPalette="yellow">
-                <Button variant="outline" width="100%" onClick={() => { setLoading(false); onToggle(); }} >Cancel</Button>
-                <Button variant="solid" width="100%" loading={loading} onClick={() => { handleLogin(); }} >Login</Button>
+              <ButtonGroup className="LoginButtonGroup">
+                <Button className="LoginButton" colorPalette="yellow" variant="surface" onClick={() => { setLoading(false); onToggle(); }} >Cancel</Button>
+                <Button className="LoginButton" colorPalette="yellow" variant="solid" loading={loading} onClick={() => { handleLogin(); }} >Login</Button>
               </ButtonGroup>
-              <Text as="p" color="black" fontSize={"sm"} textAlign={"center"}>Don't have an account?&nbsp;
+              <Text as="p" className="LoginTextSmall">Don't have an account?&nbsp;
                 <Link color="black" onClick={() => { router.push("/signup"); }}>
                   Sign Up <LuExternalLink />
                 </Link>

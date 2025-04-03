@@ -1,0 +1,80 @@
+.LoginContainer {
+    position: relative;
+    color: white;
+    background-color: white;
+    padding: 4px;
+    border-radius: 5px;
+    box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.2);
+    min-width: 300px;
+    max-width: 400px;
+    width: 350px;
+    height: fit-content;
+    max-height: 400px;
+}
+
+.LoginFormStack {
+    margin: 30px 0 30px 0;
+    align-items: center;
+    justify-content: center;
+}
+
+.CloseButton {
+    color: black;
+    position: absolute;
+    top: 2px;
+    right: 2px;
+}
+
+.CloseButton:hover {
+    color: white;
+}
+
+.LoginHeader {
+    color: black;
+    text-align: center;
+}
+
+.LoginText {
+    color: black;
+    text-align: center;
+    width: 300px;
+}
+
+.LoginTextSmall {
+    color: black;
+    text-align: center;
+    width: 300px;
+    font-size: small;
+}
+
+.LoginInputStack {
+    gap: 4px;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.LoginInputFieldRoot {
+    width: 300px;
+    color: black;
+}
+
+.LoginInput {
+    display: flex;
+    size: md;
+    width: flex;
+    color: black;
+    outline-color: #ffc106; /* yellow.500 */
+}
+
+.LoginButtonGroup {
+    margin-top: 5px;
+    display: flex;
+    width: 300px;
+}
+
+.LoginButton {
+    flex: 1;
+    margin: 2px;
+    size: md;
+}
