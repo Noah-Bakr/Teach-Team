@@ -23,9 +23,9 @@ const TutorPage: React.FC = () => {
             <h1>Tutor Page</h1>
             <p>Welcome to the Tutor page!</p>
 
-            <Stack p={4} m={4} gap={4} direction="column" wrap="wrap">
+            <Stack p={4} m={4} gap={4} direction={['column', 'row']} wrap="wrap" width={"90vw"}>
                 {courses.map((course) => (
-                    <Card.Root colorPalette="yellow" flexDirection="row" overflow="hidden" maxW="xl" key={course.id} variant="outline" size="sm">
+                    <Card.Root colorPalette="yellow" flexDirection="row" overflow="hidden" width={"500vw"} maxW="xl" key={course.id} variant="outline" size="sm">
                         <Box>
                             <Card.Body>
                                 <Card.Title mb="2">{course.name}</Card.Title>
