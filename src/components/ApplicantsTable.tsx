@@ -8,7 +8,7 @@ interface ApplicantsTableProps {
 }
 
 const ApplicantsTable: React.FC<ApplicantsTableProps> = ({ applicants, toggleSelect}) => (
-    <Table.Root size="sm">
+    <Table.Root colorScheme="gray" borderRadius="md" boxShadow="md">
         <Table.Header>
             <Table.Row>
                 <Table.ColumnHeader>Name</Table.ColumnHeader>
@@ -28,7 +28,8 @@ const ApplicantsTable: React.FC<ApplicantsTableProps> = ({ applicants, toggleSel
                     <Table.Cell>{applicant.skills.join(", ")}</Table.Cell>
                     <Table.Cell>{applicant.academicCredentials}</Table.Cell>
                     <Table.Cell>
-                        <Button size="sm"
+                        <Button variant="solid"
+                                size="sm"
                                 colorScheme={applicant.selected ? 'red' : 'green'}
                                 onClick={() => toggleSelect(applicant.id)}>
                             {applicant.selected ? 'Deselect' : 'Select'}
