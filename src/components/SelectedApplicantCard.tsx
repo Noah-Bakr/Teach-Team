@@ -16,13 +16,16 @@ const SelectedApplicantCard: React.FC<SelectedApplicantCardProps> = ({
         handleRankChange,
         handleCommentChange,
     }) => (
-    <Box p={4}
+    <Box mt={8}
+         p={4}
          border="1px solid"
+         borderWidth="1px"
          borderColor="gray.200"
          borderRadius="md"
+         boxShadow="md"
          mb={4}
          >
-        <Heading size="sm" mb={2}>
+        <Heading size="sm" mb={4}>
             {applicant.name} - {applicant.course}
         </Heading>
         <Flex align="center" mb={2}>
