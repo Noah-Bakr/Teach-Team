@@ -5,6 +5,7 @@ import { dummyApplicants } from "@/testData/dummyApplicants";
 import SearchAndSortBar from "@/components/SearchAndSortBar";
 import SelectedApplicantCard from "@/components/SelectedApplicantCard";
 import ApplicantsTable from "@/components/ApplicantsTable";
+import VisualRepresentation from '../components/VisualRepresentation';
 
 
 const LecturerPage: React.FC = () => {
@@ -152,6 +153,8 @@ const LecturerPage: React.FC = () => {
                         ))
                 )}
             </Box>
+            {/* Visual Representation */}
+            <VisualRepresentation applicants={applicants} />
         </Box>
     );
 };
