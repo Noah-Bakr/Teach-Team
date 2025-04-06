@@ -70,7 +70,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ closeForm }) => {
 
   return (
     <>  {/* Overlay to block interaction with the rest of the page. Parent required */}
-        {open && <div className="login-overlay"></div>}
+        {open && <div className="LoginOverlay"></div>}
         <Presence className="LoginContainer"
         present={open}
         animationStyle={{ _open: "scale-fade-in", _closed: "scale-fade-out" }}
