@@ -11,7 +11,11 @@ import { useAuth } from "../context/AuthContext";
 import { log } from "console";
 import "../styles/LoginForm.css";
 
-const LoginForm: React.FC = () => {
+interface LoginFormProps {
+  closeForm: () => void;
+}
+
+const LoginForm: React.FC<LoginFormProps> = ({ closeForm }) => {
     const [users, setUsers] = useState<User[]>(DEFAULT_USERS);
     
     const [loading, setLoading] = useState(false);
@@ -58,47 +62,51 @@ const LoginForm: React.FC = () => {
       }
       router.push("/dashboard");
       onToggle();
+      closeForm();
     } else {
       setError("Invalid email or password");
     }
   };
 
   return (
-    <Presence
-      present={open}
-      animationStyle={{ _open: "scale-fade-in", _closed: "scale-fade-out" }}
-      animationDuration="moderate">
-      <AbsoluteCenter>
-        <Box className="LoginContainer">
-          <VStack className="LoginFormStack">
-            <CloseButton className="CloseButton" variant="ghost" colorPalette="black" onClick={() => { onToggle(); }}/>
-            <Heading className="LoginHeader" as="h1">Login</Heading>
-            <Text className="LoginText" as="p">Please enter your email and password to login.</Text>
-            <VStack className="LoginInputStack">
-              <Field.Root className="LoginInputFieldRoot" invalid={emailError} required>
-                <Field.Label>Email <Field.RequiredIndicator /></Field.Label>
-                <Input className="LoginInput" placeholder="name@example.com" variant="outline" value={email} onChange={(e) => setEmail(e.target.value)}/>
-                <Field.ErrorText>This field is required</Field.ErrorText>
-              </Field.Root>
-              <Field.Root className="LoginInputFieldRoot" invalid={passwordError} required>
-                <Field.Label>Password <Field.RequiredIndicator /></Field.Label>
-                <PasswordInput className="LoginInput" placeholder="Password" variant={"outline"} value={password} onChange={(e) => setPassword(e.target.value)}/>
-                <Field.ErrorText>This field is required</Field.ErrorText>
-              </Field.Root>
-              <ButtonGroup className="LoginButtonGroup">
-                <Button className="LoginButton" colorPalette="yellow" variant="surface" onClick={() => { setLoading(false); onToggle(); }} >Cancel</Button>
-                <Button className="LoginButton" colorPalette="yellow" variant="solid" loading={loading} onClick={() => { handleLogin(); }} >Login</Button>
-              </ButtonGroup>
-              <Text as="p" className="LoginTextSmall">Don't have an account?&nbsp;
-                <Link color="black" onClick={() => { router.push("/signup"); }}>
-                  Sign Up <LuExternalLink />
-                </Link>
-              </Text>
-            </VStack>
-          </VStack>
-        </Box>
-      </AbsoluteCenter>
-    </Presence>
+    <>  {/* Overlay to block interaction with the rest of the page. Parent required */}
+        {open && <div className="login-overlay"></div>}
+        <Presence className="LoginContainer"
+        present={open}
+        animationStyle={{ _open: "scale-fade-in", _closed: "scale-fade-out" }}
+        animationDuration="moderate">
+            <AbsoluteCenter>
+                <Box className="LoginContainer">
+                    <VStack className="LoginFormStack">
+                        <CloseButton className="CloseButton" variant="ghost" colorPalette="black" onClick={() => { onToggle(); closeForm(); }}/>
+                        <Heading className="LoginHeader" as="h1">Login</Heading>
+                        <Text className="LoginText" as="p">Please enter your email and password to login.</Text>
+                        <VStack className="LoginInputStack">
+                        <Field.Root className="LoginInputFieldRoot" invalid={emailError} required>
+                            <Field.Label>Email <Field.RequiredIndicator /></Field.Label>
+                            <Input className="LoginInput" placeholder="name@example.com" variant="outline" value={email} onChange={(e) => setEmail(e.target.value)}/>
+                            <Field.ErrorText>This field is required</Field.ErrorText>
+                        </Field.Root>
+                        <Field.Root className="LoginInputFieldRoot" invalid={passwordError} required>
+                            <Field.Label>Password <Field.RequiredIndicator /></Field.Label>
+                            <PasswordInput className="LoginInput" placeholder="Password" variant={"outline"} value={password} onChange={(e) => setPassword(e.target.value)}/>
+                            <Field.ErrorText>This field is required</Field.ErrorText>
+                        </Field.Root>
+                        <ButtonGroup className="LoginButtonGroup">
+                            <Button className="LoginButton" colorPalette="yellow" variant="surface" onClick={() => { setLoading(false); onToggle(); closeForm(); }} >Cancel</Button>
+                            <Button className="LoginButton" colorPalette="yellow" variant="solid" loading={loading} onClick={() => { handleLogin(); }} >Login</Button>
+                        </ButtonGroup>
+                        <Text as="p" className="LoginTextSmall">Don't have an account?&nbsp;
+                            <Link color="black" onClick={() => { router.push("/signup"); }}>
+                            Sign Up <LuExternalLink />
+                            </Link>
+                        </Text>
+                        </VStack>
+                    </VStack>
+                </Box>
+            </AbsoluteCenter>
+        </Presence>
+    </>
   );
 };
 
