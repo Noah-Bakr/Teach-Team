@@ -6,28 +6,28 @@ export type Course = {
   
   export const DEFAULT_COURSES: Course[] = [
     // Default courses for testing purposes
-    { id: "1", 
+    { id: "COSC2627", 
       name: "Blockchain Tech Fundamentals",
       skills: ["Blockchain", "Cryptography", "Distributed Systems"] },
 
-    { id: "2", 
+    { id: "COSC2625", 
       name: "Introduction to Cyber Security",
       skills: ["Network Security", "Cryptography", "Ethical Hacking"] },
 
-    { id: "3",
-      name: "Machine Learning",
+    { id: "COSC2960",
+      name: "Foundations of AI for STEM",
       skills: ["Python", "Data Analysis", "Machine Learning"] },
 
-    { id: "4",
-      name: "Full Stack",
+    { id: "COSC2758",
+      name: "Full Stack Development",
       skills: ["JavaScript", "React", "CSS"] },
 
-    { id: "5",
-      name: "Mobile App Development",
+    { id: "COSC3413",
+      name: "Software Eng Fundamentals IT",
       skills: ["Java", "Android", "iOS"] },
 
-    { id: "6",
-      name: "Cloud Computing and DevOps",
+    { id: "COSC2757",
+      name: "Cloud Foundations",
       skills: ["AWS", "Docker", "Kubernetes"] },
     
   ];

@@ -13,11 +13,11 @@ import { useAuth } from "../context/AuthContext";
 import { log } from "console";
 import "../styles/PopUpForm.css";
 
-interface LoginFormProps {
+interface ApplicantFormProps {
   closeForm: () => void;
 }
 
-const LoginForm: React.FC<LoginFormProps> = ({ closeForm }) => {
+const ApplicantForm: React.FC<ApplicantFormProps> = ({ closeForm }) => {
     const [users, setUsers] = useState<User[]>(DEFAULT_USERS);
     
     const [loading, setLoading] = useState(false);
@@ -90,12 +90,10 @@ const LoginForm: React.FC<LoginFormProps> = ({ closeForm }) => {
 
     setError("");
 
-    if (passwordStrength !== 4) {
-      toaster.create({ title: "Password Strength", description: "Password is weak. Please use a stronger password.", type: "warning" });
-      return;
-    }
+    // const success = login(email, password); //uncomment in A2
 
-    const success = login(email, password);
+    //for A1, check email exists and password is strong
+    const success = users.some((user) => user.email === email && passwordStrength === 4);
     if (success) {
       if (currentUser) {
         toaster.create({ title: "Login Successful", description: `Welcome back, ${currentUser.firstName}!`, type: "success" });
@@ -119,7 +117,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ closeForm }) => {
                 <Box className="Box">
                     <VStack className="FormStack">
                         <CloseButton className="CloseButton" variant="ghost" colorPalette="black" onClick={() => { onToggle(); closeForm(); }}/>
-                        <Heading className="Header" as="h1">Login</Heading>
+                        <Heading className="Header" as="h1">Application</Heading>
                         <Text className="Text" as="p">Please enter your email and password to login.</Text>
                         <VStack className="InputStack">
                         <Field.Root className="InputFieldRoot" invalid={emailError} required>
@@ -166,4 +164,4 @@ const LoginForm: React.FC<LoginFormProps> = ({ closeForm }) => {
   );
 };
 
-export default LoginForm;
+export default ApplicantForm;

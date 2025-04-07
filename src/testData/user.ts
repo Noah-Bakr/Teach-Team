@@ -3,9 +3,14 @@ export type User = {
   username: string;
   firstName: string;
   lastName: string;
+  avatar?: string; // URL to the avatar image
   email: string; // will be the username
   password: string;
   role: "admin" | "lecturer" | "tutor" | "applicant"; // default to "applicant"
+
+  academicCredentials?: string; // Optional field for academic credentials
+  skills?: string[]; // Optional field for skills
+  availability?: "Full-Time" | "Part-Time"; // Optional field for availability
 };
 
 export const DEFAULT_USERS: User[] = [
@@ -13,7 +18,7 @@ export const DEFAULT_USERS: User[] = [
   { id: "1", 
     username: "admin_user",
     firstName: "Admin",
-    lastName: "User", 
+    lastName: "User",
     email: "admin@example.com", 
     password: "admin123", 
     role: "admin" },
@@ -23,8 +28,12 @@ export const DEFAULT_USERS: User[] = [
     firstName: "John", 
     lastName: "Doe", 
     email: "john@example.com", 
-    password: "password123", 
-    role: "lecturer" },
+    password: "Cart@21-c0ding", 
+    avatar: "https://mighty.tools/mockmind-api/content/human/80.jpg",
+    role: "lecturer",
+    academicCredentials: "Bachelor of Computer Science",
+    skills: ["Java", "Python", "C++"],
+    availability: "Full-Time" },
 
   { id: "3", 
     username: "jane_doe", 

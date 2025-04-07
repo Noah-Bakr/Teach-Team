@@ -1,4 +1,4 @@
-.LoginOverlay {
+.Overlay {
     position: fixed;
     top: 0;
     left: 0;
@@ -8,7 +8,8 @@
     z-index: 999;
   }
 
-.LoginContainer {
+/* The box that contains the form. Apply to Precesnce and Box component */
+.Box {
     position: fixed;
     top: 50%;
     left: 50%;
@@ -26,7 +27,8 @@
     z-index: 1000;
 }
 
-.LoginFormStack {
+/* Houses all the input groups and buttons (main container) */
+.FormStack {
     margin: 30px 0 30px 0;
     align-items: center;
     justify-content: center;
@@ -43,37 +45,45 @@
     color: white;
 }
 
-.LoginHeader {
+.Header {
     color: black;
     text-align: center;
 }
 
-.LoginText {
+.Text {
     color: black;
     text-align: center;
     width: 300px;
 }
 
-.LoginTextSmall {
+.TextSmall {
     color: black;
     text-align: center;
     width: 300px;
     font-size: small;
 }
 
-.LoginInputStack {
+/* Houses all the input fields */
+.InputStack {
     gap: 4px;
     justify-content: center;
     align-items: center;
     width: 100%;
 }
 
-.LoginInputFieldRoot {
+/* Houses the input field and label */
+.InputFieldRoot {
     width: 300px;
     color: black;
 }
 
-.LoginInput {
+.PasswordStrengthMeter {
+    width: 300px;
+    color: black;
+}
+
+/* The input field */
+.Input {
     display: flex;
     size: md;
     width: flex;
@@ -81,13 +91,13 @@
     outline-color: #ffc106; /* yellow.500 */
 }
 
-.LoginButtonGroup {
+.ButtonGroup {
     margin-top: 5px;
     display: flex;
     width: 300px;
 }
 
-.LoginButton {
+.Button {
     flex: 1;
     margin: 2px;
     size: md;
