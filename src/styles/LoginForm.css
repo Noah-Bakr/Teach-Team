@@ -22,7 +22,7 @@
     max-width: 400px;
     width: 350px;
     height: fit-content;
-    max-height: 400px;
+    /* max-height: 400px; */
     z-index: 1000;
 }
 

@@ -1,5 +1,7 @@
 import { Button, AbsoluteCenter, Box, ButtonGroup, VStack, 
-  Input, Field, Heading, Text, CloseButton, Presence, useDisclosure, Alert, Link } from "@chakra-ui/react";
+  Input, Field, Heading, Text, CloseButton, Presence, useDisclosure, Alert, Link, 
+  Checkbox,
+  CheckboxGroup} from "@chakra-ui/react";
 import { useState, useEffect, use } from "react";
 import { useRouter } from 'next/router';
 import { DEFAULT_USERS, User } from '@/testData/user';
@@ -63,12 +65,6 @@ const LoginForm: React.FC<LoginFormProps> = ({ closeForm }) => {
 
 
   const incrementStrength = () => {
-    // let passwordStrength = 0;
-
-    // validations.forEach((validation) => {
-    //     if (validation) passwordStrength++;
-    // });
-
     const passedValidations = validations.filter(validation => validation).length;
 
     const strengthPercentage = (passedValidations / totalValidations) * 4;
@@ -135,6 +131,21 @@ const LoginForm: React.FC<LoginFormProps> = ({ closeForm }) => {
                             <Field.ErrorText>This field is required</Field.ErrorText>
                         </Field.Root>
                         <PasswordStrengthMeter className="LoginInputFieldRoot" value={passwordStrength} />
+                        {/* <CheckboxGroup className="LoginInputFieldRoot">
+                        {[
+                            { label: "Contains an uppercase letter", passed: hasUpperCase },
+                            { label: "Contains a lowercase letter", passed: hasLowerCase },
+                            { label: "Contains a number", passed: hasNumber },
+                            { label: "Contains a special character", passed: hasSpecialChar },
+                            { label: "Has a length between 8 and 100 characters", passed: hasCorrectLength }
+                        ].map((validation, index) => (
+                            <Checkbox.Root key={index} value={validation.label} isChecked={validation.passed}>
+                                <Checkbox.HiddenInput />
+                                <Checkbox.Control />
+                                <Checkbox.Label>{validation.label}</Checkbox.Label>
+                            </Checkbox.Root>
+                        ))}
+                        </CheckboxGroup> */}
                         <ButtonGroup className="LoginButtonGroup">
                             <Button className="LoginButton" colorPalette="yellow" variant="surface" onClick={() => { setLoading(false); onToggle(); closeForm(); }} >Cancel</Button>
                             <Button className="LoginButton" colorPalette="yellow" variant="solid" loading={loading} onClick={() => { handleLogin(); }} >Login</Button>
