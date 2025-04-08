@@ -1,10 +1,26 @@
 import LecturerPage from "@/pages/lecturer";
 import TutorPage from "@/pages/tutor";
 import { useAuth } from "@/context/AuthContext";
-import { Availability, Role } from "@/types/types";
+import { Applicant, Availability, Role } from "@/types/types";
+import { useEffect, useState } from "react";
+import { DEFAULT_APPLICANTS } from "@/types/testData";
 
 
 const DashboardPage: React.FC = () => {
+    const [applications, setApplications] = useState<Applicant[]>([]);
+
+    useEffect(() => {
+    // Initialize applications from localStorage or use defaults
+    const storedApplicants = localStorage.getItem("applicants");
+    if (!storedApplicants) {
+        localStorage.setItem("applicants", JSON.stringify(DEFAULT_APPLICANTS));
+        setApplications(DEFAULT_APPLICANTS);
+    } else {
+        setApplications(JSON.parse(storedApplicants));
+    }
+    }, []);
+
+
     const { currentUser } = useAuth();
 
     if (!currentUser) {
