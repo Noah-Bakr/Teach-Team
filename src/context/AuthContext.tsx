@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { DEFAULT_USERS, User  } from "../testData/user";
+import { toaster } from "@/components/ui/toaster";
 
 interface AuthContextType {
   currentUser: User | null;
@@ -62,6 +63,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       users[userIndex] = updatedUser;
       localStorage.setItem("users", JSON.stringify(users));
       setUsers(users);
+      toaster.create({title: "User Updated", description: "User details have been updated successfully.", type: "success", duration: 5000,});
     } // User not found, no action taken (user must be logged in to update)
   };
 
