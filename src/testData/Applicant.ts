@@ -1,8 +1,10 @@
+import { Availability } from "./user";
+
 export type Applicant = {
     id: String;
     applicantId: string;
     course: string;
-    availability: "Full-Time" | "Part-Time";
+    availability: Availability[];
     skills: string[];
     academicCredentials: string;
     selected: boolean;
@@ -17,7 +19,7 @@ export type Applicant = {
     { id: "1",
       applicantId: "1",
       course: "COSC2758",
-      availability: "Full-Time",
+      availability: ["Full-Time"],
       skills: ["JavaScript", "React", "TypeScript"],
       academicCredentials: "Bachelor of Cyber Security",
       selected: false},
@@ -25,7 +27,7 @@ export type Applicant = {
     { id: "2",
       applicantId: "1",
       course: "COSC2500",
-      availability: "Part-Time",
+      availability: ["Part-Time"],
       skills: ["HTML", "CSS", "Java, Scene Builder"],
       academicCredentials: "Bachelor of Data Science",
       selected: false},
