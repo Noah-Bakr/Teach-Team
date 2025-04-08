@@ -27,7 +27,7 @@ export const DEFAULT_USERS: User[] = [
     firstName: "Jane", 
     lastName: "Doe", 
     email: "jane@example.com", 
-    password: "password456", 
+    password: "Cart@21-c0ding", 
     role: ["tutor"] },
 
   { id: "U0000004", 
@@ -35,7 +35,7 @@ export const DEFAULT_USERS: User[] = [
     firstName: "Bob", 
     lastName: "Smith", 
     email: "bob@example.com", 
-    password: "password789", 
+    password: "Cart@21-c0ding", 
     role: ["tutor"] },
 ];
 
