@@ -1,4 +1,5 @@
-import { Avatar, Box, Button, Card, Field, HStack, Input, NativeSelect, Portal, Select, Separator, Stack, Text, Textarea } from "@chakra-ui/react";
+import { Avatar, Box, Button, Card, Field, HStack, Input, NativeSelect, 
+    Separator, Stack, Text, Textarea } from "@chakra-ui/react";
 import { useAuth } from "@/context/AuthContext";
 import { useEffect, useState } from "react";
 import { User } from "@/testData/user";
@@ -105,17 +106,17 @@ const ProfilePage: React.FC = () => {
                                 <Stack gap={2} padding={4}>
                                     <Field.Root orientation="horizontal" disabled={isDisabled}>
                                         <Field.Label>First Name</Field.Label>
-                                        <Input disabled={isDisabled} name="firstName" placeholder="First Name" value={updatedUser.firstName} onChange={handleChange}/>
+                                        <Input name="firstName" placeholder="First Name" value={updatedUser.firstName} onChange={handleChange}/>
                                     </Field.Root>
 
                                     <Field.Root orientation="horizontal" disabled={isDisabled}>
                                         <Field.Label>Last Name</Field.Label>
-                                        <Input disabled={isDisabled} name="lastName" placeholder="Last Name" value={updatedUser.lastName} onChange={handleChange}/>
+                                        <Input name="lastName" placeholder="Last Name" value={updatedUser.lastName} onChange={handleChange}/>
                                     </Field.Root>
 
                                     <Field.Root orientation="horizontal" disabled={isDisabled}>
                                         <Field.Label>Avatar</Field.Label>
-                                        <Input disabled={isDisabled} name="avatar" placeholder="Avatar Url" value={updatedUser.avatar} onChange={handleChange}/>
+                                        <Input name="avatar" placeholder="Avatar Url" value={updatedUser.avatar} onChange={handleChange}/>
                                     </Field.Root>
                                 </Stack>
                             </Stack>
@@ -129,17 +130,17 @@ const ProfilePage: React.FC = () => {
                                 <Stack gap={2} padding={4}>
                                     <Field.Root orientation="horizontal" disabled={isDisabled}>
                                         <Field.Label>Username</Field.Label>
-                                        <Input disabled={isDisabled} name="username" placeholder="Username" value={updatedUser.username} onChange={handleChange}/>
+                                        <Input name="username" placeholder="Username" value={updatedUser.username} onChange={handleChange}/>
                                     </Field.Root>
 
                                     <Field.Root orientation="horizontal" disabled={isDisabled}>
                                         <Field.Label>Email</Field.Label>
-                                        <Input disabled={isDisabled} name="email" placeholder="Email" value={updatedUser.email} onChange={handleChange}/>
+                                        <Input name="email" placeholder="Email" value={updatedUser.email} onChange={handleChange}/>
                                     </Field.Root>
 
                                     <Field.Root orientation="horizontal" disabled={isDisabled}>
                                         <Field.Label>Password</Field.Label>
-                                        <PasswordInput disabled={isDisabled} name="password" placeholder="Password" value={updatedUser.password} onChange={handleChange}/>
+                                        <PasswordInput name="password" placeholder="Password" value={updatedUser.password} onChange={handleChange}/>
                                     </Field.Root>
 
                                     <Field.Root orientation="horizontal" disabled={isDisabled}>
@@ -166,12 +167,12 @@ const ProfilePage: React.FC = () => {
                                 <Stack gap={2} padding={4}>
                                     <Field.Root orientation="horizontal" disabled={isDisabled}>
                                         <Field.Label>Academic Credential</Field.Label>
-                                        <Input disabled={isDisabled} name="academicCredentials" placeholder="Academic Credential" value={updatedUser.academicCredentials} onChange={handleChange}/>
+                                        <Input name="academicCredentials" placeholder="Academic Credential" value={updatedUser.academicCredentials} onChange={handleChange}/>
                                     </Field.Root>
 
                                     <Field.Root orientation="horizontal" disabled={isDisabled}>
                                         <Field.Label>Skills</Field.Label>
-                                        <Textarea disabled={isDisabled} name="skills" placeholder="Skills" value={updatedUser.skills} onChange={handleChange}/>
+                                        <Textarea name="skills" placeholder="Skills" value={updatedUser.skills} onChange={handleChange}/>
                                     </Field.Root>
 
                                     <Field.Root orientation="horizontal" disabled={isDisabled}>
