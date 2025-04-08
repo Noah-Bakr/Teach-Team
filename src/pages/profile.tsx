@@ -185,7 +185,6 @@ const ProfilePage: React.FC = () => {
                                             </NativeSelect.Field>
                                             <NativeSelect.Indicator />
                                         </NativeSelect.Root>
-                                        <Field.ErrorText>This is an error</Field.ErrorText>
                                     </Field.Root>
                                 </Stack>
                             </Stack>

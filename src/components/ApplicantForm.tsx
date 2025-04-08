@@ -1,5 +1,6 @@
 import { Button, AbsoluteCenter, Box, ButtonGroup, VStack, 
-  Input, Field, Heading, Text, CloseButton, Presence, useDisclosure, Link} from "@chakra-ui/react";
+  Input, Field, Heading, Text, CloseButton, Presence, useDisclosure, Link,
+  NativeSelect} from "@chakra-ui/react";
 import { useState, useEffect, use } from "react";
 import { useRouter } from 'next/router';
 import { PasswordInput, PasswordStrengthMeter } from "@/components/ui/password-input";
@@ -26,19 +27,31 @@ const ApplicantForm: React.FC<ApplicantFormProps> = ({ closeForm, course }) => {
   const router = useRouter();
   const { open, onToggle } = useDisclosure();
 
-  const [updatedUser, setUpdatedUser] = useState<User>({
-      id: "",
-      username: "",
-      firstName: "",
-      lastName: "",
-      avatar: "",
-      email: "",
-      password: "",
-      role: ["tutor"] as Role[],
-      academicCredentials: "",
-      skills: [],
-      availability: ["Not Available"] as Availability[],
+  const [formData, setFormData] = useState<Omit<User, 'password' | 'username' | 'avatar' | 'role'>>({
+    id: currentUser?.id || "",
+    firstName: currentUser?.firstName || "",
+    lastName: currentUser?.lastName || "",
+    email: currentUser?.email || "",
+    academicCredentials: currentUser?.academicCredentials || "",
+    skills: currentUser?.skills || [],
+    availability: currentUser?.availability || ["Not Available"],
   });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  const handleEventChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+    setFormData((prevData) => ({
+        ...prevData,
+        [name]: value,
+    }));
+  };
 
   //Wake on show
   useEffect(() => {
@@ -59,32 +72,55 @@ const ApplicantForm: React.FC<ApplicantFormProps> = ({ closeForm, course }) => {
                       <Heading className="Header" as="h1">Apply for {course.name}</Heading>
                       <Text className="Text" as="p">Please enter your details to apply.</Text>
                       <VStack className="InputStack">
-                        <Field.Root className="InputFieldRoot">
-                          <Field.Label>Email</Field.Label>
-                          <Input name="email" placeholder="Email" value={currentUser?.email || ''} />
-                      </Field.Root>
-
 
                       <Field.Root className="InputFieldRoot" required>
-                          <Field.Label>Email <Field.RequiredIndicator /></Field.Label>
-                          <Input className="LoginInput" placeholder="name@example.com" variant="outline" />
-                          <Field.ErrorText>This field is required</Field.ErrorText>
+                        <Field.Label>First Name<Field.RequiredIndicator /></Field.Label>
+                        <Input name="firstName" placeholder="First Name" value={formData.firstName} onChange={handleChange}/>
+                        <Field.ErrorText>This field is required</Field.ErrorText>
                       </Field.Root>
-                      <Field.Root className="InputFieldRoot" required>
-                          <Field.Label>Password <Field.RequiredIndicator /></Field.Label>
-                          <PasswordInput className="Input" placeholder="Password" variant={"outline"} />
-                          <Field.ErrorText>This field is required</Field.ErrorText>
+
+                      <Field.Root className="InputFieldRoot">
+                        <Field.Label>Last Name<Field.RequiredIndicator /></Field.Label>
+                        <Input name="lastName" placeholder="Last Name" value={formData.lastName} onChange={handleChange}/>
+                        <Field.ErrorText>This field is required</Field.ErrorText>
                       </Field.Root>
+
+                      <Field.Root className="InputFieldRoot">
+                        <Field.Label>Email<Field.RequiredIndicator /></Field.Label>
+                        <Input name="email" placeholder="Email" value={formData.email} onChange={handleChange}/>
+                        <Field.ErrorText>This field is required</Field.ErrorText>
+                      </Field.Root>
+
+                      <Field.Root className="InputFieldRoot">
+                        <Field.Label>Academic Credentials<Field.RequiredIndicator /></Field.Label>
+                        <Input name="academicCredentials" placeholder="Academic Credential" value={formData.academicCredentials} onChange={handleChange}/>
+                        <Field.ErrorText>This field is required</Field.ErrorText>
+                      </Field.Root>
+
+                      <Field.Root className="InputFieldRoot">
+                        <Field.Label>Availability</Field.Label>
+                        <NativeSelect.Root onChange={handleEventChange}>
+                            <NativeSelect.Field name="availability" value={formData.availability}>
+                                {Availability.map((availability) => (
+                                    <option key={availability} value={availability}>{availability}</option>
+                                ))}
+                            </NativeSelect.Field>
+                            <NativeSelect.Indicator />
+                        </NativeSelect.Root>
+                    </Field.Root>
+
+                      <Field.Root className="InputFieldRoot">
+                        <Field.Label>Skills</Field.Label>
+                        <Input name="skills" placeholder="Skills (comma-separated)" value={formData.skills} onChange={handleChange}/>
+                      </Field.Root>
+
 
                       <ButtonGroup className="ButtonGroup">
                           <Button className="Button" colorPalette="yellow" variant="surface" onClick={() => { setLoading(false); onToggle(); closeForm(); }} >Cancel</Button>
-                          <Button className="Button" colorPalette="yellow" variant="solid" loading={loading} onClick={() => { setLoading(false); }} >Login</Button>
+                          <Button className="Button" colorPalette="yellow" variant="solid" loading={loading} 
+                            onClick={() => { setLoading(false);toaster.create({title: "Application Submitted", description: `You have successfully applied for ${course.name}.`, 
+                              type: "success", duration: 5000,}); closeForm(); }} >Submit Application</Button>
                       </ButtonGroup>
-                      <Text as="p" className="TextSmall">Don't have an account?&nbsp;
-                          <Link color="black" onClick={() => { router.push("/signup"); }}>
-                          Sign Up <LuExternalLink />
-                          </Link>
-                      </Text>
                       </VStack>
                   </VStack>
               </Box>
