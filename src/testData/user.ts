@@ -6,12 +6,15 @@ export type User = {
   avatar?: string; // URL to the avatar image
   email: string; // will be the username
   password: string;
-  role: "admin" | "lecturer" | "tutor"; // default to "tutor"
+  role: Role[]; // List of roles (closed)
 
   academicCredentials?: string; // Optional field for academic credentials
   skills?: string[]; // Optional field for skills
-  availability?: "Full-Time" | "Part-Time"; // Optional field for availability
+  availability?: Availability[]; // Optional field for availability (list)
 };
+
+export type Role = "admin" | "lecturer" | "tutor";
+export type Availability = "Full-Time" | "Part-Time" | "Not Available";
 
 export const DEFAULT_USERS: User[] = [
   // Default users for testing purposes
@@ -21,7 +24,7 @@ export const DEFAULT_USERS: User[] = [
     lastName: "User",
     email: "admin@example.com", 
     password: "admin123", 
-    role: "admin" },
+    role: ["admin"] },
   
   { id: "2", 
     username: "john_doe", 
@@ -30,10 +33,10 @@ export const DEFAULT_USERS: User[] = [
     email: "john@example.com", 
     password: "Cart@21-c0ding", 
     avatar: "https://mighty.tools/mockmind-api/content/human/80.jpg",
-    role: "lecturer",
+    role: ["lecturer"],
     academicCredentials: "Bachelor of Computer Science",
     skills: ["Java", "Python", "C++"],
-    availability: "Full-Time" },
+    availability: ["Full-Time"] },
 
   { id: "3", 
     username: "jane_doe", 
@@ -41,7 +44,7 @@ export const DEFAULT_USERS: User[] = [
     lastName: "Doe", 
     email: "jane@example.com", 
     password: "password456", 
-    role: "tutor" },
+    role: ["tutor"] },
 
   { id: "4", 
     username: "bob_smith", 
@@ -49,5 +52,5 @@ export const DEFAULT_USERS: User[] = [
     lastName: "Smith", 
     email: "bob@example.com", 
     password: "password789", 
-    role: "applicant" },
+    role: ["tutor"] },
 ];
