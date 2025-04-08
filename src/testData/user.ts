@@ -20,7 +20,7 @@ export type Availability = typeof Availability[number];
 
 export const DEFAULT_USERS: User[] = [
   // Default users for testing purposes
-  { id: "1", 
+  { id: "U0000001", 
     username: "admin_user",
     firstName: "Admin",
     lastName: "User",
@@ -28,7 +28,7 @@ export const DEFAULT_USERS: User[] = [
     password: "admin123", 
     role: ["admin"] },
   
-  { id: "2", 
+  { id: "U0000002", 
     username: "john_doe", 
     firstName: "John", 
     lastName: "Doe", 
@@ -40,7 +40,7 @@ export const DEFAULT_USERS: User[] = [
     skills: ["Java", "Python", "C++"],
     availability: ["Full-Time"] },
 
-  { id: "3", 
+  { id: "U0000003", 
     username: "jane_doe", 
     firstName: "Jane", 
     lastName: "Doe", 
@@ -48,7 +48,7 @@ export const DEFAULT_USERS: User[] = [
     password: "password456", 
     role: ["tutor"] },
 
-  { id: "4", 
+  { id: "U0000004", 
     username: "bob_smith", 
     firstName: "Bob", 
     lastName: "Smith", 

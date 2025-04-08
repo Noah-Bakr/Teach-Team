@@ -17,7 +17,7 @@ export type Applicant = {
   export const DEFAULT_APPLICANTS: Applicant[] = [
     // Default applicants for testing purposes
     { id: "1",
-      applicantId: "1",
+      applicantId: "U0000001",
       course: "COSC2758",
       availability: ["Full-Time"],
       skills: ["JavaScript", "React", "TypeScript"],
@@ -25,7 +25,7 @@ export type Applicant = {
       selected: false},
 
     { id: "2",
-      applicantId: "1",
+      applicantId: "U0000001",
       course: "COSC2500",
       availability: ["Part-Time"],
       skills: ["HTML", "CSS", "Java, Scene Builder"],
