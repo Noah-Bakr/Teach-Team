@@ -40,7 +40,7 @@ const ApplicantForm: React.FC<ApplicantFormProps> = ({ closeForm }) => {
 
   useEffect(() => {
     if (error == "Invalid email or password") {
-      toaster.create({title: error, type: "error", isClosable: true, placement: "top-end", overlap: true, duration: 5000, max: 3});
+      toaster.create({title: error, type: "error", duration: 5000});
       setError("");
     }
   }, [error]);

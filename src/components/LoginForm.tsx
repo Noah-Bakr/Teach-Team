@@ -53,7 +53,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ closeForm }) => {
 
     useEffect(() => {
         if (error == "Invalid email or password") {
-        toaster.create({title: error, type: "error", isClosable: true, placement: "top-end", overlap: true, duration: 5000, max: 3});
+        toaster.create({title: error, type: "error", duration: 5000});
         setError("");
         }
     }, [error]);
@@ -87,14 +87,14 @@ const LoginForm: React.FC<LoginFormProps> = ({ closeForm }) => {
         setError("");
 
         if (passwordStrength !== 4) {
-        toaster.create({ title: "Password Strength", description: "Password is weak. Please use a stronger password.", type: "warning" });
+        toaster.create({ title: "Password Strength", description: "Password is weak. Please use a stronger password.", type: "warning", duration: 5000 });
         return;
         }
 
         const success = login(email, password);
         if (success) {
         if (currentUser) {
-            toaster.create({ title: "Login Successful", description: `Welcome back, ${currentUser.firstName}!`, type: "success" });
+            toaster.create({ title: "Login Successful", description: `Welcome back, ${currentUser.firstName}!`, type: "success", duration: 5000 });
         }
         router.push("/dashboard");
         onToggle();
