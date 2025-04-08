@@ -6,7 +6,7 @@ export type User = {
   avatar?: string; // URL to the avatar image
   email: string; // will be the username
   password: string;
-  role: "admin" | "lecturer" | "tutor" | "applicant"; // default to "applicant"
+  role: "admin" | "lecturer" | "tutor"; // default to "tutor"
 
   academicCredentials?: string; // Optional field for academic credentials
   skills?: string[]; // Optional field for skills
