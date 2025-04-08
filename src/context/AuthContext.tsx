@@ -6,6 +6,7 @@ interface AuthContextType {
   users: User[];
   login: (email: string, password: string) => boolean;
   logout: () => void;
+  updateUserInLocalStorage: (updatedUser: User) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -49,8 +50,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     localStorage.removeItem("currentUser");
   };
 
+  // Function to update user in localStorage (Users) and state (Current User)
+  const updateUserInLocalStorage = (updatedUser: User) => {
+    localStorage.setItem("currentUser", JSON.stringify(updatedUser)); //Ensure currentUser is updated
+    setCurrentUser(updatedUser);
+  
+    // Find the index of the user to update (where user.id === updatedUser.id)
+    const userIndex = users.findIndex((user: User) => user.id === updatedUser.id);
+  
+    if (userIndex !== -1) {
+      users[userIndex] = updatedUser;
+      localStorage.setItem("users", JSON.stringify(users));
+      setUsers(users);
+    } // User not found, no action taken (user must be logged in to update)
+  };
+
   return (
-    <AuthContext.Provider value={{ currentUser: currentUser, users, login, logout }}>
+    <AuthContext.Provider value={{ currentUser: currentUser, users, login, logout, updateUserInLocalStorage }}>
       {children}
     </AuthContext.Provider>
   );
