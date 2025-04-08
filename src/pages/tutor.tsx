@@ -4,17 +4,19 @@ import { useEffect, useState } from "react";
 import ApplicantForm from '../components/ApplicantForm';
 
 const TutorPage: React.FC = () => {
+    const [courses, setCourses] = useState<Course[]>(DEFAULT_COURSES);
     const [isApplicantFormOpen, setIsApplicantFormOpen] = useState(false);
+    const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
     
-    const handleApplicantClick = () => {
+    const handleApplicantClick = (course: Course) => {
         setIsApplicantFormOpen(true);
+        setSelectedCourse(course);
     };
 
     const closeApplicantForm = () => {
         setIsApplicantFormOpen(false);
+        setSelectedCourse(null);
     };
-
-    const [courses, setCourses] = useState<Course[]>(DEFAULT_COURSES);
 
     // Load saved courses from localStorage
     useEffect(() => {
@@ -31,10 +33,7 @@ const TutorPage: React.FC = () => {
 
     return (
         <div>
-            {isApplicantFormOpen && <ApplicantForm closeForm={closeApplicantForm} />}
-            <h1>Tutor Page</h1>
-            <p>Welcome to the Tutor page!</p>
-
+            {isApplicantFormOpen && selectedCourse && <ApplicantForm closeForm={closeApplicantForm} course={selectedCourse}/>}
             <Stack p={4} m={4} gap={4} direction={['column', 'row']} wrap="wrap" width={"90vw"}>
                 {courses.map((course) => (
                     <Card.Root colorPalette="yellow" flexDirection="row" overflow="hidden" width={"500vw"} maxW="xl" key={course.id} variant="outline" size="sm">
@@ -52,7 +51,7 @@ const TutorPage: React.FC = () => {
                                 </HStack>
                             </Card.Body>
                             <Card.Footer>
-                                <Button onClick={handleApplicantClick}>Apply</Button>
+                                <Button onClick={() => handleApplicantClick(course)}>Apply</Button>
                             </Card.Footer>
                         </Box>
                     </Card.Root>
