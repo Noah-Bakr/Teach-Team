@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { Availability, Role, Roles, User } from "@/types/types";
 import { PasswordInput } from "@/components/ui/password-input";
 
+// TODO: Add area for previous experience
 const ProfilePage: React.FC = () => {
     const { currentUser, updateUserInLocalStorage } = useAuth();
     const [isDisabled, setIsDisabled] = useState(true);
