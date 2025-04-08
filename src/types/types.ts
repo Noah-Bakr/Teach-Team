@@ -19,7 +19,7 @@ export type User = {
 };
 
 export type Applicant = {
-    id: String;
+    id: string;
     applicantId: string;
     course: string;
     availability: Availability[];
