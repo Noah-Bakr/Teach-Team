@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { DEFAULT_USERS, User  } from "../testData/user";
+import { User  } from "../types/types";
+import { DEFAULT_USERS } from "../types/testData";
 import { toaster } from "@/components/ui/toaster";
 
 interface AuthContextType {

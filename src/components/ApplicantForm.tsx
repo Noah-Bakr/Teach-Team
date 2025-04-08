@@ -9,9 +9,7 @@ import { LuExternalLink } from "react-icons/lu";
 import { useAuth } from "../context/AuthContext";
 import { log } from "console";
 import "../styles/PopUpForm.css";
-import { Course } from "@/testData/course";
-import { User } from "@/testData/user";
-import { Availability, Role, Roles } from "@/testData/user";
+import { Course, Availability, User } from "@/types/types";
 
 interface ApplicantFormProps {
   closeForm: () => void;

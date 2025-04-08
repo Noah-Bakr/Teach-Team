@@ -1,6 +1,6 @@
 import React from "react";
 import { Box, Flex, Heading, Text, Input, Textarea } from "@chakra-ui/react";
-import { Applicant } from "@/testData/types";
+import { Applicant } from "@/types/types";
 import CustomFormControl from "./CustomFormControl";
 
 interface SelectedApplicantCardProps {

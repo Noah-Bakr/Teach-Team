@@ -1,4 +1,5 @@
-import { DEFAULT_COURSES, Course } from "@/testData/course";
+import { Course } from "@/types/types";
+import { DEFAULT_COURSES } from "@/types/testData";
 import { Badge, Box, Button, Card, HStack, Stack } from "@chakra-ui/react"
 import { useEffect, useState } from "react";
 import ApplicantForm from '../components/ApplicantForm';

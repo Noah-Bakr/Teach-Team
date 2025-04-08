@@ -2,8 +2,7 @@ import { Avatar, Box, Button, Card, Field, HStack, Input, NativeSelect,
     Separator, Stack, Text, Textarea } from "@chakra-ui/react";
 import { useAuth } from "@/context/AuthContext";
 import { useEffect, useState } from "react";
-import { User } from "@/testData/user";
-import { Availability, Role, Roles } from "@/testData/user";
+import { Availability, Role, Roles, User } from "@/types/types";
 import { PasswordInput } from "@/components/ui/password-input";
 
 const ProfilePage: React.FC = () => {

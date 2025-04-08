@@ -1,7 +1,7 @@
 import LecturerPage from "@/pages/lecturer";
 import TutorPage from "@/pages/tutor";
 import { useAuth } from "@/context/AuthContext";
-import { Availability, Role } from "@/testData/user";
+import { Availability, Role } from "@/types/types";
 
 
 const DashboardPage: React.FC = () => {

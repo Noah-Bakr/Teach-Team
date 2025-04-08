@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button, Table } from '@chakra-ui/react';
-import { Applicant } from '@/testData/types';
+import { Applicant } from '@/types/types';
 
 interface ApplicantsTableProps {
     applicants: Applicant[];

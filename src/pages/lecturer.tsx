@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Heading, Text } from '@chakra-ui/react';
-import { Applicant } from '@/testData/types';
-import { dummyApplicants } from "@/testData/dummyApplicants";
+import { Applicant } from '@/types/types';
+import { dummyApplicants } from "@/types/dummyApplicants";
 import SearchAndSortBar from "@/components/SearchAndSortBar";
 import SelectedApplicantCard from "@/components/SelectedApplicantCard";
 import ApplicantsTable from "@/components/ApplicantsTable";

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Heading, Text, Flex, VStack } from '@chakra-ui/react';
-import { Applicant } from '@/testData/types';
+import { Applicant } from '@/types/types';
 
 interface VisualRepresentationProps {
     applicants: Applicant[];
