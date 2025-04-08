@@ -13,8 +13,10 @@ export type User = {
   availability?: Availability[]; // Optional field for availability (list)
 };
 
-export type Role = "admin" | "lecturer" | "tutor";
-export type Availability = "Full-Time" | "Part-Time" | "Not Available";
+export const Roles: string[] = ["admin", "lecturer", "tutor"];
+export type Role = typeof Roles[number];
+export const Availability: string[] = ["Full-Time", "Part-Time", "Not Available"];
+export type Availability = typeof Availability[number];
 
 export const DEFAULT_USERS: User[] = [
   // Default users for testing purposes
