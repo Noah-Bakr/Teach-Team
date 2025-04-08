@@ -1,11 +1,9 @@
 import { Button, AbsoluteCenter, Box, ButtonGroup, VStack, 
   Input, Field, Heading, Text, CloseButton, Presence, useDisclosure, Link,
   NativeSelect} from "@chakra-ui/react";
-import { useState, useEffect, use } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from 'next/router';
-import { PasswordInput, PasswordStrengthMeter } from "@/components/ui/password-input";
 import { toaster } from "@/components/ui/toaster"
-import { LuExternalLink } from "react-icons/lu";
 import { useAuth } from "../context/AuthContext";
 import { log } from "console";
 import "../styles/PopUpForm.css";
