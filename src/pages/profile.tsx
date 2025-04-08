@@ -2,6 +2,7 @@ import { Avatar, Box, Button, Card, Field, HStack, Input, Separator, Stack, Text
 import { useAuth } from "@/context/AuthContext";
 import { useEffect, useState } from "react";
 import { User } from "@/testData/user";
+import { Availability, Role } from "@/testData/user";
 
 const ProfilePage: React.FC = () => {
     const { currentUser, updateUserInLocalStorage } = useAuth();
@@ -15,10 +16,10 @@ const ProfilePage: React.FC = () => {
         avatar: "",
         email: "",
         password: "",
-        role: "tutor",
+        role: ["tutor"] as Role[],
         academicCredentials: "",
         skills: [],
-        availability: undefined,
+        availability: ["Not Available"] as Availability[],
     });
 
     // Effect to set the updatedUser state when currentUser changes
