@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Heading, Text } from '@chakra-ui/react';
 import { Applicant } from '@/types/types';
-import { dummyApplicants } from "@/types/dummyApplicants";
+import { DEFAULT_APPLICANTS } from "@/types/testData";
 import SearchAndSortBar from "@/components/SearchAndSortBar";
 import SelectedApplicantCard from "@/components/SelectedApplicantCard";
 import ApplicantsTable from "@/components/ApplicantsTable";
@@ -10,7 +10,7 @@ import VisualRepresentation from '../components/VisualRepresentation';
 
 const LecturerPage: React.FC = () => {
     // Use dummy applicants for initial state
-    const [applicants, setApplicants] = useState<Applicant[]>(dummyApplicants);
+    const [applicants, setApplicants] = useState<Applicant[]>(DEFAULT_APPLICANTS);
 
     // State to track validation errors for applicants by id
     const [errors, setErrors] = useState<{
@@ -101,6 +101,7 @@ const LecturerPage: React.FC = () => {
         }
     };
 
+    // TODO: search for applicants by applicantId -> get name from there (localStorage)
     // Filter -Combine Applicants field into a searchable string
     const filteredApplicants = applicants.filter((applicant) => {
         const lowercaseSearch = search.toLowerCase();
@@ -111,6 +112,7 @@ const LecturerPage: React.FC = () => {
                 applicant.skills.join(' ').toLowerCase().includes(lowercaseSearch));
     });
 
+    // TODO: Property 'localeCompare' does not exist on type 'string[]'. You have to compare with "indexOf" or "includes"
     // Sort - If sortBy options selected, sort by filteredApplicants
     const sortedApplicants = sortBy ? [...filteredApplicants].sort((a, b) => {
         if(sortBy === 'course') {
@@ -146,7 +148,7 @@ const LecturerPage: React.FC = () => {
                             <SelectedApplicantCard
                                 key={applicant.id}
                                 applicant={applicant}
-                                error={errors[applicant.id]}
+                                error={errors[applicant.id]} // TODO: applicant id is a string (A0000000). Maybe remove the "A" and make it a number
                                 handleRankChange={handleRankChange}
                                 handleCommentChange={handleCommentChange}
                             />
