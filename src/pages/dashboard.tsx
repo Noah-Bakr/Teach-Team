@@ -1,6 +1,8 @@
 import LecturerPage from "@/pages/lecturer";
 import TutorPage from "@/pages/tutor";
 import { useAuth } from "@/context/AuthContext";
+import { Availability, Role } from "@/testData/user";
+
 
 const DashboardPage: React.FC = () => {
     const { currentUser } = useAuth();
@@ -9,11 +11,11 @@ const DashboardPage: React.FC = () => {
         return <div>Please log in to view this page.</div>;
     }
 
-    if (currentUser.role === "lecturer") {
+    if (currentUser.role.includes("lecturer")) {
         return (<LecturerPage />);
     }
 
-    if (currentUser.role === "tutor") {
+    if (currentUser.role.includes("tutor")) {
         return (<TutorPage />);
     }
 
