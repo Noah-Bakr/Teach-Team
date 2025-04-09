@@ -93,10 +93,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ closeForm }) => {
 
         const success = login(email, password);
         if (success) {
-            if (currentUser) {
-                toaster.create({ title: "Sign In Successful", description: `Welcome back, ${currentUser?.firstName || "User"}!`, type: "success", duration: 5000 });
-            }
-            // router.push("/dashboard");
+            router.push("/dashboard");
             onToggle();
             closeForm();
         } else {
@@ -113,9 +110,9 @@ const LoginForm: React.FC<LoginFormProps> = ({ closeForm }) => {
             animationDuration="moderate">
                 <AbsoluteCenter>
                     <Box className="Box">
-                        <VStack className="FormStack">
+                        <VStack className="FormStack" colorPalette={"yellow"}>
                             <CloseButton className="CloseButton" variant="ghost" colorPalette="black" onClick={() => { onToggle(); closeForm(); }}/>
-                            <Heading className="Header" as="h1">Login</Heading>
+                            <Heading className="Header" as="h1">Sign In</Heading>
                             <Text className="Text" as="p">Please enter your email and password to login.</Text>
                             <VStack className="InputStack">
                             <Field.Root className="InputFieldRoot" invalid={emailError} required>
