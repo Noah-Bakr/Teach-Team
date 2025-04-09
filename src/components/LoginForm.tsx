@@ -112,7 +112,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ closeForm }) => {
                     <Box className="Box">
                         <VStack className="FormStack">
                             <CloseButton className="CloseButton" variant="ghost" colorPalette="black" onClick={() => { onToggle(); closeForm(); }}/>
-                            <Heading className="Header" as="h1">Login</Heading>
+                            <Heading className="Header" as="h1">Sign In</Heading>
                             <Text className="Text" as="p">Please enter your email and password to login.</Text>
                             <VStack className="InputStack">
                             <Field.Root className="InputFieldRoot" invalid={emailError} required>
