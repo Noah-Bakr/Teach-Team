@@ -9,6 +9,7 @@ import SelectedApplicantCard from "@/components/SelectedApplicantCard";
 import ApplicantsTable from "@/components/ApplicantsTable";
 import VisualRepresentation from '../components/VisualRepresentation';
 import { useUserLookup } from "@/utils/userLookup";
+import { useCourseLookup } from "@/utils/courseLookup";
 
 
 const LecturerPage: React.FC = () => {
@@ -115,12 +116,23 @@ const LecturerPage: React.FC = () => {
         return applicantId;
     };
 
+    // Call the useCourseLookup hook at the top level.
+    const courseLookup = useCourseLookup();
+
+    // Helper function that uses the lookup to get a course name.
+    const getCourseName = (courseId: string): string => {
+        const course = courseLookup[courseId];
+        // If found, return the course name; otherwise fallback to the courseId
+        return course ? course.name : courseId;
+    };
+
     // Filter -Combine Applicants field into a searchable string
     const filteredApplicants = applicants.filter((applicant) => {
         const lowercaseSearch = search.toLowerCase();
         return (
             getUserName(applicant.applicantId).toLowerCase().includes(lowercaseSearch) ||
             applicant.course.toLowerCase().includes(lowercaseSearch) ||
+            getCourseName(applicant.course).toLowerCase().includes(lowercaseSearch) ||
             applicant.availability.join(" ").toLowerCase().includes(lowercaseSearch) ||
             applicant.skills.join(' ').toLowerCase().includes(lowercaseSearch));
     });
