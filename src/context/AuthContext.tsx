@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import { User  } from "../types/types";
 import { DEFAULT_USERS } from "../types/testData";
 import { toaster } from "@/components/ui/toaster";
+import { useRouter } from "next/router";
 
 interface AuthContextType {
   currentUser: User | null;
@@ -16,6 +17,8 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [currentUser, setCurrentUser] = useState<User | (null)>(null);
   const [users, setUsers] = useState<User[]>([]);
+  const router = useRouter();
+  
 
   useEffect(() => {
     // Initialize users from localStorage or use defaults
@@ -50,6 +53,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const logout = () => {
     setCurrentUser(null);
     localStorage.removeItem("currentUser");
+    toaster.create({ title: "Sign out Successful", description: `We hope to see you back soon, ${currentUser?.firstName}!`, type: "success", duration: 5000 });
+    router.push("/");
   };
 
   // Function to update user in localStorage (Users) and state (Current User)
