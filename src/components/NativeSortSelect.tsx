@@ -16,7 +16,7 @@ const NativeSortSelect: React.FC<SortSelectProps> = ({ value, onChange }) => {
                 value={value}
                 onChange={(e) => onChange(e.target.value)}
             >
-                <option value="course">Course Name</option>
+                <option value="course">Course</option>
                 <option value="availability">Availability</option>
             </NativeSelect.Field>
             <NativeSelect.Indicator />
