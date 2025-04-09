@@ -108,6 +108,7 @@ const ApplicantForm: React.FC<ApplicantFormProps> = ({ closeForm, course }) => {
                         <Field.Root className="InputFieldRoot" disabled>
                           <Field.Label>Last Name<Field.RequiredIndicator /></Field.Label>
                           <Input name="lastName" placeholder="Last Name" value={formData.lastName} onChange={handleChange}/>
+
                           <Field.ErrorText>This field is required</Field.ErrorText>
                         </Field.Root>
 
