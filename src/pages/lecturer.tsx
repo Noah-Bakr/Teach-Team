@@ -129,12 +129,12 @@ const LecturerPage: React.FC = () => {
     // Use the custom hook
     const userLookup = useUserLookup();
     // Define a helper function (not a Hook) that uses the lookup.
-    const getUserName = (applicantId: string): string => {
-        const user = userLookup[applicantId];
+    const getUserName = (userId: string): string => {
+        const user = userLookup[userId];
         if (user) {
             return `${user.firstName} ${user.lastName}`;
         }
-        return applicantId;
+        return userId;
     };
 
     // Call the useCourseLookup hook at the top level.
