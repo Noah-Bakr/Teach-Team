@@ -24,9 +24,9 @@ const SelectedApplicantCard: React.FC<SelectedApplicantCardProps> = ({
     const userLookup = useUserLookup();
 
     // Helper function for getting users name from the lookup.
-    const getUserName = (applicantId: string): string => {
-        const user = userLookup[applicantId];
-        return user ? `${user.firstName} ${user.lastName}` : applicantId;
+    const getUserName = (userId: string): string => {
+        const user = userLookup[userId];
+        return user ? `${user.firstName} ${user.lastName}` : userId;
     };
 
     // Call the useCourseLookup hook at the top level.
