@@ -72,14 +72,35 @@ const LecturerPage: React.FC = () => {
     const handleRankChange = (id: string, newValue: string) => {
         const rank = Number(newValue);
         if (rank > 0) {
-            // Clear any rank error if valid.
-            setErrors((prev) => ({
-                ...prev,
-                [id]: { ...prev[id], rank: '' }
-            }));
-            updateApplicantDetails(id, "rank", rank);
+            // Find applicant  being updated
+            const currentApplicant = applicants.find(app => app.id === id);
+            if (currentApplicant) {
+                // Check if another applicant in the same course already has the same rank.
+                const duplicate = applicants.find(app =>
+                    app.id !== id &&
+                    app.selected &&
+                    app.course === currentApplicant.course &&
+                    app.rank === rank
+                );
+                if (duplicate) {
+                    setErrors(prev => ({
+                        ...prev,
+                        [id]: {
+                            ...prev[id],
+                            rank: `Rank ${rank} is already assigned for ${currentApplicant.course}`
+                        }
+                    }));
+                    return;
+                } else {
+                    setErrors(prev => ({
+                        ...prev,
+                        [id]: {...prev[id], rank: ''}
+                    }));
+                    updateApplicantDetails(id, "rank", rank);
+                }
+            }
         } else {
-            // Set error message for invalid rank.
+            // Clear any rank error if valid.
             setErrors((prev) => ({
                 ...prev,
                 [id]: { ...prev[id], rank: 'Rank must be greater than 0' }
@@ -147,6 +168,15 @@ const LecturerPage: React.FC = () => {
         return 0;
     }) : filteredApplicants;
 
+    // Group Selected Applicants by course
+    const selectedByCourse = applicants.filter(app => app.selected).reduce((acc, app) => {
+        const courseKey = app.course;
+        if (!acc[courseKey]) acc[courseKey] = [];
+        acc[courseKey].push(app);
+        return acc;
+    }, {} as Record<string, Applicant[]>);
+
+
     return(
         <Box p={4}>
             <Heading mb={4}>Lecturer Dashboard</Heading>
@@ -163,23 +193,26 @@ const LecturerPage: React.FC = () => {
                 <ApplicantsTable applicants={sortedApplicants} toggleSelect={toggleSelect} />
             </Box>
 
-            {/* Applicants Ranking and Comments */}
-            <Box>
+            {/* Selected Applicants Grouped by Course */}
+            <Box mb={8}>
                 <Heading size="md" mb={2}>Selected Applicants</Heading>
-                {applicants.filter((app) => app.selected).length === 0 ? (
+                {Object.entries(selectedByCourse).length === 0 ? (
                     <Text>No Applicants Selected, Please choose to proceed.</Text>
                 ) : (
-                    applicants
-                        .filter((app) => app.selected)
-                        .map((applicant) => (
-                            <SelectedApplicantCard
-                                key={applicant.id}
-                                applicant={applicant}
-                                error={errors[applicant.id]}
-                                handleRankChange={handleRankChange}
-                                handleCommentChange={handleCommentChange}
-                            />
-                        ))
+                    Object.entries(selectedByCourse).map(([course, apps]) => (
+                        <Box key={course} mb={6}>
+                            <Heading size="sm" mb={2}>Course: {course}</Heading>
+                            {apps.map(applicant => (
+                                <SelectedApplicantCard
+                                    key={applicant.id}
+                                    applicant={applicant}
+                                    error={errors[applicant.id]}
+                                    handleRankChange={handleRankChange}
+                                    handleCommentChange={handleCommentChange}
+                                />
+                            ))}
+                        </Box>
+                    ))
                 )}
             </Box>
             {/* Visual Representation */}
