@@ -5,6 +5,7 @@ import { Box, Flex, Heading, Text, Input, Textarea } from "@chakra-ui/react";
 import { Applicant } from "@/types/types";
 import CustomFormControl from "./CustomFormControl";
 import { useUserLookup } from "@/utils/userLookup";
+import { useCourseLookup } from "@/utils/courseLookup";
 
 interface SelectedApplicantCardProps {
     applicant: Applicant;
@@ -28,6 +29,16 @@ const SelectedApplicantCard: React.FC<SelectedApplicantCardProps> = ({
         return user ? `${user.firstName} ${user.lastName}` : applicantId;
     };
 
+    // Call the useCourseLookup hook at the top level.
+    const courseLookup = useCourseLookup();
+
+    // Helper function that uses the lookup to get a course name.
+    const getCourseName = (courseId: string): string => {
+        const course = courseLookup[courseId];
+        // If found, return the course name; otherwise fallback to the courseId
+        return course ? course.name : courseId;
+    };
+
     return (
         <Box mt={8}
              p={4}
@@ -39,7 +50,7 @@ const SelectedApplicantCard: React.FC<SelectedApplicantCardProps> = ({
              mb={4}
         >
             <Heading size="sm" mb={4}>
-                {getUserName(applicant.applicantId)} - {applicant.course}
+                {getUserName(applicant.applicantId)} - {applicant.course} {getCourseName(applicant.course)}
             </Heading>
             <Flex align="center" mb={2}>
                 <Text mr={2}>Rank:</Text>
