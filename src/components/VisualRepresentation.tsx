@@ -1,12 +1,24 @@
+"use client";
+
 import React from 'react';
 import { Box, Heading, Text, Flex, VStack } from '@chakra-ui/react';
 import { Applicant } from '@/types/types';
+import { useUserLookup } from "@/utils/userLookup";
 
 interface VisualRepresentationProps {
     applicants: Applicant[];
 }
 
 const VisualRepresentation: React.FC<VisualRepresentationProps> =({ applicants }) => {
+    // Call the useUserLookup hook once at the top level.
+    const userLookup = useUserLookup();
+
+    // Helper function to get a user's full name from the lookup.
+    const getUserName = (applicantId: string): string => {
+        const user = userLookup[applicantId];
+        return user ? `${user.firstName} ${user.lastName}` : applicantId;
+    };
+
     // Filter applicants by ranking
     const selectedApplicants = applicants.filter(app => app.selected && app.rank !== undefined);
 
@@ -31,7 +43,7 @@ const VisualRepresentation: React.FC<VisualRepresentationProps> =({ applicants }
                     <Heading size="sm">Most Chosen Applicant</Heading>
                     {mostSelectedApplicant ? (
                         <Box p={2} borderWidth="1px" borderRadius="md" w="100%" textAlign="center">
-                            <Text fontWeight="bold">{mostSelectedApplicant.name}</Text>
+                            <Text fontWeight="bold">{getUserName(mostSelectedApplicant.applicantId)}</Text>
                             <Text>Rank: {mostSelectedApplicant.rank}</Text>
                         </Box>
                     ) : (
@@ -42,7 +54,7 @@ const VisualRepresentation: React.FC<VisualRepresentationProps> =({ applicants }
                     <Heading size="sm">Least Chosen</Heading>
                     {leastSelectedApplicant ? (
                         <Box p={2} borderWidth="1px" borderRadius="md" w="100%" textAlign="center">
-                            <Text fontWeight="bold">{leastSelectedApplicant.name}</Text>
+                            <Text fontWeight="bold">{getUserName(leastSelectedApplicant.applicantId)}</Text>
                             <Text>Rank: {leastSelectedApplicant.rank}</Text>
                         </Box>
                     ) : (
@@ -53,8 +65,13 @@ const VisualRepresentation: React.FC<VisualRepresentationProps> =({ applicants }
                     <Heading size="sm">Not Selected</Heading>
                     {notSelectedApplicant.length > 0 ? (
                         notSelectedApplicant.map(applicant => (
-                            <Box key={applicant.id} p={2} borderWidth="1px" borderRadius="md" w="100%" textAlign="center">
-                                <Text>{applicant.name}</Text>
+                            <Box key={applicant.id}
+                                 p={2}
+                                 borderWidth="1px"
+                                 borderRadius="md"
+                                 w="100%"
+                                 textAlign="center">
+                                <Text>{getUserName(applicant.applicantId)}</Text>
                             </Box>
                         ))
                     ) : (
