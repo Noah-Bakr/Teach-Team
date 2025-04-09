@@ -76,26 +76,26 @@ const LoginForm: React.FC<LoginFormProps> = ({ closeForm }) => {
     const handleLogin = () => {
         // Check if email and password are empty. "return" prevents the rest of the function from executing
         if (email === '') {
-        setEmailError(true);
-        return;
+            setEmailError(true);
+            return;
         } else { setEmailError(false); }
         if (password === '') {
-        setPasswordError(true);
-        return;
+            setPasswordError(true);
+            return;
         } else { setPasswordError(false); }
 
         setError("");
 
         if (passwordStrength !== 4) {
-        toaster.create({ title: "Password Strength", description: "Password is weak. Please use a stronger password.", type: "warning", duration: 5000 });
-        return;
+            toaster.create({ title: "Password Strength", description: "Password is weak. Please use a stronger password.", type: "warning", duration: 5000 });
+            return;
         }
 
         const success = login(email, password);
         if (success) {
-        if (currentUser) {
-            toaster.create({ title: "Login Successful", description: `Welcome back, ${currentUser.firstName}!`, type: "success", duration: 5000 });
-        }
+            if (currentUser) {
+                toaster.create({ title: "Login Successful", description: `Welcome back, ${currentUser.firstName}!`, type: "success", duration: 5000 });
+            }
         router.push("/dashboard");
         onToggle();
         closeForm();
