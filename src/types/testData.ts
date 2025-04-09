@@ -41,9 +41,9 @@ export const DEFAULT_USERS: User[] = [
 
 export const DEFAULT_COURSES: Course[] = [
     // Default courseIds for testing purposes
-  { id: "COSC2627", 
-    name: "Blockchain Tech Fundamentals",
-    skills: ["Blockchain", "Cryptography", "Distributed Systems"] },
+    { id: "COSC2627", 
+        name: "Blockchain Tech Fundamentals",
+        skills: ["Blockchain", "Cryptography", "Distributed Systems"] },
 
     { id: "COSC2625", 
         name: "Introduction to Cyber Security",
@@ -61,8 +61,8 @@ export const DEFAULT_COURSES: Course[] = [
         name: "Software Eng Fundamentals IT",
         skills: ["Java", "Android", "iOS"] },
 
-    { id: "COSC2757",
-        name: "Cloud Foundations",
+    { id: "COSC2757",  
+        name: "Cloud Foundations", 
         skills: ["AWS", "Docker", "Kubernetes"] },
 
 ];
@@ -76,7 +76,17 @@ export const DEFAULT_APPLICANTS: Applicant[] = [
       availability: ["Full-Time"],
       skills: ["JavaScript", "React", "TypeScript"],
       academicCredentials: "Bachelor of Cyber Security",
-      selected: false},
+      selected: false,
+      previousRoles: [
+        {
+            role: "Cyber Security Analyst",
+            company: "NexaTech Solutions",
+            startDate: "2023-06-01",
+            endDate: "",
+            description: "Developed and maintained web applications using Java and JavaScript."
+        }
+      ],
+    },
 
     { id: "A0000002",
       date: "2025-04-04T10:14:22.321Z",
@@ -85,7 +95,17 @@ export const DEFAULT_APPLICANTS: Applicant[] = [
       availability: ["Part-Time"],
       skills: ["Java", "Android", "iOS"],
       academicCredentials: "Bachelor of Data Science",
-      selected: false},
+      selected: false,
+      previousRoles: [
+        {
+            role: "Data Scientist",
+            company: "QuantumFuze",
+            startDate: "2023-06-01",
+            endDate: "",
+            description: "Developed and maintained web applications using Java and JavaScript."
+        }
+      ],
+    },
 
     { id: "A0000003",
       date: "2025-04-05T06:33:12.654Z",
@@ -94,7 +114,17 @@ export const DEFAULT_APPLICANTS: Applicant[] = [
       availability: ["Part-Time"],
       skills: ["HTML", "CSS", "Java, Scene Builder"],
       academicCredentials: "Bachelor of Data Engineering",
-      selected: false},
+      selected: false,
+      previousRoles: [
+        {
+            role: "Data Engineer",
+            company: "CyberNova Labs",
+            startDate: "2023-06-01",
+            endDate: "2024-12-31",
+            description: "Developed and maintained web applications using Java and JavaScript."
+        }
+      ],
+    },
 
     { id: "A0000004",
       date: "2025-04-01T12:08:56.123Z",
@@ -103,7 +133,17 @@ export const DEFAULT_APPLICANTS: Applicant[] = [
       availability: ["Full-Time"],
       skills: ["Network Security", "Cryptography", "Ethical Hacking"],
       academicCredentials: "Bachelor of Computer Science",
-      selected: false},
+      selected: false,
+      previousRoles: [
+        {
+            role: "Computer Programmer",
+            company: "VortexWave Innovations",
+            startDate: "2023-04-18",
+            endDate: "2025-01-31",
+            description: "Developed and maintained web applications using Java and JavaScript."
+        }
+      ],
+    },
 
     { id: "A0000005",
       date: "2025-04-03T19:45:39.111Z",
@@ -112,7 +152,17 @@ export const DEFAULT_APPLICANTS: Applicant[] = [
       availability: ["Full-Time"],
       skills: ["JavaScript", "React", "TypeScript"],
       academicCredentials: "Bachelor of Cyber Security",
-      selected: false},
+      selected: false,
+      previousRoles: [
+        {
+            role: "Cyber Security Architect",
+            company: "StratosCore Systems",
+            startDate: "2022-09-08",
+            endDate: "2024-12-14",
+            description: "Developed and maintained web applications using Java and JavaScript."
+        }
+      ],
+    },
 
     { id: "A0000006",
       date: "2025-04-06T08:05:27.987Z",
@@ -121,7 +171,17 @@ export const DEFAULT_APPLICANTS: Applicant[] = [
       availability: ["Part-Time"],
       skills: ["Java", "Android", "iOS"],
       academicCredentials: "Bachelor of Data Science",
-      selected: false},
+      selected: false,
+      previousRoles: [
+        {
+            role: "Data Analyst",
+            company: "LuminaForge Technologies",
+            startDate: "2023-02-04",
+            endDate: "2024-09-05",
+            description: "Developed and maintained web applications using Java and JavaScript."
+        }
+      ],
+    },
 
     { id: "A0000007",
       date: "2025-04-07T23:59:01.234Z",
@@ -130,7 +190,17 @@ export const DEFAULT_APPLICANTS: Applicant[] = [
       availability: ["Part-Time"],
       skills: ["HTML", "CSS", "Java, Scene Builder"],
       academicCredentials: "Bachelor of Data Engineering",
-      selected: false},
+      selected: false,
+      previousRoles: [
+        {
+            role: "Data Developer",
+            company: "ArcadiaNet Solutions",
+            startDate: "2021-05-11",
+            endDate: "2024-03-21",
+            description: "Developed and maintained web applications using Java and JavaScript."
+        }
+      ],
+    },
 
     { id: "A0000008",
       date: "2025-04-09T05:16:48.765Z",
@@ -139,5 +209,15 @@ export const DEFAULT_APPLICANTS: Applicant[] = [
       availability: ["Full-Time"],
       skills: ["Network Security", "Cryptography", "Ethical Hacking"],
       academicCredentials: "Bachelor of Computer Science",
-      selected: false},
+      selected: false,
+      previousRoles: [
+        {
+            role: "Java Developer",
+            company: "ByteShift Industries",
+            startDate: "2023-07-28",
+            endDate: "2024-02-24",
+            description: "Developed and maintained web applications using Java and JavaScript."
+        }
+      ],
+    },
   ];

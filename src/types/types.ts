@@ -25,13 +25,22 @@ export type Applicant = {
     courseId: string;
     availability: Availability[];
     skills: string[];
-    academicCredentials: string;
-    selected: boolean;
+    academicCredentials: string | null;
+    previousRoles: PreviousRoles[]
+    selected: boolean | false;
     // Optional based on lecturers preference
     rank?: number;
     // Optional comments left by lecturer
     comment?: string[];
-  };
+};
+
+export type PreviousRoles = {
+    role: string;
+    company: string;
+    startDate: string;  // (new Date().toISOString())
+    endDate: string | null;  // endDate can be null if the user is still employed
+    description: string;
+};
 
 export type Course = {
     id: string;
