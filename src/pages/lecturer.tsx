@@ -151,7 +151,7 @@ const LecturerPage: React.FC = () => {
     const filteredApplicants = applicants.filter((applicant) => {
         const lowercaseSearch = search.toLowerCase();
         return (
-            getUserName(applicant.applicantId).toLowerCase().includes(lowercaseSearch) ||
+            getUserName(applicant.userId).toLowerCase().includes(lowercaseSearch) ||
             applicant.courseId.toLowerCase().includes(lowercaseSearch) ||
             getCourseName(applicant.courseId).toLowerCase().includes(lowercaseSearch) ||
             applicant.availability.join(" ").toLowerCase().includes(lowercaseSearch) ||

@@ -46,10 +46,10 @@ const ApplicantsTable: React.FC<ApplicantsTableProps> = ({ applicants, toggleSel
                 {applicants.map((applicant) => (
                     <Table.Row key={applicant.id}>
                         {/* Use the getUserName to display the full name */}
-                        <Table.Cell>{getUserName(applicant.applicantId)}</Table.Cell>
-                        <Table.Cell>{applicant.course}</Table.Cell>
+                        <Table.Cell>{getUserName(applicant.userId)}</Table.Cell>
+                        <Table.Cell>{applicant.courseId}</Table.Cell>
                         {/* Use the getCourseName to display courseName */}
-                        <Table.Cell>{getCourseName(applicant.course)}</Table.Cell>
+                        <Table.Cell>{getCourseName(applicant.courseId)}</Table.Cell>
                         <Table.Cell>{applicant.availability}</Table.Cell>
                         <Table.Cell>{applicant.skills.join(", ")}</Table.Cell>
                         <Table.Cell>{applicant.academicCredentials}</Table.Cell>

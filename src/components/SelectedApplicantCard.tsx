@@ -50,7 +50,7 @@ const SelectedApplicantCard: React.FC<SelectedApplicantCardProps> = ({
              mb={4}
         >
             <Heading size="sm" mb={4}>
-                {getUserName(applicant.applicantId)} - {applicant.course} {getCourseName(applicant.course)}
+                {getUserName(applicant.userId)} - {applicant.courseId} {getCourseName(applicant.courseId)}
             </Heading>
             <Flex align="center" mb={2}>
                 <Text mr={2}>Rank:</Text>

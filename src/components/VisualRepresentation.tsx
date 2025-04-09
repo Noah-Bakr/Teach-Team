@@ -14,19 +14,19 @@ const VisualRepresentation: React.FC<VisualRepresentationProps> = ({ applicants 
     const userLookup = useUserLookup();
 
     // Helper function to get a user's full name from the lookup.
-    const getUserName = (applicantId: string): string => {
-        const user = userLookup[applicantId];
-        return user ? `${user.firstName} ${user.lastName}` : applicantId;
+    const getUserName = (userId: string): string => {
+        const user = userLookup[userId];
+        return user ? `${user.firstName} ${user.lastName}` : userId;
     };
 
-    // Build an object mapping each applicantId (i.e. user) to the count of selected applications.
+    // Build an object mapping each userId (i.e. user) to the count of selected applications.
     const userCounts: Record<string, number> = {};
     applicants.forEach((app) => {
-        if (!(app.applicantId in userCounts)) {
-            userCounts[app.applicantId] = 0;
+        if (!(app.userId in userCounts)) {
+            userCounts[app.userId] = 0;
         }
         if (app.selected) {
-            userCounts[app.applicantId] += 1;
+            userCounts[app.userId] += 1;
         }
     });
 
