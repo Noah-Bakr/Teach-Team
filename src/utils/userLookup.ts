@@ -31,11 +31,11 @@ export const useUserLookup = (): Record<string, User> => {
     return lookup;
 };
 
-export const useUserName = (applicantId: string): string => {
+export const useUserName = (userId: string): string => {
     const lookup = useUserLookup();
-    if (lookup[applicantId]) {
-        const { firstName, lastName } = lookup[applicantId];
+    if (lookup[userId]) {
+        const { firstName, lastName } = lookup[userId];
         return `${firstName} ${lastName}`;
     }
-    return applicantId; // Fallback if not found
+    return userId; // Fallback if not found
 };
