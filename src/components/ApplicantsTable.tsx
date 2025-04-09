@@ -2,6 +2,7 @@ import React from 'react';
 import { Button, Table } from '@chakra-ui/react';
 import { Applicant } from '@/types/types';
 import { useUserLookup } from "@/utils/userLookup";
+import { useCourseLookup } from "@/utils/courseLookup";
 
 interface ApplicantsTableProps {
     applicants: Applicant[];
@@ -12,17 +13,29 @@ const ApplicantsTable: React.FC<ApplicantsTableProps> = ({ applicants, toggleSel
     // Call the useUserLookup hook at the top level.
     const userLookup = useUserLookup();
 
-    // Define a helper function that uses the lookup to get a user's full name.
+    // Helper function that uses the lookup to get a user's full name.
     const getUserName = (applicantId: string): string => {
         const user = userLookup[applicantId];
         return user ? `${user.firstName} ${user.lastName}` : applicantId;
     };
+
+    // Call the useCourseLookup hook at the top level.
+    const courseLookup = useCourseLookup();
+
+    // Helper function that uses the lookup to get a course name.
+    const getCourseName = (courseId: string): string => {
+        const course = courseLookup[courseId];
+        // If found, return the course name; otherwise fallback to the courseId
+        return course ? course.name : courseId;
+    };
+
     return (
         <Table.Root colorScheme="gray" borderRadius="md" boxShadow="md">
             <Table.Header>
                 <Table.Row>
                     <Table.ColumnHeader>Name</Table.ColumnHeader>
-                    <Table.ColumnHeader>Course</Table.ColumnHeader>
+                    <Table.ColumnHeader>Course Code</Table.ColumnHeader>
+                    <Table.ColumnHeader>Course Name</Table.ColumnHeader>
                     <Table.ColumnHeader>Availability</Table.ColumnHeader>
                     <Table.ColumnHeader>Skills</Table.ColumnHeader>
                     <Table.ColumnHeader>Credentials</Table.ColumnHeader>
@@ -35,6 +48,8 @@ const ApplicantsTable: React.FC<ApplicantsTableProps> = ({ applicants, toggleSel
                         {/* Use the getUserName to display the full name */}
                         <Table.Cell>{getUserName(applicant.applicantId)}</Table.Cell>
                         <Table.Cell>{applicant.course}</Table.Cell>
+                        {/* Use the getCourseName to display courseName */}
+                        <Table.Cell>{getCourseName(applicant.course)}</Table.Cell>
                         <Table.Cell>{applicant.availability}</Table.Cell>
                         <Table.Cell>{applicant.skills.join(", ")}</Table.Cell>
                         <Table.Cell>{applicant.academicCredentials}</Table.Cell>
