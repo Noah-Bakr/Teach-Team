@@ -14,9 +14,9 @@ const ApplicantsTable: React.FC<ApplicantsTableProps> = ({ applicants, toggleSel
     const userLookup = useUserLookup();
 
     // Helper function that uses the lookup to get a user's full name.
-    const getUserName = (applicantId: string): string => {
-        const user = userLookup[applicantId];
-        return user ? `${user.firstName} ${user.lastName}` : applicantId;
+    const getUserName = (userId: string): string => {
+        const user = userLookup[userId];
+        return user ? `${user.firstName} ${user.lastName}` : userId;
     };
 
     // Call the useCourseLookup hook at the top level.
