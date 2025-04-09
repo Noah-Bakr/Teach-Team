@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState, useEffect } from 'react';
 import { Box, Heading, Text } from '@chakra-ui/react';
 import { Applicant } from '@/types/types';
@@ -6,6 +8,7 @@ import SearchAndSortBar from "@/components/SearchAndSortBar";
 import SelectedApplicantCard from "@/components/SelectedApplicantCard";
 import ApplicantsTable from "@/components/ApplicantsTable";
 import VisualRepresentation from '../components/VisualRepresentation';
+import { useUserLookup } from "@/utils/userLookup";
 
 
 const LecturerPage: React.FC = () => {
@@ -14,7 +17,7 @@ const LecturerPage: React.FC = () => {
 
     // State to track validation errors for applicants by id
     const [errors, setErrors] = useState<{
-        [id: number]: { rank?: string; comment?: string };
+        [id: string]: { rank?: string; comment?: string };
     }>({});
 
     // State for search & sort
@@ -35,7 +38,7 @@ const LecturerPage: React.FC = () => {
     }, [applicants]);
 
     // Toggle Selection for Applicant
-    const toggleSelect = (id: number) => {
+    const toggleSelect = (id: string) => {
         setApplicants((prev) =>
             prev.map((app) =>
                 app.id === id ? {...app, selected: !app.selected} : app
@@ -50,10 +53,10 @@ const LecturerPage: React.FC = () => {
             Rank: Must be a positive number.
             Comments: Must not exceed 200 characters.
      */
-    function updateApplicantDetails(id: number, key: "rank", value: number): void;
-    function updateApplicantDetails(id: number, key: "comment", value: string): void;
+    function updateApplicantDetails(id: string, key: "rank", value: number): void;
+    function updateApplicantDetails(id: string, key: "comment", value: string): void;
     function updateApplicantDetails(
-        id: number,
+        id: string,
         key: "rank" | "comment",
         value: number | string
     ): void {
@@ -65,7 +68,7 @@ const LecturerPage: React.FC = () => {
     }
 
     // Handle rank changes with validation
-    const handleRankChange = (id: number, newValue: string) => {
+    const handleRankChange = (id: string, newValue: string) => {
         const rank = Number(newValue);
         if (rank > 0) {
             // Clear any rank error if valid.
@@ -84,7 +87,7 @@ const LecturerPage: React.FC = () => {
     };
 
     // Handle comment changes with validation.
-    const handleCommentChange = (id: number, newValue: string) => {
+    const handleCommentChange = (id: string, newValue: string) => {
         if (newValue.length <= 200) {
             // Clear any comment error if valid.
             setErrors((prev) => ({
@@ -101,24 +104,33 @@ const LecturerPage: React.FC = () => {
         }
     };
 
-    // TODO: search for applicants by applicantId -> get name from there (localStorage)
+    // Use the custom hook
+    const userLookup = useUserLookup();
+    // Define a helper function (not a Hook) that uses the lookup.
+    const getUserName = (applicantId: string): string => {
+        const user = userLookup[applicantId];
+        if (user) {
+            return `${user.firstName} ${user.lastName}`;
+        }
+        return applicantId;
+    };
+
     // Filter -Combine Applicants field into a searchable string
     const filteredApplicants = applicants.filter((applicant) => {
         const lowercaseSearch = search.toLowerCase();
         return (
-            applicant.name.toLowerCase().includes(lowercaseSearch) ||
-                applicant.course.toLowerCase().includes(lowercaseSearch) ||
-                applicant.availability.toLowerCase().includes(lowercaseSearch) ||
-                applicant.skills.join(' ').toLowerCase().includes(lowercaseSearch));
+            getUserName(applicant.applicantId).toLowerCase().includes(lowercaseSearch) ||
+            applicant.course.toLowerCase().includes(lowercaseSearch) ||
+            applicant.availability.join(" ").toLowerCase().includes(lowercaseSearch) ||
+            applicant.skills.join(' ').toLowerCase().includes(lowercaseSearch));
     });
 
-    // TODO: Property 'localeCompare' does not exist on type 'string[]'. You have to compare with "indexOf" or "includes"
     // Sort - If sortBy options selected, sort by filteredApplicants
     const sortedApplicants = sortBy ? [...filteredApplicants].sort((a, b) => {
         if(sortBy === 'course') {
             return a.course.localeCompare(b.course);
         } else if (sortBy === 'availability') {
-            return a.availability.localeCompare(b.availability);
+            return a.availability.join(" ").localeCompare(b.availability.join(" "));
         }
         return 0;
     }) : filteredApplicants;
@@ -128,7 +140,10 @@ const LecturerPage: React.FC = () => {
             <Heading mb={4}>Lecturer Dashboard</Heading>
 
             {/* Search & Sort */}
-            <SearchAndSortBar search={search} setSearch={setSearch} sortBy={sortBy} setSortBy={setSortBy} />
+            <SearchAndSortBar search={search}
+                              setSearch={setSearch}
+                              sortBy={sortBy}
+                              setSortBy={setSortBy} />
 
             {/* Applicants List */}
             <Box mb={8}>
@@ -148,7 +163,7 @@ const LecturerPage: React.FC = () => {
                             <SelectedApplicantCard
                                 key={applicant.id}
                                 applicant={applicant}
-                                error={errors[applicant.id]} // TODO: applicant id is a string (A0000000). Maybe remove the "A" and make it a number
+                                error={errors[applicant.id]}
                                 handleRankChange={handleRankChange}
                                 handleCommentChange={handleCommentChange}
                             />
