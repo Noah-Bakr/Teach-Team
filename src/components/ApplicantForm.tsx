@@ -10,6 +10,7 @@ import { useAuth } from "../context/AuthContext";
 import { log } from "console";
 import "../styles/PopUpForm.css";
 import { Course, Availability, User } from "@/types/types";
+import { Tooltip } from "./ui/tooltip";
 
 interface ApplicantFormProps {
   closeForm: () => void;
@@ -57,6 +58,32 @@ const ApplicantForm: React.FC<ApplicantFormProps> = ({ closeForm, course }) => {
       onToggle();
   }, []);
 
+  // Save the application to local storage
+  const saveApplicationToLocalStorage = () => {
+    const existingApplications = JSON.parse(localStorage.getItem("applications") || "[]");
+
+    // Create a new application with previous form data and other data to parse
+    const newApplication = {
+      ...formData,
+      courseId: course.id,
+      date: new Date().toISOString(), // Add a timestamp for the application
+    };
+
+    // Append the new application to the existing applications
+    const updatedApplications = [...existingApplications, newApplication];
+    
+    // Save updated applications list back to localStorage
+    localStorage.setItem('applications', JSON.stringify(updatedApplications));
+  };
+
+  const handleSubmit = () => {
+    setLoading(true);
+    saveApplicationToLocalStorage();
+    toaster.create({title: "Application Submitted", description: `You have successfully applied for ${course.name}.`, type: "success", duration: 5000,});
+    closeForm();
+    setLoading(false);
+  };
+
   return (
     <>  {/* Overlay to block interaction with the rest of the page. Parent required */}
       {open && <div className="Overlay"></div>}
@@ -71,7 +98,7 @@ const ApplicantForm: React.FC<ApplicantFormProps> = ({ closeForm, course }) => {
                       <Heading className="Header" as="h1">Apply for {course.name}</Heading>
                       <Text className="Text" as="p">Please enter your details to apply.</Text>
                       <VStack className="InputStack" colorPalette={"yellow"}>
-
+                      {/* <Tooltip content="These details must be changed in the profile page"> */}
                         <Field.Root className="InputFieldRoot" disabled>
                           <Field.Label>First Name<Field.RequiredIndicator /></Field.Label>
                           <Input name="firstName" placeholder="First Name" value={formData.firstName} onChange={handleChange}/>
@@ -89,7 +116,7 @@ const ApplicantForm: React.FC<ApplicantFormProps> = ({ closeForm, course }) => {
                           <Input name="email" placeholder="Email" value={formData.email} onChange={handleChange}/>
                           <Field.ErrorText>This field is required</Field.ErrorText>
                         </Field.Root>
-
+                      {/* </Tooltip> */}
                         <Field.Root className="InputFieldRoot">
                           <Field.Label>Academic Credentials<Field.RequiredIndicator /></Field.Label>
                           <Input name="academicCredentials" placeholder="Academic Credential" value={formData.academicCredentials} onChange={handleChange}/>
@@ -125,8 +152,7 @@ const ApplicantForm: React.FC<ApplicantFormProps> = ({ closeForm, course }) => {
                         <ButtonGroup className="ButtonGroup">
                             <Button className="Button" colorPalette="yellow" variant="surface" onClick={() => { setLoading(false); onToggle(); closeForm(); }} >Cancel</Button>
                             <Button disabled={!termsChecked} className="Button" colorPalette="yellow" variant="solid" loading={loading} 
-                              onClick={() => { setLoading(false);toaster.create({title: "Application Submitted", description: `You have successfully applied for ${course.name}.`, 
-                                type: "success", duration: 5000,}); closeForm(); }} >Submit Application</Button>
+                              onClick={() => { setLoading(false); handleSubmit(); }} >Submit Application</Button>
                         </ButtonGroup>
                       </VStack>
                   </VStack>
