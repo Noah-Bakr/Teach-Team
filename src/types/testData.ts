@@ -78,7 +78,7 @@ export const DEFAULT_APPLICANTS: Applicant[] = [
       selected: false},
 
     { id: "A0000002",
-      applicantId: "U0000001",
+      applicantId: "U0000002",
       course: "COSC2625",
       availability: ["Part-Time"],
       skills: ["Java", "Android", "iOS"],
@@ -86,7 +86,7 @@ export const DEFAULT_APPLICANTS: Applicant[] = [
       selected: false},
 
     { id: "A0000003",
-    applicantId: "U0000002",
+    applicantId: "U0000003",
     course: "COSC2625",
     availability: ["Part-Time"],
     skills: ["HTML", "CSS", "Java, Scene Builder"],
@@ -94,7 +94,7 @@ export const DEFAULT_APPLICANTS: Applicant[] = [
     selected: false},
 
     { id: "A0000004",
-    applicantId: "U0000002",
+    applicantId: "U0000004",
     course: "COSC2625",
     availability: ["Full-Time"],
     skills: ["Network Security", "Cryptography", "Ethical Hacking"],
@@ -110,7 +110,7 @@ export const DEFAULT_APPLICANTS: Applicant[] = [
     selected: false},
 
     { id: "A0000006",
-    applicantId: "U0000001",
+    applicantId: "U0000002",
     course: "COSC2758",
     availability: ["Part-Time"],
     skills: ["Java", "Android", "iOS"],
@@ -118,7 +118,7 @@ export const DEFAULT_APPLICANTS: Applicant[] = [
     selected: false},
 
     { id: "A0000007",
-    applicantId: "U0000002",
+    applicantId: "U0000003",
     course: "COSC3413",
     availability: ["Part-Time"],
     skills: ["HTML", "CSS", "Java, Scene Builder"],
