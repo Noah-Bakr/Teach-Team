@@ -12,6 +12,7 @@ export type User = {
   email: string; // will be the username
   password: string;
   role: Role[]; // List of roles (closed)
+  previousRoles: PreviousRoles[]
 
   academicCredentials?: string; // Optional field for academic credentials
   skills?: string[]; // Optional field for skills
@@ -26,7 +27,6 @@ export type Applicant = {
     availability: Availability[];
     skills: string[];
     academicCredentials: string | null;
-    previousRoles: PreviousRoles[]
     selected: boolean | false;
     // Optional based on lecturers preference
     rank?: number;
