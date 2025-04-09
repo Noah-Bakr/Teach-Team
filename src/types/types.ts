@@ -33,7 +33,7 @@ export type Applicant = {
   };
 
 export type Course = {
-id: string;
-name: string;
-skills?: string[];
+    id: string;
+    name: string;
+    skills?: string[];
 };
