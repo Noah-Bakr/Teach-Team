@@ -39,7 +39,7 @@ export const DEFAULT_USERS: User[] = [
     role: ["tutor"] },
 ];
 
-export const DEFAULT_COURSEIdS: Course[] = [
+export const DEFAULT_COURSES: Course[] = [
     // Default courseIds for testing purposes
   { id: "COSC2627", 
     name: "Blockchain Tech Fundamentals",
