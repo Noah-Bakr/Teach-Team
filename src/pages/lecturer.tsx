@@ -79,7 +79,7 @@ const LecturerPage: React.FC = () => {
                 const duplicate = applicants.find(app =>
                     app.id !== id &&
                     app.selected &&
-                    app.course === currentApplicant.course &&
+                    app.courseId === currentApplicant.courseId &&
                     app.rank === rank
                 );
                 if (duplicate) {
@@ -87,7 +87,7 @@ const LecturerPage: React.FC = () => {
                         ...prev,
                         [id]: {
                             ...prev[id],
-                            rank: `Rank ${rank} is already assigned for ${currentApplicant.course}`
+                            rank: `Rank ${rank} is already assigned for ${currentApplicant.courseId}`
                         }
                     }));
                     return;
@@ -152,8 +152,8 @@ const LecturerPage: React.FC = () => {
         const lowercaseSearch = search.toLowerCase();
         return (
             getUserName(applicant.applicantId).toLowerCase().includes(lowercaseSearch) ||
-            applicant.course.toLowerCase().includes(lowercaseSearch) ||
-            getCourseName(applicant.course).toLowerCase().includes(lowercaseSearch) ||
+            applicant.courseId.toLowerCase().includes(lowercaseSearch) ||
+            getCourseName(applicant.courseId).toLowerCase().includes(lowercaseSearch) ||
             applicant.availability.join(" ").toLowerCase().includes(lowercaseSearch) ||
             applicant.skills.join(' ').toLowerCase().includes(lowercaseSearch));
     });
@@ -161,7 +161,7 @@ const LecturerPage: React.FC = () => {
     // Sort - If sortBy options selected, sort by filteredApplicants
     const sortedApplicants = sortBy ? [...filteredApplicants].sort((a, b) => {
         if(sortBy === 'course') {
-            return a.course.localeCompare(b.course);
+            return a.courseId.localeCompare(b.courseId);
         } else if (sortBy === 'availability') {
             return a.availability.join(" ").localeCompare(b.availability.join(" "));
         }
@@ -170,7 +170,7 @@ const LecturerPage: React.FC = () => {
 
     // Group Selected Applicants by course
     const selectedByCourse = applicants.filter(app => app.selected).reduce((acc, app) => {
-        const courseKey = app.course;
+        const courseKey = app.courseId;
         if (!acc[courseKey]) acc[courseKey] = [];
         acc[courseKey].push(app);
         return acc;

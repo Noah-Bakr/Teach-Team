@@ -21,10 +21,11 @@ export type User = {
 export type Applicant = {
     id: string;
     applicantId: string;
-    course: string;
+    courseId: string;
     availability: Availability[];
     skills: string[];
     academicCredentials: string;
+    date: String; // Date of application (new Date().toISOString())
     selected: boolean;
     // Optional based on lecturers preference
     rank?: number;
