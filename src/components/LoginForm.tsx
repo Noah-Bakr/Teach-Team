@@ -93,10 +93,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ closeForm }) => {
 
         const success = login(email, password);
         if (success) {
-            if (currentUser) {
-                toaster.create({ title: "Sign In Successful", description: `Welcome back, ${currentUser?.firstName || "User"}!`, type: "success", duration: 5000 });
-            }
-            // router.push("/dashboard");
+            router.push("/dashboard");
             onToggle();
             closeForm();
         } else {

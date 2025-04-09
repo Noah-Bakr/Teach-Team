@@ -43,6 +43,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     );
 
     if (foundUser) {
+      toaster.create({ title: "Sign in Successful", description: `Welcome back, ${foundUser.firstName}!`, type: "success", duration: 5000 });
       setCurrentUser(foundUser);
       localStorage.setItem("currentUser", JSON.stringify(foundUser));
       return true;
