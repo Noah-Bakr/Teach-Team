@@ -93,14 +93,11 @@ const LoginForm: React.FC<LoginFormProps> = ({ closeForm }) => {
 
         const success = login(email, password);
         if (success) {
-            if (currentUser) {
-                toaster.create({ title: "Login Successful", description: `Welcome back, ${currentUser.firstName}!`, type: "success", duration: 5000 });
-            }
-        router.push("/dashboard");
-        onToggle();
-        closeForm();
+            router.push("/dashboard");
+            onToggle();
+            closeForm();
         } else {
-        setError("Invalid email or password");
+            setError("Invalid email or password");
         }
     };
 

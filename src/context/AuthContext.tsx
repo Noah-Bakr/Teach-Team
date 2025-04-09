@@ -42,6 +42,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (foundUser) {
       setCurrentUser(foundUser);
       localStorage.setItem("currentUser", JSON.stringify(foundUser));
+      toaster.create({ title: "Sign In Successful", description: `Welcome back, ${currentUser?.firstName}!`, type: "success", duration: 5000 });
       return true;
     }
     return false;
@@ -50,6 +51,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const logout = () => {
     setCurrentUser(null);
     localStorage.removeItem("currentUser");
+    toaster.create({ title: "Sign out Successful", description: `We hope to see you back soon, ${currentUser?.firstName}!`, type: "success", duration: 5000 });
+    
   };
 
   // Function to update user in localStorage (Users) and state (Current User)
