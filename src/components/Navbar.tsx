@@ -4,6 +4,7 @@ import { Avatar, Button, Menu, Portal } from "@chakra-ui/react";
 import "../styles/Navbar.css";
 import LoginForm from './LoginForm';
 import { useAuth } from '@/context/AuthContext';
+import { toaster } from './ui/toaster';
 
 const Navbar: React.FC = () => {
     const { currentUser, logout } = useAuth();
@@ -46,7 +47,7 @@ const Navbar: React.FC = () => {
                                 <Menu.Positioner>
                                     <Menu.Content>
                                         {currentUser === null ? <><Menu.Item value="sign-in" onClick={handleLoginClick}>Sign In</Menu.Item>
-                                        <Menu.Item value="sign-up">Sign Up</Menu.Item></> : 
+                                        <Menu.Item value="sign-up" onClick={() => {toaster.create({ title: "Deployment Error", description: "The Sign Up form has not been deployed yet.", type: "info", duration: 6000 })}}>Sign Up</Menu.Item></> : 
                                         <><Menu.Item value="profile">Profile</Menu.Item>
                                         <Menu.Item value="sign-out" color="fg.error"_hover={{ bg: "bg.error", color: "fg.error" }} onClick={handleSignOutClick}>Sign Out</Menu.Item></>}
                                     </Menu.Content>
