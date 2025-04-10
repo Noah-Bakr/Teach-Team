@@ -27,6 +27,7 @@ export type Applicant = {
     availability: Availability[];
     skills: string[];
     academicCredentials: string | null;
+    previousRoles: PreviousRoles[]
     selected: boolean | false;
     // Optional based on lecturers preference
     rank?: number;

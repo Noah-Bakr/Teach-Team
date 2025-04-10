@@ -153,6 +153,24 @@ export const DEFAULT_APPLICANTS: Applicant[] = [
       skills: ["JavaScript", "React", "TypeScript"],
       academicCredentials: "Bachelor of Cyber Security",
       selected: false,
+      previousRoles: [
+        {
+            id: "1",
+            role: "Computer Programmer",
+            company: "VortexWave Innovations",
+            startDate: "2023-04-18",
+            endDate: "2025-01-31",
+            description: "Developed and maintained web applications using Java and JavaScript."
+        },
+        {
+            id: "2",
+            role: "Java Developer",
+            company: "ByteShift Industries",
+            startDate: "2023-07-28",
+            endDate: "2024-02-24",
+            description: "Developed and maintained web applications using Java and JavaScript."
+        }
+      ],
     },
 
     { id: "A0000002",
@@ -163,6 +181,16 @@ export const DEFAULT_APPLICANTS: Applicant[] = [
       skills: ["Java", "Android", "iOS"],
       academicCredentials: "Bachelor of Data Science",
       selected: false,
+      previousRoles: [
+        {
+            id: "1",
+            role: "Data Scientist",
+            company: "QuantumFuze",
+            startDate: "2023-06-01",
+            endDate: "",
+            description: "Developed and maintained web applications using Java and JavaScript."
+        },
+      ],
     },
 
     { id: "A0000003",
@@ -173,6 +201,16 @@ export const DEFAULT_APPLICANTS: Applicant[] = [
       skills: ["HTML", "CSS", "Java, Scene Builder"],
       academicCredentials: "Bachelor of Data Engineering",
       selected: false,
+      previousRoles: [
+        {
+            id: "1",
+            role: "Data Developer",
+            company: "ArcadiaNet Solutions",
+            startDate: "2021-05-11",
+            endDate: "2024-03-21",
+            description: "Developed and maintained web applications using Java and JavaScript."
+        }
+      ],
     },
 
     { id: "A0000004",
@@ -183,6 +221,16 @@ export const DEFAULT_APPLICANTS: Applicant[] = [
       skills: ["Network Security", "Cryptography", "Ethical Hacking"],
       academicCredentials: "Bachelor of Computer Science",
       selected: false,
+      previousRoles: [
+        {
+            id: "1",
+            role: "Data Engineer",
+            company: "CyberNova Labs",
+            startDate: "2023-06-01",
+            endDate: "2024-12-31",
+            description: "Developed and maintained web applications using Java and JavaScript."
+        },
+      ],
     },
 
     { id: "A0000005",
@@ -193,6 +241,16 @@ export const DEFAULT_APPLICANTS: Applicant[] = [
       skills: ["JavaScript", "React", "TypeScript"],
       academicCredentials: "Bachelor of Cyber Security",
       selected: false,
+      previousRoles: [
+        {
+            id: "1",
+            role: "Data Analyst",
+            company: "LuminaForge Technologies",
+            startDate: "2023-02-04",
+            endDate: "2024-09-05",
+            description: "Developed and maintained web applications using Java and JavaScript."
+        }
+      ],
     },
 
     { id: "A0000006",
@@ -203,6 +261,16 @@ export const DEFAULT_APPLICANTS: Applicant[] = [
       skills: ["Java", "Android", "iOS"],
       academicCredentials: "Bachelor of Data Science",
       selected: false,
+      previousRoles: [
+        {
+            id: "1",
+            role: "Data Engineer",
+            company: "CyberNova Labs",
+            startDate: "2023-06-01",
+            endDate: "2024-12-31",
+            description: "Developed and maintained web applications using Java and JavaScript."
+        },
+      ],
     },
 
     { id: "A0000007",
@@ -213,6 +281,16 @@ export const DEFAULT_APPLICANTS: Applicant[] = [
       skills: ["HTML", "CSS", "Java, Scene Builder"],
       academicCredentials: "Bachelor of Data Engineering",
       selected: false,
+      previousRoles: [
+        {
+            id: "1",
+            role: "Data Analyst",
+            company: "LuminaForge Technologies",
+            startDate: "2023-02-04",
+            endDate: "2024-09-05",
+            description: "Developed and maintained web applications using Java and JavaScript."
+        }
+      ],
     },
 
     { id: "A0000008",
@@ -223,5 +301,23 @@ export const DEFAULT_APPLICANTS: Applicant[] = [
       skills: ["Network Security", "Cryptography", "Ethical Hacking"],
       academicCredentials: "Bachelor of Computer Science",
       selected: false,
+      previousRoles: [
+        {
+            id: "1",
+            role: "Data Engineer",
+            company: "CyberNova Labs",
+            startDate: "2023-06-01",
+            endDate: "2024-12-31",
+            description: "Developed and maintained web applications using Java and JavaScript."
+        },
+        {
+            id: "2",
+            role: "Data Analyst",
+            company: "LuminaForge Technologies",
+            startDate: "2023-02-04",
+            endDate: "2024-09-05",
+            description: "Developed and maintained web applications using Java and JavaScript."
+        }
+      ],
     },
   ];
