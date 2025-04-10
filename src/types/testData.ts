@@ -7,7 +7,7 @@ export const DEFAULT_USERS: User[] = [
     firstName: "Admin",
     lastName: "User",
     email: "admin@example.com", 
-    password: "admin123", 
+    password: "Cart@21-c0ding", 
     role: ["admin"],
     previousRoles: [
         {
