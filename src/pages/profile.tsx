@@ -183,7 +183,7 @@ const ProfilePage: React.FC = () => {
 
                                         <Field.Root orientation="horizontal" disabled={isDisabled}>
                                             <Field.Label>Password</Field.Label>
-                                            <PasswordInput name="password" placeholder="Password" value={updatedUser.password} onChange={handleChange}/>
+                                            <PasswordInput disabled={isDisabled} name="password" placeholder="Password" value={updatedUser.password} onChange={handleChange}/>
                                         </Field.Root>
 
                                         <Field.Root orientation="horizontal" disabled={isDisabled}>
