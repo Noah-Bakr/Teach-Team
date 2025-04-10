@@ -47,20 +47,20 @@ Click the avatar in the top-right of the screen and choose `Sign In` to progress
 You can use the following test accounts to log in as a tutor:
 
 | Email | Password |
-| ----- | -------- |
+| --- | --- |
 | `jane@example.com` | `Cart@21-c0ding` |
 | `bob@example.com` | `Cart@21-c0ding` |
 
 You can use the following test account to log in as a lecturer:
 
 | Email | Password |
-| ----- | -------- |
+| --- | --- |
 | `john@example.com` | `Cart@21-c0ding` |
 
 You can use the following test account to log in as an admin:
 
 | Email | Password |
-| ----- | -------- |
+| --- | --- |
 | `admin@example.com` | `Cart@21-c0ding` |
 
 ### Navigation Overview
@@ -82,10 +82,10 @@ Once logged in, you'll be redirected to the appropriate dashboard based on your 
   - Course
   - Availability
   - Skill set
-    - (all inclusive of the search bar)
+    - (All inclusive of the search bar)
 - **Select**, **rank**, and **comment** on tutor candidates
 - **View** selection insights
-  - most/least chosen
+  - Most/least chosen
 
 ### Profile Page
 - **View and edit** all acount details
