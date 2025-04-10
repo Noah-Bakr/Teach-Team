@@ -61,6 +61,7 @@ src/
 | `@emotion/react` | Required by Chakra UI |
 | `@emotion/styled` | Required by Chakra UI |
 | `framer-motion` | Animation support (pop ups) |
+| `@testing-library/react` | Unit testing library |
 
 ---
 
