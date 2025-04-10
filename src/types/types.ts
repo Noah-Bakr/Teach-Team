@@ -35,6 +35,7 @@ export type Applicant = {
 };
 
 export type PreviousRoles = {
+    id: string;
     role: string;
     company: string;
     startDate: string;  // (new Date().toISOString())

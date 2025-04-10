@@ -11,6 +11,7 @@ export const DEFAULT_USERS: User[] = [
     role: ["admin"],
     previousRoles: [
         {
+            id: "1",
             role: "Cyber Security Analyst",
             company: "NexaTech Solutions",
             startDate: "2025-01-01",
@@ -18,6 +19,7 @@ export const DEFAULT_USERS: User[] = [
             description: "Developed and maintained web applications using Java and JavaScript."
         },
         {
+            id: "2",
             role: "Cyber Security Architect",
             company: "StratosCore Systems",
             startDate: "2022-09-08",
@@ -40,6 +42,7 @@ export const DEFAULT_USERS: User[] = [
     availability: ["Full-Time"],
     previousRoles: [
         {
+            id: "1",
             role: "Data Scientist",
             company: "QuantumFuze",
             startDate: "2023-06-01",
@@ -47,6 +50,7 @@ export const DEFAULT_USERS: User[] = [
             description: "Developed and maintained web applications using Java and JavaScript."
         },
         {
+            id: "2",
             role: "Data Developer",
             company: "ArcadiaNet Solutions",
             startDate: "2021-05-11",
@@ -65,6 +69,7 @@ export const DEFAULT_USERS: User[] = [
     role: ["tutor"],
     previousRoles: [
         {
+            id: "1",
             role: "Data Engineer",
             company: "CyberNova Labs",
             startDate: "2023-06-01",
@@ -72,6 +77,7 @@ export const DEFAULT_USERS: User[] = [
             description: "Developed and maintained web applications using Java and JavaScript."
         },
         {
+            id: "2",
             role: "Data Analyst",
             company: "LuminaForge Technologies",
             startDate: "2023-02-04",
@@ -90,6 +96,7 @@ export const DEFAULT_USERS: User[] = [
     role: ["tutor"],
     previousRoles: [
         {
+            id: "1",
             role: "Computer Programmer",
             company: "VortexWave Innovations",
             startDate: "2023-04-18",
@@ -97,6 +104,7 @@ export const DEFAULT_USERS: User[] = [
             description: "Developed and maintained web applications using Java and JavaScript."
         },
         {
+            id: "2",
             role: "Java Developer",
             company: "ByteShift Industries",
             startDate: "2023-07-28",
