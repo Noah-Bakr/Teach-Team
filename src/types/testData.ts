@@ -9,24 +9,24 @@ export const DEFAULT_USERS: User[] = [
     email: "admin@example.com", 
     password: "Cart@21-c0ding", 
     role: ["admin"],
-    previousRoles: [
-        {
-            id: "1",
-            role: "Cyber Security Analyst",
-            company: "NexaTech Solutions",
-            startDate: "2025-01-01",
-            endDate: "",
-            description: "Developed and maintained web applications using Java and JavaScript."
-        },
-        {
-            id: "2",
-            role: "Cyber Security Architect",
-            company: "StratosCore Systems",
-            startDate: "2022-09-08",
-            endDate: "2024-12-14",
-            description: "Developed and maintained web applications using Java and JavaScript."
-        }
-      ],
+    // previousRoles: [
+    //     {
+    //         id: "1",
+    //         role: "Cyber Security Analyst",
+    //         company: "NexaTech Solutions",
+    //         startDate: "2025-01-01",
+    //         endDate: "",
+    //         description: "Developed and maintained web applications using Java and JavaScript."
+    //     },
+    //     {
+    //         id: "2",
+    //         role: "Cyber Security Architect",
+    //         company: "StratosCore Systems",
+    //         startDate: "2022-09-08",
+    //         endDate: "2024-12-14",
+    //         description: "Developed and maintained web applications using Java and JavaScript."
+    //     }
+    //   ],
     },
   
   { id: "U0000002", 
@@ -38,26 +38,26 @@ export const DEFAULT_USERS: User[] = [
     avatar: "https://mighty.tools/mockmind-api/content/human/80.jpg",
     role: ["lecturer"],
     academicCredentials: "Bachelor of Computer Science",
-    skills: ["Java", "Python", "C++"],
-    availability: ["Full-Time"],
-    previousRoles: [
-        {
-            id: "1",
-            role: "Data Scientist",
-            company: "QuantumFuze",
-            startDate: "2023-06-01",
-            endDate: "",
-            description: "Developed and maintained web applications using Java and JavaScript."
-        },
-        {
-            id: "2",
-            role: "Data Developer",
-            company: "ArcadiaNet Solutions",
-            startDate: "2021-05-11",
-            endDate: "2024-03-21",
-            description: "Developed and maintained web applications using Java and JavaScript."
-        }
-      ],
+    // skills: ["Java", "Python", "C++"],
+    // availability: ["Full-Time"],
+    // previousRoles: [
+    //     {
+    //         id: "1",
+    //         role: "Data Scientist",
+    //         company: "QuantumFuze",
+    //         startDate: "2023-06-01",
+    //         endDate: "",
+    //         description: "Developed and maintained web applications using Java and JavaScript."
+    //     },
+    //     {
+    //         id: "2",
+    //         role: "Data Developer",
+    //         company: "ArcadiaNet Solutions",
+    //         startDate: "2021-05-11",
+    //         endDate: "2024-03-21",
+    //         description: "Developed and maintained web applications using Java and JavaScript."
+    //     }
+    //   ],
     },
 
   { id: "U0000003", 
@@ -65,8 +65,11 @@ export const DEFAULT_USERS: User[] = [
     firstName: "Jane", 
     lastName: "Doe", 
     email: "jane@example.com", 
-    password: "Cart@21-c0ding", 
+    password: "Cart@21-c0ding",
     role: ["tutor"],
+    academicCredentials: "Bachelor of Computer Science",
+    skills: ["Java", "Python", "C++"],
+    availability: ["Full-Time"],
     previousRoles: [
         {
             id: "1",
@@ -94,6 +97,9 @@ export const DEFAULT_USERS: User[] = [
     email: "bob@example.com", 
     password: "Cart@21-c0ding", 
     role: ["tutor"],
+    academicCredentials: "Bachelor of Data Science",
+    skills: ["Java", "React", "C++"],
+    availability: ["Full-Time"],
     previousRoles: [
         {
             id: "1",
@@ -112,6 +118,67 @@ export const DEFAULT_USERS: User[] = [
             description: "Developed and maintained web applications using Java and JavaScript."
         }
       ],
+    },
+
+    { id: "U0000005",
+        username: "dexter_charles",
+        firstName: "Dexter",
+        lastName: "Charles",
+        email: "dexter@example.com",
+        password: "Cart@21-c0ding",
+        avatar: "https://mighty.tools/mockmind-api/content/human/80.jpg",
+        role: ["tutor"],
+        academicCredentials: "Bachelor of Cyber Security",
+        skills: ["Java", "Python", "Html", "CSS"],
+        availability: ["Part-Time"],
+        previousRoles: [
+            {
+                id: "1",
+                role: "Data Scientist",
+                company: "QuantumFuze",
+                startDate: "2023-06-01",
+                endDate: "",
+                description: "Developed and maintained web applications using Java and JavaScript."
+            },
+            {
+                id: "2",
+                role: "Data Developer",
+                company: "ArcadiaNet Solutions",
+                startDate: "2021-05-11",
+                endDate: "2024-03-21",
+                description: "Developed and maintained web applications using Java and JavaScript."
+            }
+        ],
+    },
+
+    { id: "U0000006",
+        username: "julie_robbins",
+        firstName: "Julie",
+        lastName: "Robbins",
+        email: "julie@example.com",
+        password: "Cart@21-c0ding",
+        role: ["tutor"],
+        academicCredentials: "Bachelor of Information Technology",
+        skills: ["Java", "Linux", "BASH", "Ethical Hacking"],
+        availability: ["Part-Time"],
+        previousRoles: [
+            {
+                id: "1",
+                role: "Cyber Security Analyst",
+                company: "NexaTech Solutions",
+                startDate: "2025-01-01",
+                endDate: "",
+                description: "Developed and maintained web applications using Java and JavaScript."
+            },
+            {
+                id: "2",
+                role: "Cyber Security Architect",
+                company: "StratosCore Systems",
+                startDate: "2022-09-08",
+                endDate: "2024-12-14",
+                description: "Developed and maintained web applications using Java and JavaScript."
+            }
+        ],
     },
 ];
 
@@ -147,7 +214,7 @@ export const DEFAULT_APPLICANTS: Applicant[] = [
     // Default applicants for testing purposes
     { id: "A0000001",
       date: "2025-04-02T16:22:45.987Z",
-      userId: "U0000001",
+      userId: "U0000006",
       courseId: "COSC2625",
       availability: ["Full-Time"],
       skills: ["JavaScript", "React", "TypeScript"],
@@ -175,7 +242,7 @@ export const DEFAULT_APPLICANTS: Applicant[] = [
 
     { id: "A0000002",
       date: "2025-04-04T10:14:22.321Z",
-      userId: "U0000002",
+      userId: "U0000005",
       courseId: "COSC2625",
       availability: ["Part-Time"],
       skills: ["Java", "Android", "iOS"],
@@ -235,7 +302,7 @@ export const DEFAULT_APPLICANTS: Applicant[] = [
 
     { id: "A0000005",
       date: "2025-04-03T19:45:39.111Z",
-      userId: "U0000001",
+      userId: "U0000003",
       courseId: "COSC2758",
       availability: ["Full-Time"],
       skills: ["JavaScript", "React", "TypeScript"],
@@ -255,7 +322,7 @@ export const DEFAULT_APPLICANTS: Applicant[] = [
 
     { id: "A0000006",
       date: "2025-04-06T08:05:27.987Z",
-      userId: "U0000002",
+      userId: "U0000004",
       courseId: "COSC2758",
       availability: ["Part-Time"],
       skills: ["Java", "Android", "iOS"],
@@ -295,7 +362,7 @@ export const DEFAULT_APPLICANTS: Applicant[] = [
 
     { id: "A0000008",
       date: "2025-04-09T05:16:48.765Z",
-      userId: "U0000002",
+      userId: "U0000003",
       courseId: "COSC2757",
       availability: ["Full-Time"],
       skills: ["Network Security", "Cryptography", "Ethical Hacking"],
