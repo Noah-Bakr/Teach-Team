@@ -1,13 +1,11 @@
-import { Avatar, Box, Button, Card, Field, Heading, HStack, IconButton, Input, NativeSelect, 
+import { Avatar, Box, Button, Card, Collapsible, Field, Heading, HStack, IconButton, Input, NativeSelect, 
     Separator, Stack, Text, Textarea } from "@chakra-ui/react";
 import { useAuth } from "@/context/AuthContext";
 import { useEffect, useState } from "react";
 import { Applicant, Availability, PreviousRoles, Role, Roles, User } from "@/types/types";
 import { PasswordInput } from "@/components/ui/password-input";
-import { LuPencil, LuPencilOff } from "react-icons/lu";
-import Header from "@/components/Header";
+import { LuPencil, LuPencilOff, LuPlus } from "react-icons/lu";
 
-// TODO: Add area for previous experience, readme, testing, application viewer
 const ProfilePage: React.FC = () => {
     const { currentUser, updateUserInLocalStorage } = useAuth();
     const [isDisabled, setIsDisabled] = useState(true);
@@ -323,6 +321,31 @@ const ProfilePage: React.FC = () => {
                                                     <Text>Skills: {app.skills.join(", ")}</Text>
                                                     <Text>Academic Credentials: {app.academicCredentials || "None"}</Text>
                                                     <Text>Status: <strong>{app.selected ? "Selected" : "Pending"}</strong></Text>
+
+                                                    {app.previousRoles && app.previousRoles.length > 0 && (
+                                                    <>
+                                                    <Text mt={2} fontWeight="bold">Submitted Work Experience:</Text>
+                                                    {app.previousRoles.map((role) => (
+                                                        <Box key={role.id} mt={2} p={2} borderWidth="1px" borderRadius="md">
+                                                            <Collapsible.Root>
+                                                                <Collapsible.Trigger justifyContent="space-between" width={"100%"}>
+                                                                    <HStack width={"100%"} display="flex" flexDirection="row" justifyContent="space-between" alignItems="center">
+                                                                        <Text><strong>{role.company}</strong></Text>
+                                                                        <LuPlus />
+                                                                    </HStack>
+                                                                </Collapsible.Trigger>
+                                                                <Collapsible.Content>
+                                                                    <Separator size="sm" marginBottom={2} marginTop={2}/>
+                                                                    <Text><strong>Role:</strong> {role.role}</Text>
+                                                                    <Text><strong>Company:</strong> {role.company}</Text>
+                                                                    <Text><strong>Period:</strong> {new Date(role.startDate).toLocaleDateString()} - {role.endDate ? new Date(role.endDate).toLocaleDateString() : "Present"}</Text>
+                                                                    <Text><strong>Description:</strong> {role.description}</Text>
+                                                                </Collapsible.Content>
+                                                            </Collapsible.Root>
+                                                        </Box>
+                                                    ))}
+                                                    </>
+                                                )}
                                                 </Box>
                                             </Card.Root>
                                         ))
