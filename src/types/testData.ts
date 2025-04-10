@@ -9,24 +9,6 @@ export const DEFAULT_USERS: User[] = [
     email: "admin@example.com", 
     password: "Cart@21-c0ding", 
     role: ["admin"],
-    // previousRoles: [
-    //     {
-    //         id: "1",
-    //         role: "Cyber Security Analyst",
-    //         company: "NexaTech Solutions",
-    //         startDate: "2025-01-01",
-    //         endDate: "",
-    //         description: "Developed and maintained web applications using Java and JavaScript."
-    //     },
-    //     {
-    //         id: "2",
-    //         role: "Cyber Security Architect",
-    //         company: "StratosCore Systems",
-    //         startDate: "2022-09-08",
-    //         endDate: "2024-12-14",
-    //         description: "Developed and maintained web applications using Java and JavaScript."
-    //     }
-    //   ],
     },
   
   { id: "U0000002", 
@@ -38,26 +20,6 @@ export const DEFAULT_USERS: User[] = [
     avatar: "https://mighty.tools/mockmind-api/content/human/80.jpg",
     role: ["lecturer"],
     academicCredentials: "Bachelor of Computer Science",
-    // skills: ["Java", "Python", "C++"],
-    // availability: ["Full-Time"],
-    // previousRoles: [
-    //     {
-    //         id: "1",
-    //         role: "Data Scientist",
-    //         company: "QuantumFuze",
-    //         startDate: "2023-06-01",
-    //         endDate: "",
-    //         description: "Developed and maintained web applications using Java and JavaScript."
-    //     },
-    //     {
-    //         id: "2",
-    //         role: "Data Developer",
-    //         company: "ArcadiaNet Solutions",
-    //         startDate: "2021-05-11",
-    //         endDate: "2024-03-21",
-    //         description: "Developed and maintained web applications using Java and JavaScript."
-    //     }
-    //   ],
     },
 
   { id: "U0000003", 
