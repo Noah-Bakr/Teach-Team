@@ -146,7 +146,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ closeForm }) => {
                                 <Button className="Button" colorPalette="yellow" variant="solid" loading={loading} onClick={() => { handleLogin(); }} >Login</Button>
                             </ButtonGroup>
                             <Text as="p" className="TextSmall">Don't have an account?&nbsp;
-                                <Link color="black" onClick={() => { router.push("/signup"); }}>
+                                <Link color="black" onClick={() => {toaster.create({ title: "Deployment Error", description: "The Sign Up form has not been deployed yet.", type: "info", duration: 6000 })}}>
                                 Sign Up <LuExternalLink />
                                 </Link>
                             </Text>
