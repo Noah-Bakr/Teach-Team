@@ -16,6 +16,7 @@ cd s3575564-s4095646-a1
 ```
 
 ### 2. Install Dependencies
+
 Make sure you have **Node.js (v18+)** and npm installed. Then run:
 
 ```bash
@@ -27,6 +28,7 @@ npm install
 ```bash
 npm start
 ```
+
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
 ---
