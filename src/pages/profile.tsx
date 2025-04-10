@@ -36,12 +36,12 @@ const ProfilePage: React.FC = () => {
         description: "",
     });
     const [previousRoles, setPreviousRoles] = useState<PreviousRoles[]>(updatedUser.previousRoles);
-    const [applications, setApplications] = useState<Applicant[]>([]);
-    const userApplications = applications.filter(applicant => applicant.userId === currentUser?.id); // Filter user's applications
+    const [applicants, setApplicants] = useState<Applicant[]>([]);
+    const userApplicants = applicants.filter(applicant => applicant.userId === currentUser?.id); // Filter user's applications
 
     useEffect(() => {
-        const storedApplications = JSON.parse(localStorage.getItem("applications") || "[]");
-        setApplications(storedApplications);
+        const storedApplications = JSON.parse(localStorage.getItem("applicants") || "[]");
+        setApplicants(storedApplications);
     }, []);
 
 
@@ -313,8 +313,8 @@ const ProfilePage: React.FC = () => {
                                     </Stack>
                                     <Separator size="md" />
                                     <Stack gap={2}>
-                                        {userApplications.length === 0 ? (<Text>No applications submitted yet.</Text>) : 
-                                        (userApplications.map((app) => (
+                                        {userApplicants.length === 0 ? (<Text>No applications submitted yet.</Text>) : 
+                                        (userApplicants.map((app) => (
                                             <Card.Root colorPalette="yellow" flexDirection="row" overflow="hidden" maxW="xl" variant="outline" size="sm">
                                                 <Box key={app.id} p="4" >
                                                     <Text fontWeight="bold">Course ID: {app.courseId}</Text>

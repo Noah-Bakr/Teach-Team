@@ -11,9 +11,9 @@ const DashboardPage: React.FC = () => {
 
     useEffect(() => {
     // Initialize applications from localStorage or use defaults
-    const storedApplicants = localStorage.getItem("applications");
+    const storedApplicants = localStorage.getItem("applicants");
     if (!storedApplicants) {
-        localStorage.setItem("applications", JSON.stringify(DEFAULT_APPLICANTS));
+        localStorage.setItem("applicants", JSON.stringify(DEFAULT_APPLICANTS));
         setApplications(DEFAULT_APPLICANTS);
     } else {
         setApplications(JSON.parse(storedApplicants));
