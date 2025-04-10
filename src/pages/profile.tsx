@@ -2,10 +2,10 @@ import { Avatar, Box, Button, Card, Field, HStack, Input, NativeSelect,
     Separator, Stack, Text, Textarea } from "@chakra-ui/react";
 import { useAuth } from "@/context/AuthContext";
 import { useEffect, useState } from "react";
-import { Availability, Role, Roles, User } from "@/types/types";
+import { Applicant, Availability, PreviousRoles, Role, Roles, User } from "@/types/types";
 import { PasswordInput } from "@/components/ui/password-input";
 
-// TODO: Add area for previous experience
+// TODO: Add area for previous experience, readme, testing, application viewer
 const ProfilePage: React.FC = () => {
     const { currentUser, updateUserInLocalStorage } = useAuth();
     const [isDisabled, setIsDisabled] = useState(true);
@@ -22,7 +22,26 @@ const ProfilePage: React.FC = () => {
         academicCredentials: "",
         skills: [],
         availability: ["Not Available"] as Availability[],
+        previousRoles: [] as PreviousRoles[],
     });
+    // State to manage the new experience input fields
+    const [newPreviousRole, setNewPreviousRole] = useState({
+        id: "",
+        role: "",
+        company: "",
+        startDate: "",
+        endDate: "",
+        description: "",
+    });
+    const [previousRoles, setPreviousRoles] = useState<PreviousRoles[]>(updatedUser.previousRoles);
+    const [applications, setApplications] = useState<Applicant[]>([]);
+    const userApplications = applications.filter(applicant => applicant.userId === currentUser?.id); // Filter user's applications
+
+    useEffect(() => {
+        const storedApplications = JSON.parse(localStorage.getItem("applications") || "[]");
+        setApplications(storedApplications);
+    }, []);
+
 
     // Effect to set the updatedUser state when currentUser changes
     useEffect(() => {
@@ -39,7 +58,9 @@ const ProfilePage: React.FC = () => {
                 academicCredentials: currentUser.academicCredentials,
                 skills: currentUser.skills,
                 availability: currentUser.availability,
+                previousRoles: currentUser.previousRoles,
             });
+            setPreviousRoles(currentUser.previousRoles);
         }
     }, [currentUser]);
     
@@ -53,11 +74,17 @@ const ProfilePage: React.FC = () => {
     }, [isEditing]);
 
     // Function to handle input changes to user profile data
-    // Updates the state of the updatedUser object
+    // Updates the state of the updatedUser
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
         setUpdatedUser((prevUser) => ({
             ...prevUser,
+            [name]: value,
+        }));
+    
+        // Updates the state of the previousRoles
+        setNewPreviousRole((prevExperience) => ({
+            ...prevExperience,
             [name]: value,
         }));
     };
@@ -69,13 +96,37 @@ const ProfilePage: React.FC = () => {
             ...prevUser,
             [name]: value,
         }));
+        
+    };
+
+    // Function to handle adding a new experience
+    const handleAddExperience = () => {
+        // Find the last ID in the previousRoles array and increment it for the new experience
+        const lastId = previousRoles.length ? Math.max(...previousRoles.map((exp) => parseInt(exp.id))): 0; // Default to 0 if no previous roles exist
+        const newExp = {...newPreviousRole, id: (lastId + 1).toString(), };
+
+        // Add the new experience to the previousRoles array
+        setPreviousRoles([...previousRoles, newExp]);
+        // Reset the newPreviousRole state to clear the input fields
+        setNewPreviousRole({ id: "", role: "", company: "", startDate: "", endDate: "", description: "" });
     };
 
     // Function to handle saving the updated user data
     const handleSave = () => {
-        const savedUser = { ...currentUser, ...updatedUser }; // Merge currentUser and updatedUser
+        const savedUser = { ...currentUser, ...updatedUser, previousRoles: previousRoles }; // Merge currentUser and updatedUser
         updateUserInLocalStorage(savedUser);
         setIsEditing(false);
+    };
+
+    const handleEditPreviousRole = (id: string) => {
+        const previousRoleToEdit = previousRoles.find((prevRole) => prevRole.id === id);
+        if (previousRoleToEdit) {
+            setNewPreviousRole({
+                ...previousRoleToEdit,
+                endDate: previousRoleToEdit.endDate || "",
+            });
+            setPreviousRoles(previousRoles.filter((prevRole) => prevRole.id !== id)); // Remove it while editing
+        }
     };
 
     return (
@@ -94,109 +145,199 @@ const ProfilePage: React.FC = () => {
                     </Stack>
                 </HStack>
 
-                <Card.Root colorPalette="yellow" flexDirection="row" overflow="hidden" maxW="xl" variant="outline" size="sm">
-                    <Box width={"100%"}>
-                        <Card.Body>
-                            <Stack gap={2}>
-                                <Stack gap={0}>
-                                    <Card.Title mb="2">Profile Information</Card.Title>
-                                    <Card.Description>View or change your profile information here.</Card.Description>
+                <Stack gap={4} direction={"row"} width={"100%"} wrap="wrap">
+                    <Card.Root colorPalette="yellow" flexDirection="row" overflow="hidden" maxW="xl" variant="outline" size="sm">
+                        <Box width={"100%"}>
+                            <Card.Body>
+                                <Stack gap={2}>
+                                    <Stack gap={0}>
+                                        <Card.Title mb="2">Profile Information</Card.Title>
+                                        <Card.Description>View or change your profile information here.</Card.Description>
+                                    </Stack>
+                                    <Separator size="md" />
+                                    <Stack gap={2} padding={4}>
+                                        <Field.Root orientation="horizontal" disabled={isDisabled}>
+                                            <Field.Label>First Name</Field.Label>
+                                            <Input name="firstName" placeholder="First Name" value={updatedUser.firstName} onChange={handleChange}/>
+                                        </Field.Root>
+
+                                        <Field.Root orientation="horizontal" disabled={isDisabled}>
+                                            <Field.Label>Last Name</Field.Label>
+                                            <Input name="lastName" placeholder="Last Name" value={updatedUser.lastName} onChange={handleChange}/>
+                                        </Field.Root>
+
+                                        <Field.Root orientation="horizontal" disabled={isDisabled}>
+                                            <Field.Label>Avatar</Field.Label>
+                                            <Input name="avatar" placeholder="Avatar Url" value={updatedUser.avatar} onChange={handleChange}/>
+                                        </Field.Root>
+                                    </Stack>
                                 </Stack>
-                                <Separator size="md" />
-                                <Stack gap={2} padding={4}>
-                                    <Field.Root orientation="horizontal" disabled={isDisabled}>
-                                        <Field.Label>First Name</Field.Label>
-                                        <Input name="firstName" placeholder="First Name" value={updatedUser.firstName} onChange={handleChange}/>
-                                    </Field.Root>
 
-                                    <Field.Root orientation="horizontal" disabled={isDisabled}>
-                                        <Field.Label>Last Name</Field.Label>
-                                        <Input name="lastName" placeholder="Last Name" value={updatedUser.lastName} onChange={handleChange}/>
-                                    </Field.Root>
+                                <Stack gap={2}>
+                                    <Stack gap={0}>
+                                        <Card.Title mb="2">Account Information</Card.Title>
+                                        <Card.Description>View or change your account information here.</Card.Description>
+                                    </Stack>
+                                    <Separator size="md" />
+                                    <Stack gap={2} padding={4}>
+                                        <Field.Root orientation="horizontal" disabled={isDisabled}>
+                                            <Field.Label>Username</Field.Label>
+                                            <Input name="username" placeholder="Username" value={updatedUser.username} onChange={handleChange}/>
+                                        </Field.Root>
 
-                                    <Field.Root orientation="horizontal" disabled={isDisabled}>
-                                        <Field.Label>Avatar</Field.Label>
-                                        <Input name="avatar" placeholder="Avatar Url" value={updatedUser.avatar} onChange={handleChange}/>
-                                    </Field.Root>
+                                        <Field.Root orientation="horizontal" disabled={isDisabled}>
+                                            <Field.Label>Email</Field.Label>
+                                            <Input name="email" placeholder="Email" value={updatedUser.email} onChange={handleChange}/>
+                                        </Field.Root>
+
+                                        <Field.Root orientation="horizontal" disabled={isDisabled}>
+                                            <Field.Label>Password</Field.Label>
+                                            <PasswordInput name="password" placeholder="Password" value={updatedUser.password} onChange={handleChange}/>
+                                        </Field.Root>
+
+                                        <Field.Root orientation="horizontal" disabled={isDisabled}>
+                                            <Field.Label>Role</Field.Label>
+                                            <NativeSelect.Root onChange={handleEventChange}>
+                                                <NativeSelect.Field name="role" value={updatedUser.role}>
+                                                    {Roles.map((role) => (
+                                                        <option key={role} value={role}>{role}</option>
+                                                    ))}
+                                                </NativeSelect.Field>
+                                                <NativeSelect.Indicator />
+                                            </NativeSelect.Root>
+                                            <Field.ErrorText>This is an error</Field.ErrorText>
+                                        </Field.Root>
+                                    </Stack>
                                 </Stack>
-                            </Stack>
 
-                            <Stack gap={2}>
-                                <Stack gap={0}>
-                                    <Card.Title mb="2">Account Information</Card.Title>
-                                    <Card.Description>View or change your account information here.</Card.Description>
+                                <Stack gap={2}>
+                                    <Stack gap={0}>
+                                        <Card.Title mb="2">Academic Information</Card.Title>
+                                        <Card.Description>View or change your academic information here.</Card.Description>
+                                    </Stack>
+                                    <Separator size="md" />
+                                    <Stack gap={2} padding={4}>
+                                        <Field.Root orientation="horizontal" disabled={isDisabled}>
+                                            <Field.Label>Academic Credential</Field.Label>
+                                            <Input name="academicCredentials" placeholder="Academic Credential" value={updatedUser.academicCredentials} onChange={handleChange}/>
+                                        </Field.Root>
+
+                                        <Field.Root orientation="horizontal" disabled={isDisabled}>
+                                            <Field.Label>Skills</Field.Label>
+                                            <Textarea name="skills" placeholder="Skills" value={updatedUser.skills} onChange={handleChange}/>
+                                        </Field.Root>
+
+                                        <Field.Root orientation="horizontal" disabled={isDisabled}>
+                                            <Field.Label>Availability</Field.Label>
+                                            <NativeSelect.Root onChange={handleEventChange}>
+                                                <NativeSelect.Field name="availability" value={updatedUser.availability}>
+                                                    {Availability.map((availability) => (
+                                                        <option key={availability} value={availability}>{availability}</option>
+                                                    ))}
+                                                </NativeSelect.Field>
+                                                <NativeSelect.Indicator />
+                                            </NativeSelect.Root>
+                                        </Field.Root>
+                                    </Stack>
                                 </Stack>
-                                <Separator size="md" />
-                                <Stack gap={2} padding={4}>
-                                    <Field.Root orientation="horizontal" disabled={isDisabled}>
-                                        <Field.Label>Username</Field.Label>
-                                        <Input name="username" placeholder="Username" value={updatedUser.username} onChange={handleChange}/>
-                                    </Field.Root>
+                                
+                            </Card.Body>
+                            <Card.Footer>
+                                <Button onClick={() => {isEditing ? handleSave() : setIsEditing(true); }}>{isEditing ? "Save" : "Edit"}</Button>
+                            </Card.Footer>
+                        </Box>
+                    </Card.Root>
 
-                                    <Field.Root orientation="horizontal" disabled={isDisabled}>
-                                        <Field.Label>Email</Field.Label>
-                                        <Input name="email" placeholder="Email" value={updatedUser.email} onChange={handleChange}/>
-                                    </Field.Root>
+                    <Card.Root colorPalette="yellow" flexDirection="row" overflow="hidden" maxW="xl" variant="outline" size="sm">
+                        <Box width={"100%"}>
+                            <Card.Body>
+                                <Stack gap={2}>
+                                    <Stack gap={0}>
+                                        <Card.Title mb="2">Previous Work Experience</Card.Title>
+                                        <Card.Description>View, add, or edit your work experience here.</Card.Description>
+                                    </Stack>
+                                    <Separator size="md" />
+                                    <Stack gap={2} padding={4}>
+                                        <Field.Root orientation="horizontal" disabled={isDisabled}>
+                                            <Field.Label>Role</Field.Label>
+                                            <Input name="role" placeholder="Role" value={newPreviousRole.role} onChange={handleChange}/>
+                                        </Field.Root>
 
-                                    <Field.Root orientation="horizontal" disabled={isDisabled}>
-                                        <Field.Label>Password</Field.Label>
-                                        <PasswordInput name="password" placeholder="Password" value={updatedUser.password} onChange={handleChange}/>
-                                    </Field.Root>
+                                        <Field.Root orientation="horizontal" disabled={isDisabled}>
+                                            <Field.Label>Company</Field.Label>
+                                            <Input name="company" placeholder="Company" value={newPreviousRole.company} onChange={handleChange}/>
+                                        </Field.Root>
 
-                                    <Field.Root orientation="horizontal" disabled={isDisabled}>
-                                        <Field.Label>Role</Field.Label>
-                                        <NativeSelect.Root onChange={handleEventChange}>
-                                            <NativeSelect.Field name="role" value={updatedUser.role}>
-                                                {Roles.map((role) => (
-                                                    <option key={role} value={role}>{role}</option>
-                                                ))}
-                                            </NativeSelect.Field>
-                                            <NativeSelect.Indicator />
-                                        </NativeSelect.Root>
-                                        <Field.ErrorText>This is an error</Field.ErrorText>
-                                    </Field.Root>
+                                        <Field.Root orientation="horizontal" disabled={isDisabled}>
+                                            <Field.Label>Start Date</Field.Label>
+                                            <Input type="date" name="startDate" value={newPreviousRole.startDate} onChange={handleChange}/>
+                                        </Field.Root>
+
+                                        <Field.Root orientation="horizontal" disabled={isDisabled}>
+                                            <Field.Label>End Date</Field.Label>
+                                            <Input type="date" name="endDate" value={newPreviousRole.endDate} onChange={handleChange}/>
+                                        </Field.Root>
+
+                                        <Field.Root orientation="horizontal" disabled={isDisabled}>
+                                            <Field.Label>Description</Field.Label>
+                                            <Textarea name="description" placeholder="Description" value={newPreviousRole.description} onChange={handleChange}/>
+                                        </Field.Root>
+
+                                        <Button onClick={handleAddExperience} colorScheme="yellow" disabled={isDisabled}>
+                                            {newPreviousRole.id ? "Save Experience" : "Add Experience"}
+                                        </Button>
+                                    </Stack>
+
+                                    <Separator size="md" />
+                                    <Stack gap={2}>
+                                        {previousRoles?.map((prevRole) => (
+                                            <Box key={prevRole.id}>
+                                                <Text>{prevRole.role} at {prevRole.company}</Text>
+                                                <Text>{prevRole.startDate} - {prevRole.endDate}</Text>
+                                                <Text>{prevRole.description}</Text>
+                                                <Button disabled={isDisabled} onClick={() => handleEditPreviousRole(prevRole.id)} colorScheme="yellow">Edit</Button>
+                                            </Box>
+                                        ))}
+                                    </Stack>
                                 </Stack>
-                            </Stack>
+                            </Card.Body>
+                            <Card.Footer>
+                            </Card.Footer>
+                        </Box>
+                    </Card.Root>
 
-                            <Stack gap={2}>
-                                <Stack gap={0}>
-                                    <Card.Title mb="2">Academic Information</Card.Title>
-                                    <Card.Description>View or change your academic information here.</Card.Description>
+                    <Card.Root colorPalette="yellow" flexDirection="row" overflow="hidden" maxW="xl" variant="outline" size="sm">
+                        <Box width={"100%"}>
+                            <Card.Body>
+                                <Stack gap={2}>
+                                    <Stack gap={0}>
+                                        <Card.Title mb="2">Your Applications</Card.Title>
+                                        <Card.Description>View your applications here.</Card.Description>
+                                    </Stack>
+                                    <Separator size="md" />
+                                    <Stack gap={2} padding={4}>
+                                        {userApplications.length === 0 ? (<Text>No applications submitted yet.</Text>) : 
+                                        (userApplications.map((app) => (
+                                            <Box key={app.id} border="1px" borderColor="gray.200" p="4" rounded="md">
+                                                <Text fontWeight="bold">Course ID: {app.courseId}</Text>
+                                                <Text>Date Submitted: {new Date(app.date).toLocaleDateString()}</Text>
+                                                <Text>Availability: {app.availability.join(", ")}</Text>
+                                                <Text>Skills: {app.skills.join(", ")}</Text>
+                                                <Text>Academic Credentials: {app.academicCredentials || "None"}</Text>
+                                                <Text>Status: <strong>{app.selected ? "Selected" : "Pending"}</strong></Text>
+                                            </Box>
+                                        ))
+                                        )}
+                                    </Stack>
                                 </Stack>
-                                <Separator size="md" />
-                                <Stack gap={2} padding={4}>
-                                    <Field.Root orientation="horizontal" disabled={isDisabled}>
-                                        <Field.Label>Academic Credential</Field.Label>
-                                        <Input name="academicCredentials" placeholder="Academic Credential" value={updatedUser.academicCredentials} onChange={handleChange}/>
-                                    </Field.Root>
+                            </Card.Body>
+                            <Card.Footer>
+                            </Card.Footer>
+                        </Box>
+                    </Card.Root>
 
-                                    <Field.Root orientation="horizontal" disabled={isDisabled}>
-                                        <Field.Label>Skills</Field.Label>
-                                        <Textarea name="skills" placeholder="Skills" value={updatedUser.skills} onChange={handleChange}/>
-                                    </Field.Root>
 
-                                    <Field.Root orientation="horizontal" disabled={isDisabled}>
-                                        <Field.Label>Availability</Field.Label>
-                                        <NativeSelect.Root onChange={handleEventChange}>
-                                            <NativeSelect.Field name="availability" value={updatedUser.availability}>
-                                                {Availability.map((availability) => (
-                                                    <option key={availability} value={availability}>{availability}</option>
-                                                ))}
-                                            </NativeSelect.Field>
-                                            <NativeSelect.Indicator />
-                                        </NativeSelect.Root>
-                                    </Field.Root>
-                                </Stack>
-                            </Stack>
-                            
-                        </Card.Body>
-                        <Card.Footer>
-                            <Button onClick={() => {isEditing ? handleSave() : setIsEditing(true); }}>{isEditing ? "Save" : "Edit"}</Button>
-                        </Card.Footer>
-                    </Box>
-                </Card.Root>
-                    
-                    
+                </Stack>
             </Stack>
             
         </div>
