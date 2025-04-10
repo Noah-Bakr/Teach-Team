@@ -33,6 +33,77 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 ---
 
+## Logging In & Navigating the Website
+
+### Homepage Navigation
+
+Click the avatar in the top-right of the screen and choose `Sign In` to progress in the website.
+
+### Dummy Sign-In Credentials
+
+> [!TIP]
+> For ease of logging in, all account passwords are the same.
+
+You can use the following test accounts to log in as a tutor:
+
+| Email | Password |
+| ----- | -------- |
+| `jane@example.com` | `Cart@21-c0ding` |
+| `bob@example.com` | `Cart@21-c0ding` |
+
+You can use the following test account to log in as a lecturer:
+
+| Email | Password |
+| ----- | -------- |
+| `john@example.com` | `Cart@21-c0ding` |
+
+You can use the following test account to log in as an admin:
+
+| Email | Password |
+| ----- | -------- |
+| `admin@example.com` | `Cart@21-c0ding` |
+
+### Navigation Overview
+
+Once logged in, you'll be redirected to the appropriate dashboard based on your user type.
+
+#### Tutor Dashboard
+- **Apply** for available courses
+- Submit your:
+  - Availability
+    - Part-Time / Full-Time / Not Available
+  - Skills and Academic Credentials
+  - Previous Work Experience
+
+#### Lecturer Dashboard
+- **View all applicants** filtered by course
+- **Search & sort** applicants by:
+  - Name
+  - Course
+  - Availability
+  - Skill set
+    - (all inclusive of the search bar)
+- **Select**, **rank**, and **comment** on tutor candidates
+- **View** selection insights
+  - most/least chosen
+
+### Profile Page
+- **View and edit** all acount details
+  - Profile Information
+    - First name, Last name, Avatar
+  - Account Information
+    - Username
+    - Email, Password
+    - Role
+  - Academic Information
+    - Academic Credentials
+    - Skills
+    - Availability
+- **Add and edit** all previous work experience
+- **View** all submitted applications
+
+---
+
 ## Project Structure
 
 ```bash
