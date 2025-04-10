@@ -1,9 +1,11 @@
-import { Avatar, Box, Button, Card, Field, HStack, Input, NativeSelect, 
+import { Avatar, Box, Button, Card, Field, Heading, HStack, IconButton, Input, NativeSelect, 
     Separator, Stack, Text, Textarea } from "@chakra-ui/react";
 import { useAuth } from "@/context/AuthContext";
 import { useEffect, useState } from "react";
 import { Applicant, Availability, PreviousRoles, Role, Roles, User } from "@/types/types";
 import { PasswordInput } from "@/components/ui/password-input";
+import { LuPencil, LuPencilOff } from "react-icons/lu";
+import Header from "@/components/Header";
 
 // TODO: Add area for previous experience, readme, testing, application viewer
 const ProfilePage: React.FC = () => {
@@ -132,21 +134,10 @@ const ProfilePage: React.FC = () => {
     return (
         <div>
             <Stack gap={8}>
-                <HStack gap="4">
-                    <Avatar.Root colorPalette="yellow" size={"2xl"} >
-                        <Avatar.Fallback name={currentUser?.firstName.concat(" " + currentUser?.lastName)} />
-                        <Avatar.Image src={currentUser?.avatar}/>
-                    </Avatar.Root>
-                    <Stack gap="0">
-                        <Text fontWeight="medium">{currentUser?.firstName.concat(" " + currentUser?.lastName)}</Text>
-                        <Text color="fg.muted" textStyle="sm">
-                        {currentUser?.email}
-                        </Text>
-                    </Stack>
-                </HStack>
 
-                <Stack gap={4} direction={"row"} width={"100%"} wrap="wrap">
-                    <Card.Root colorPalette="yellow" flexDirection="row" overflow="hidden" maxW="xl" variant="outline" size="sm">
+
+                <Stack gap={4} direction={"row"} width={"90rem"} wrap="wrap">
+                    <Card.Root colorPalette="yellow" flexDirection="row" width="25rem" overflow="hidden" maxW="xl" variant="outline" size="sm">
                         <Box width={"100%"}>
                             <Card.Body>
                                 <Stack gap={2}>
@@ -248,7 +239,7 @@ const ProfilePage: React.FC = () => {
                         </Box>
                     </Card.Root>
 
-                    <Card.Root colorPalette="yellow" flexDirection="row" overflow="hidden" maxW="xl" variant="outline" size="sm">
+                    <Card.Root colorPalette="yellow" flexDirection="row" width="35rem" overflow="hidden" maxW="xl" variant="outline" size="sm">
                         <Box width={"100%"}>
                             <Card.Body>
                                 <Stack gap={2}>
@@ -291,14 +282,20 @@ const ProfilePage: React.FC = () => {
                                     <Separator size="md" />
                                     <Stack gap={2}>
                                         {previousRoles?.map((prevRole) => (
-                                            <Box key={prevRole.id}>
-                                                <Text>{prevRole.role} at {prevRole.company}</Text>
-                                                <Text>{prevRole.startDate} - {prevRole.endDate}</Text>
-                                                <Text>{prevRole.description}</Text>
-                                                <Button disabled={isDisabled} onClick={() => handleEditPreviousRole(prevRole.id)} colorScheme="yellow">Edit</Button>
-                                            </Box>
+                                            <Card.Root colorPalette="yellow" flexDirection="row" overflow="hidden" maxW="xl" variant="outline" size="sm">
+                                                <IconButton position="absolute" right="0px" top="0px" disabled={isDisabled} aria-label="Edit" variant="ghost" colorScheme="yellow" size="sm" onClick={() => handleEditPreviousRole(prevRole.id)} >
+                                                    <LuPencil />
+                                                </IconButton>
+                                                <Box direction="row" key={prevRole.id} p={4}>
+                                                    <Text>{prevRole.role} at {prevRole.company}</Text>
+                                                    <Text>{new Date(prevRole.startDate).toLocaleDateString()} - {prevRole.endDate ? new Date(prevRole.endDate).toLocaleDateString() : "Present"}</Text>
+                                                    <Text>{prevRole.description}</Text>
+                                                    {/* <Button disabled={isDisabled} onClick={() => handleEditPreviousRole(prevRole.id)} colorScheme="yellow">Edit</Button> */}
+                                                </Box>
+                                            </Card.Root>
                                         ))}
                                     </Stack>
+                                    
                                 </Stack>
                             </Card.Body>
                             <Card.Footer>
@@ -306,7 +303,7 @@ const ProfilePage: React.FC = () => {
                         </Box>
                     </Card.Root>
 
-                    <Card.Root colorPalette="yellow" flexDirection="row" overflow="hidden" maxW="xl" variant="outline" size="sm">
+                    <Card.Root colorPalette="yellow" flexDirection="row" width="25rem" overflow="hidden" maxW="xl" variant="outline" size="sm">
                         <Box width={"100%"}>
                             <Card.Body>
                                 <Stack gap={2}>
@@ -315,17 +312,19 @@ const ProfilePage: React.FC = () => {
                                         <Card.Description>View your applications here.</Card.Description>
                                     </Stack>
                                     <Separator size="md" />
-                                    <Stack gap={2} padding={4}>
+                                    <Stack gap={2}>
                                         {userApplications.length === 0 ? (<Text>No applications submitted yet.</Text>) : 
                                         (userApplications.map((app) => (
-                                            <Box key={app.id} border="1px" borderColor="gray.200" p="4" rounded="md">
-                                                <Text fontWeight="bold">Course ID: {app.courseId}</Text>
-                                                <Text>Date Submitted: {new Date(app.date).toLocaleDateString()}</Text>
-                                                <Text>Availability: {app.availability.join(", ")}</Text>
-                                                <Text>Skills: {app.skills.join(", ")}</Text>
-                                                <Text>Academic Credentials: {app.academicCredentials || "None"}</Text>
-                                                <Text>Status: <strong>{app.selected ? "Selected" : "Pending"}</strong></Text>
-                                            </Box>
+                                            <Card.Root colorPalette="yellow" flexDirection="row" overflow="hidden" maxW="xl" variant="outline" size="sm">
+                                                <Box key={app.id} p="4" >
+                                                    <Text fontWeight="bold">Course ID: {app.courseId}</Text>
+                                                    <Text>Date Submitted: {new Date(app.date).toLocaleDateString()}</Text>
+                                                    <Text>Availability: {app.availability.join(", ")}</Text>
+                                                    <Text>Skills: {app.skills.join(", ")}</Text>
+                                                    <Text>Academic Credentials: {app.academicCredentials || "None"}</Text>
+                                                    <Text>Status: <strong>{app.selected ? "Selected" : "Pending"}</strong></Text>
+                                                </Box>
+                                            </Card.Root>
                                         ))
                                         )}
                                     </Stack>
