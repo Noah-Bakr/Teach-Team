@@ -6,7 +6,7 @@ COSC2758 – Assignment 1 | RMIT University – Semester 1, 2025
 
 ---
 
-## 📦 How to Run the Project
+## How to Run the Project
 
 ### 1. Clone the Repository
 
