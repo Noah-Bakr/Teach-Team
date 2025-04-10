@@ -109,7 +109,7 @@ const ApplicantForm: React.FC<ApplicantFormProps> = ({ closeForm, course }) => {
       present={open}
       animationStyle={{ _open: "scale-fade-in", _closed: "scale-fade-out" }}
       animationDuration="moderate">
-          <AbsoluteCenter>
+          <AbsoluteCenter colorPalette={"yellow"}>
               <Box className="Box">
                   <VStack className="FormStack">
                       <CloseButton className="CloseButton" variant="ghost" colorPalette="black" onClick={() => { onToggle(); closeForm(); }}/>
