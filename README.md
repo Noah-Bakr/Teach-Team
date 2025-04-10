@@ -148,6 +148,6 @@ All images, icons, and avatars used in the project are sourced from royalty-free
 
 ## Team Info
 
-Student 1: s3575564 – Bodene Downie
+Bodene Downie | s3575564
 
-Student 2: s4095646 – Noah Bakr
+Noah Bakr | s4095646
