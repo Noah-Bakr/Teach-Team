@@ -76,6 +76,6 @@ All images, icons, and avatars used in the project are sourced from royalty-free
 
 ## Team Info
 
-👤 Student 1: s3123456 – John Doe
+Student 1: s3575564 – Bodene Downie
 
-👤 Student 2: s3654321 – Jane Smith
+Student 2: s4095646 – Noah Bakr
