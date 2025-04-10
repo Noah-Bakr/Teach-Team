@@ -156,7 +156,7 @@ const ApplicantForm: React.FC<ApplicantFormProps> = ({ closeForm, course }) => {
                         {currentUser?.previousRoles && currentUser.previousRoles.length > 0 && (
                           <>
                             <Field.Root className="InputFieldRoot">
-                              <Field.Label>Select Work Experience to Include</Field.Label>
+                              <Field.Label>Select Previous Roles to Include</Field.Label>
                             </Field.Root>
                             <VStack gap={2} align="start" className="InputFieldRoot">
                             {currentUser.previousRoles.map((previousRole) => (
