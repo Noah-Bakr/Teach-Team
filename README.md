@@ -1,42 +1,79 @@
-`npm install react react-dom next`
+# TeachTeam (TT) – Tutor Application Management (Frontend Prototype)
 
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/pages/api-reference/create-next-app).
+## COSC2758 – Assignment 1
 
-## Getting Started
+RMIT University – Semester 1, 2025
 
-First, run the development server:
+---
+
+## 📦 How to Run the Project
+
+### 1. Clone the Repository
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/rmit-fsd-2025-s1/s3575564-s4095646-a1.git
+cd s3575564-s4095646-a1
 ```
 
+### 2. Install Dependencies
+Make sure you have **Node.js (v18+)** and npm installed. Then run:
+
+```bash
+npm install
+```
+
+### 3. Run the Server
+
+```bash
+npm start
+```
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+---
 
-[API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+## Project Structure
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) instead of React pages.
+```bash
+src/
+│
+├── components/       # Header, Footer, Forms, Lists
+        └── ui/       # Chakra UI components
+├── context/          # Global data (e.g., AuthContext)
+├── pages/            # Home, TutorPage, LecturerPage, SignIn, SignUp
+├── styles/           # CSS files (e.g., globals, Navbar)
+├── types/            # TypeScript interfaces (e.g., Applicants, Courses)
+└── utils/            # Helpers
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/pages/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## Dependencies
 
-To learn more about Next.js, take a look at the following resources:
+| Package | Description |
+| --- | --- |
+| `react` | JavaScript library for building UI |
+| `react-dom` | DOM rendering for React |
+| `typescript` | Static typing |
+| `jest` | Testing framework |
+| `@chakra-ui/react` | Component library for styling |
+| `@emotion/react` | Required by Chakra UI |
+| `@emotion/styled` | Required by Chakra UI |
+| `framer-motion` | Animation support (pop ups) |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn-pages-router) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Assets
 
-## Deploy on Vercel
+All images, icons, and avatars used in the project are sourced from royalty-free websites:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+* Images: [Unsplash](https://unsplash.com)
+* Avatars: [UI Faces](https://uifaces.co)
+* Icons: [React Lucide](https://react-icons.github.io/react-icons/icons/lu/)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/pages/building-your-application/deploying) for more details.
+---
+
+## Team Info
+
+👤 Student 1: s3123456 – John Doe
+
+👤 Student 2: s3654321 – Jane Smith
