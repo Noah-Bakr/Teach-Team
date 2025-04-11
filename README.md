@@ -50,6 +50,8 @@ You can use the following test accounts to log in as a tutor:
 | --- | --- |
 | `jane@example.com` | `Cart@21-c0ding` |
 | `bob@example.com` | `Cart@21-c0ding` |
+| `julie@example.com` | `Cart@21-c0ding` |
+| `dexter@example.com` | `Cart@21-c0ding` |
 
 You can use the following test account to log in as a lecturer:
 
@@ -68,6 +70,7 @@ You can use the following test account to log in as an admin:
 Once logged in, you'll be redirected to the appropriate dashboard based on your user type.
 
 #### Tutor Dashboard
+
 - **Apply** for available courses
 - Submit your:
   - Availability
@@ -76,6 +79,7 @@ Once logged in, you'll be redirected to the appropriate dashboard based on your 
   - Previous Work Experience
 
 #### Lecturer Dashboard
+
 - **View all applicants** filtered by course
 - **Search & sort** applicants by:
   - Name
@@ -88,6 +92,7 @@ Once logged in, you'll be redirected to the appropriate dashboard based on your 
   - Most/least chosen
 
 ### Profile Page
+
 - **View and edit** all acount details
   - Profile Information
     - First name, Last name, Avatar
@@ -149,5 +154,4 @@ All images, icons, and avatars used in the project are sourced from royalty-free
 ## Team Info
 
 Bodene Downie | s3575564
-
 Noah Bakr | s4095646
