@@ -12,11 +12,11 @@ export type User = {
   email: string; // will be the username
   password: string;
   role: Role[]; // List of roles (closed)
-  previousRoles: PreviousRoles[]
+  previousRoles?: PreviousRoles[]; // Optional field only for tutors
 
   academicCredentials?: string; // Optional field for academic credentials
   skills?: string[]; // Optional field for skills
-  availability?: Availability[]; // Optional field for availability (list)
+  availability?: Availability[]; // Optional field for availability (list) only for tutors
 };
 
 export type Applicant = {
