@@ -46,18 +46,18 @@ Click the avatar in the top-right of the screen and choose `Sign In` to progress
 
 You can use the following test accounts to log in as a tutor:
 
-| Email | Password |
-| --- | --- |
-| `jane@example.com` | `Cart@21-c0ding` |
-| `bob@example.com` | `Cart@21-c0ding` |
-| `julie@example.com` | `Cart@21-c0ding` |
-| `dexter@example.com` | `Cart@21-c0ding` |
+| Avatar | Email | Password |
+| --- | --- | --- |
+| <img src="https://mighty.tools/mockmind-api/content/human/97.jpg" alt="avatar" width="50"/> | `jane@example.com` | `Cart@21-c0ding` |
+| <img src="https://mighty.tools/mockmind-api/content/human/91.jpg" alt="avatar" width="50"/> | `bob@example.com` | `Cart@21-c0ding` |
+| <img src="https://mighty.tools/mockmind-api/content/human/99.jpg" alt="avatar" width="50"/> | `dexter@example.com` | `Cart@21-c0ding` |
+| <img src="https://mighty.tools/mockmind-api/content/human/125.jpg" alt="avatar" width="50"/> | `julie@example.com` | `Cart@21-c0ding` |
 
 You can use the following test account to log in as a lecturer:
 
-| Email | Password |
-| --- | --- |
-| `john@example.com` | `Cart@21-c0ding` |
+| Avatar | Email | Password |
+| --- | --- | --- |
+| <img src="https://mighty.tools/mockmind-api/content/human/80.jpg" alt="avatar" width="50"/> | `john@example.com` | `Cart@21-c0ding` |
 
 You can use the following test account to log in as an admin:
 
