@@ -5,7 +5,7 @@ import { Box, BoxProps } from "@chakra-ui/react";
 export const CreamCard: React.FC<BoxProps> = ({ children, ...props }) => {
     return (
         <Box
-            bg="rgba(0, 0, 0, 0.8)"
+            bg="rgba(0, 0, 0, 0.7)"
             color="#FFFFFF"
             p={4}
             borderRadius="md"
