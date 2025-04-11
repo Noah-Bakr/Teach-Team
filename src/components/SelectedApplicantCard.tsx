@@ -7,6 +7,7 @@ import CustomFormControl from "./CustomFormControl";
 import { useUserLookup } from "@/utils/userLookup";
 import { useCourseLookup } from "@/utils/courseLookup";
 
+
 interface SelectedApplicantCardProps {
     applicant: Applicant;
     error?: { rank?: string; comment?: string };
@@ -40,14 +41,14 @@ const SelectedApplicantCard: React.FC<SelectedApplicantCardProps> = ({
     };
 
     return (
-        <Box mt={8}
+        <Box mt={2}
              p={4}
              border="1px solid"
              borderWidth="1px"
              borderColor="gray.200"
              borderRadius="md"
              boxShadow="md"
-             mb={4}
+             mb={2}
         >
             <Heading size="sm" mb={4}>
                 {getUserName(applicant.userId)} - {applicant.courseId} {getCourseName(applicant.courseId)}
