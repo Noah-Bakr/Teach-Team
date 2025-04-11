@@ -42,8 +42,7 @@ const LecturerPage: React.FC = () => {
     const toggleSelect = (id: string) => {
         setApplicants((prev) =>
             prev.map((app) =>
-                app.id === id ? {...app, selected: !app.selected} : app
-            )
+                (app.id === id ? {...app, selected: !app.selected} : app))
         );
     };
 
@@ -63,8 +62,7 @@ const LecturerPage: React.FC = () => {
     ): void {
         setApplicants((prev) =>
             prev.map((app) =>
-                app.id === id ? { ...app, [key]: value } : app
-            )
+                (app.id === id ? { ...app, [key]: value } : app))
         );
     }
 
@@ -73,17 +71,17 @@ const LecturerPage: React.FC = () => {
         const rank = Number(newValue);
         if (rank > 0) {
             // Find applicant  being updated
-            const currentApplicant = applicants.find(app => app.id === id);
+            const currentApplicant = applicants.find((app) => app.id === id);
             if (currentApplicant) {
                 // Check if another applicant in the same course already has the same rank.
-                const duplicate = applicants.find(app =>
+                const duplicate = applicants.find((app) =>
                     app.id !== id &&
                     app.selected &&
                     app.courseId === currentApplicant.courseId &&
                     app.rank === rank
                 );
                 if (duplicate) {
-                    setErrors(prev => ({
+                    setErrors((prev) => ({
                         ...prev,
                         [id]: {
                             ...prev[id],
@@ -92,18 +90,18 @@ const LecturerPage: React.FC = () => {
                     }));
                     return;
                 } else {
-                    setErrors(prev => ({
+                    setErrors((prev) => ({
                         ...prev,
-                        [id]: {...prev[id], rank: ''}
+                        [id]: {...prev[id], rank: ''},
                     }));
                     updateApplicantDetails(id, "rank", rank);
                 }
             }
         } else {
-            // Clear any rank error if valid.
+            // Set an error if rank is not greater than 0.
             setErrors((prev) => ({
                 ...prev,
-                [id]: { ...prev[id], rank: 'Rank must be greater than 0' }
+                [id]: { ...prev[id], rank: 'Rank must be greater than 0' },
             }));
         }
     };
@@ -114,33 +112,29 @@ const LecturerPage: React.FC = () => {
             // Clear any comment error if valid.
             setErrors((prev) => ({
                 ...prev,
-                [id]: { ...prev[id], comment: '' }
+                [id]: { ...prev[id], comment: '' },
             }));
             updateApplicantDetails(id, "comment", newValue);
         } else {
             // Set error message for too long comment.
             setErrors((prev) => ({
                 ...prev,
-                [id]: { ...prev[id], comment: 'Comment cannot exceed 200 characters' }
+                [id]: { ...prev[id], comment: 'Comment cannot exceed 200 characters' },
             }));
         }
     };
 
-    // Use the custom hook
+    // Use the custom hooks for user and course lookups
     const userLookup = useUserLookup();
-    // Define a helper function (not a Hook) that uses the lookup.
-    const getUserName = (userId: string): string => {
-        const user = userLookup[userId];
-        if (user) {
-            return `${user.firstName} ${user.lastName}`;
-        }
-        return userId;
-    };
-
-    // Call the useCourseLookup hook at the top level.
     const courseLookup = useCourseLookup();
 
-    // Helper function that uses the lookup to get a course name.
+    // Helper function to get users full name
+    const getUserName = (userId: string): string => {
+        const user = userLookup[userId];
+        return user ? `${user.firstName} ${user.lastName}` : userId;
+    };
+
+    // Helper function to get course name
     const getCourseName = (courseId: string): string => {
         const course = courseLookup[courseId];
         // If found, return the course name; otherwise fallback to the courseId
@@ -169,15 +163,16 @@ const LecturerPage: React.FC = () => {
     }) : filteredApplicants;
 
     // Group Selected Applicants by course
-    const selectedByCourse = applicants.filter(app => app.selected).reduce((acc, app) => {
-        const courseKey = app.courseId;
-        if (!acc[courseKey]) acc[courseKey] = [];
-        acc[courseKey].push(app);
-        return acc;
-    }, {} as Record<string, Applicant[]>);
+    const selectedByCourse = applicants
+        .filter((app) => app.selected)
+        .reduce((acc, app) => {
+            const courseKey = app.courseId;
+            if (!acc[courseKey]) acc[courseKey] = [];
+            acc[courseKey].push(app);
+            return acc;
+        }, {} as Record<string, Applicant[]>);
 
-
-    return(
+    return (
         <Box p={4}>
             <Heading mb={4}>Lecturer Dashboard</Heading>
 
@@ -200,11 +195,11 @@ const LecturerPage: React.FC = () => {
                 {Object.entries(selectedByCourse).length === 0 ? (
                     <Text>No Applicants Selected, Please choose to proceed.</Text>
                 ) : (
-                    Object.entries(selectedByCourse).map(([course, apps]) => (
-                        <Box key={course} mb={1}>
-                            <Heading size="sm" mb={2}>Course: {course}</Heading>
+                    Object.entries(selectedByCourse).map(([courseId, apps]) => (
+                        <Box key={courseId} mb={1}>
+                            <Heading size="sm" mb={2}>Course: {getCourseName(courseId)}</Heading>
                             <SimpleGrid minChildWidth="sm" columns={[1, null, 2]} columnGap="4" rowGap="0">
-                            {apps.map(applicant => (
+                            {apps.map((applicant) => (
                                 <SelectedApplicantCard
                                     key={applicant.id}
                                     applicant={applicant}
@@ -218,6 +213,7 @@ const LecturerPage: React.FC = () => {
                     ))
                 )}
             </Box>
+
             {/* Visual Representation */}
             <VisualRepresentation applicants={applicants} />
         </Box>
