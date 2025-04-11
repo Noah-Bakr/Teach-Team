@@ -81,8 +81,12 @@ const ProfilePage: React.FC = () => {
             ...prevUser,
             [name]: value,
         }));
-    
-        // Updates the state of the previousRoles
+    };
+
+    // Function to handle changes to the new experience input fields
+    // IS seperate from handleChange to avoid confusion with role state
+    const handlePreviousRoleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        const { name, value } = e.target;
         setNewPreviousRole((prevExperience) => ({
             ...prevExperience,
             [name]: value,
@@ -249,27 +253,27 @@ const ProfilePage: React.FC = () => {
                                         <Stack gap={2} padding={4}>
                                             <Field.Root orientation="horizontal" disabled={isDisabled}>
                                                 <Field.Label>Role</Field.Label>
-                                                <Input name="role" placeholder="Role" value={newPreviousRole.role} onChange={handleChange}/>
+                                                <Input name="role" placeholder="Role" value={newPreviousRole.role} onChange={handlePreviousRoleChange}/>
                                             </Field.Root>
 
                                             <Field.Root orientation="horizontal" disabled={isDisabled}>
                                                 <Field.Label>Company</Field.Label>
-                                                <Input name="company" placeholder="Company" value={newPreviousRole.company} onChange={handleChange}/>
+                                                <Input name="company" placeholder="Company" value={newPreviousRole.company} onChange={handlePreviousRoleChange}/>
                                             </Field.Root>
 
                                             <Field.Root orientation="horizontal" disabled={isDisabled}>
                                                 <Field.Label>Start Date</Field.Label>
-                                                <Input type="date" name="startDate" value={newPreviousRole.startDate} onChange={handleChange}/>
+                                                <Input type="date" name="startDate" value={newPreviousRole.startDate} onChange={handlePreviousRoleChange}/>
                                             </Field.Root>
 
                                             <Field.Root orientation="horizontal" disabled={isDisabled}>
                                                 <Field.Label>End Date</Field.Label>
-                                                <Input type="date" name="endDate" value={newPreviousRole.endDate} onChange={handleChange}/>
+                                                <Input type="date" name="endDate" value={newPreviousRole.endDate} onChange={handlePreviousRoleChange}/>
                                             </Field.Root>
 
                                             <Field.Root orientation="horizontal" disabled={isDisabled}>
                                                 <Field.Label>Description</Field.Label>
-                                                <Textarea name="description" placeholder="Description" value={newPreviousRole.description} onChange={handleChange}/>
+                                                <Textarea name="description" placeholder="Description" value={newPreviousRole.description} onChange={handlePreviousRoleChange}/>
                                             </Field.Root>
 
                                             <Button onClick={handleAddExperience} colorScheme="yellow" disabled={isDisabled}>
