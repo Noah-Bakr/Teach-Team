@@ -1,11 +1,16 @@
 import { Course } from "@/types/types";
 import { DEFAULT_COURSES } from "@/types/testData";
 import { Badge, Box, Button, Card, HStack, Stack } from "@chakra-ui/react"
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import ApplicantForm from '../components/ApplicantForm';
 
 const TutorPage: React.FC = () => {
-    const [courses, setCourses] = useState<Course[]>(DEFAULT_COURSES);
+    // Lazy initialiser for courses: load from localStorage or fall back to DEFAULT_COURSES
+    const [courses, setCourses] = useState<Course[]>(() => {
+        const saved = localStorage.getItem("courses");
+        return saved ? JSON.parse(saved) : DEFAULT_COURSES;
+    });
+
     const [isApplicantFormOpen, setIsApplicantFormOpen] = useState(false);
     const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
     
@@ -18,19 +23,6 @@ const TutorPage: React.FC = () => {
         setIsApplicantFormOpen(false);
         setSelectedCourse(null);
     };
-
-    // Load saved courses from localStorage
-    useEffect(() => {
-        const saved = localStorage.getItem('courses');
-        if (saved) {
-            setCourses(JSON.parse(saved));
-        }
-    }, []);
-
-    // Save courses state to localStorage when it changes.
-    useEffect(() => {
-        localStorage.setItem('courses', JSON.stringify(DEFAULT_COURSES));
-    }, [DEFAULT_COURSES]);
 
     return (
         <div>
