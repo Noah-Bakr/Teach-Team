@@ -1,13 +1,24 @@
 import {Box, Button, Flex, Heading, Stack, Text} from "@chakra-ui/react"
 import {CreamCard} from "@/components/CreamCard";
 import Link from "next/link";
+import { toaster } from "@/components/ui/toaster";
+import { useState } from "react";
+import LoginForm from '@/components/LoginForm';
 
 //     src="https://images.unsplash.com/photo-1557804506-669a67965ba0?q=80&w=3174&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" />
 
 
 
 export default function Home() {
+    const [isLoginFormOpen, setIsLoginFormOpen] = useState(false);
 
+    const handleLoginClick = () => {
+        setIsLoginFormOpen(true);
+    };
+
+    const closeLoginForm = () => {
+        setIsLoginFormOpen(false);
+    };
 
   return (
      <Box position="relative" >
@@ -23,12 +34,11 @@ export default function Home() {
                             TeachTeam makes the process efficient and transparent.
                         </Text>
                         <Flex gap={4} mt={3} justify="center">
-                            {/*TODO Noah to add sign in and sign up button login*/}
-                                <Button as="a" style={{ backgroundColor: '#fddf49' }}>
+                                <Button as="a" style={{ backgroundColor: '#fddf49' }} onClick={() => {toaster.create({ title: "Deployment Error", description: "The Sign Up form has not been deployed yet.", type: "info", duration: 6000 })}}>
                                     Sign Up
                                 </Button>
 
-                                <Button as="a" style={{ backgroundColor: '#fddf49' }}>
+                                <Button as="a" style={{ backgroundColor: '#fddf49' }} onClick={handleLoginClick}>
                                     Sign In
                                 </Button>
                         </Flex>
@@ -59,6 +69,7 @@ export default function Home() {
                     </Flex>
                 </Box>
             </Box>
+            {isLoginFormOpen && <LoginForm closeForm={closeLoginForm} />}
      </Box>
    );
 }
