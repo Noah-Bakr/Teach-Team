@@ -10,19 +10,19 @@ export default function Home() {
 
 
   return (
-     <Box position="relative" height="100vh">
+     <Box position="relative" >
             {/* Main Content */}
-            <Box as="main" p={4}>
+            <Box as="main" p={3}>
                 <Flex direction="column" align="center" textAlign="center">
                     <CreamCard>
-                        <Heading my={4}>Welcome to TeachTeam</Heading>
+                        <Heading my={3}>Welcome to TeachTeam</Heading>
                         <Text fontSize="xl" maxW="800px">
                             TeachTeam is a dedicated web system designed to streamline the selection and
                             hiring of casual tutors at the School of Computer Science. Whether you are a tutor
                             applicant filling out a comprehensive profile or a lecturer reviewing candidates,
                             TeachTeam makes the process efficient and transparent.
                         </Text>
-                        <Flex gap={4} mt={6} justify="center">
+                        <Flex gap={4} mt={3} justify="center">
                             {/*TODO Noah to add sign in and sign up button login*/}
                                 <Button as="a" style={{ backgroundColor: '#fddf49' }}>
                                     Sign Up
@@ -34,7 +34,7 @@ export default function Home() {
                         </Flex>
                     </CreamCard>
                 </Flex>
-                <Box mt={12} maxW="800px" mx="auto">
+                <Box mt={8} maxW="800px" mx="auto">
                     <Flex direction={["column", "row"]} gap={8}>
                         <Box flex="1">
                             <CreamCard>
