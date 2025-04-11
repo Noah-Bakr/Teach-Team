@@ -11,6 +11,8 @@ import VisualRepresentation from '../components/VisualRepresentation';
 import { useUserLookup } from "@/utils/userLookup";
 import { useCourseLookup } from "@/utils/courseLookup";
 import { SimpleGrid } from "@chakra-ui/react";
+import "@/styles/Lecturer.css";
+import {CreamCard} from "@/components/CreamCard";
 
 const LecturerPage: React.FC = () => {
     // Use a lazy initialiser: try to load from localStorage; if missing, fall back to DEFAULT_APPLICANTS.
@@ -168,50 +170,54 @@ const LecturerPage: React.FC = () => {
         }, {} as Record<string, Applicant[]>);
 
     return (
+
         <Box p={4}>
-            <Heading mb={4}>Lecturer Dashboard</Heading>
+            <CreamCard>
+                <Heading mb={4}>Lecturer Dashboard</Heading>
 
-            {/* Search & Sort */}
-            <SearchAndSortBar search={search}
-                              setSearch={setSearch}
-                              sortBy={sortBy}
-                              setSortBy={setSortBy} />
+                {/* Search & Sort */}
+                <SearchAndSortBar search={search}
+                                  setSearch={setSearch}
+                                  sortBy={sortBy}
+                                  setSortBy={setSortBy} />
 
-            {/* Applicants List */}
-            <Box mb={8}>
-                <Heading size="md" mb={2}>Applicants</Heading>
-                <ApplicantsTable applicants={sortedApplicants} toggleSelect={toggleSelect} />
-            </Box>
+                {/* Applicants List */}
+                <Box mb={8}>
+                    <Heading size="md" mb={2}>Applicants</Heading>
+                    <ApplicantsTable applicants={sortedApplicants} toggleSelect={toggleSelect} />
+                </Box>
 
-            {/* Selected Applicants Grouped by Course */}
-            <Box mb={8}>
-                <Heading size="md" mb={2}>Selected Applicants</Heading>
+                {/* Selected Applicants Grouped by Course */}
+                <Box mb={8}>
+                    <Heading size="sm" mb={2}>Selected Applicants</Heading>
 
-                {Object.entries(selectedByCourse).length === 0 ? (
-                    <Text>No Applicants Selected, Please choose to proceed.</Text>
-                ) : (
-                    Object.entries(selectedByCourse).map(([courseId, apps]) => (
-                        <Box key={courseId} mb={1}>
-                            <Heading size="sm" mb={2}>Course: {getCourseName(courseId)}</Heading>
-                            <SimpleGrid minChildWidth="sm" columns={[1, null, 2]} columnGap="4" rowGap="0">
-                            {apps.map((applicant) => (
-                                <SelectedApplicantCard
-                                    key={applicant.id}
-                                    applicant={applicant}
-                                    error={errors[applicant.id]}
-                                    handleRankChange={handleRankChange}
-                                    handleCommentChange={handleCommentChange}
-                                />
-                            ))}
-                            </SimpleGrid>
-                        </Box>
-                    ))
-                )}
-            </Box>
+                    {Object.entries(selectedByCourse).length === 0 ? (
+                        <Text>No Applicants Selected, Please choose to proceed.</Text>
+                    ) : (
+                        Object.entries(selectedByCourse).map(([courseId, apps]) => (
+                            <Box key={courseId} mb={1}>
+                                <Heading as="h3" mb={2}>Course: {getCourseName(courseId)}</Heading>
+                                <SimpleGrid minChildWidth="sm" columns={[1, null, 2]} columnGap="4" rowGap="0">
+                                {apps.map((applicant) => (
+                                    <SelectedApplicantCard
+                                        key={applicant.id}
+                                        applicant={applicant}
+                                        error={errors[applicant.id]}
+                                        handleRankChange={handleRankChange}
+                                        handleCommentChange={handleCommentChange}
+                                    />
+                                ))}
+                                </SimpleGrid>
+                            </Box>
+                        ))
+                    )}
+                </Box>
 
-            {/* Visual Representation */}
-            <VisualRepresentation applicants={applicants} />
+                {/* Visual Representation */}
+                <VisualRepresentation applicants={applicants} />
+            </CreamCard>
         </Box>
+
     );
 };
 
