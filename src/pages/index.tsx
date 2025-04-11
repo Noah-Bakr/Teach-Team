@@ -13,8 +13,8 @@ export default function Home() {
      <Box position="relative" height="100vh">
             {/* Main Content */}
             <Box as="main" p={4}>
-               <CreamCard>
-                    <Flex direction="column" align="center" textAlign="center">
+                <Flex direction="column" align="center" textAlign="center">
+                    <CreamCard>
                         <Heading my={4}>Welcome to TeachTeam</Heading>
                         <Text fontSize="xl" maxW="800px">
                             TeachTeam is a dedicated web system designed to streamline the selection and
@@ -31,32 +31,34 @@ export default function Home() {
                                 <Button as="a" style={{ backgroundColor: '#fddf49' }}>
                                     Sign In
                                 </Button>
-
                         </Flex>
-                    </Flex>
-                   <Box mt={12} maxW="800px" mx="auto">
-                       <Flex direction={["column", "row"]} gap={8}>
-                           <Box flex="1">
+                    </CreamCard>
+                </Flex>
+                <Box mt={12} maxW="800px" mx="auto">
+                    <Flex direction={["column", "row"]} gap={8}>
+                        <Box flex="1">
+                            <CreamCard>
                                <Heading size="md" mb={3}>For Tutor Applicants</Heading>
                                <Text>
                                    Build a detailed profile that highlights your academic achievements, relevant
                                    skills, and any previous teaching or tutoring experience. Our intuitive application
                                    form ensures that your qualifications are fully represented.
                                </Text>
-                           </Box>
-                           <Box flex="1">
+                            </CreamCard>
+                        </Box>
+                        <Box flex="1">
+                            <CreamCard>
                                <Heading size="md" mb={3}>For Lecturers</Heading>
                                <Text>
                                    Quickly review and assess tutor applications. With features to rank, comment,
                                    and select candidates based on your detailed analysis, TeachTeam helps you
                                    make well‑informed hiring decisions.
                                </Text>
-                           </Box>
-                       </Flex>
-                   </Box>
-               </CreamCard>
+                            </CreamCard>
+                        </Box>
+                    </Flex>
+                </Box>
             </Box>
      </Box>
-   
    );
 }
