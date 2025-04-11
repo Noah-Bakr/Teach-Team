@@ -197,6 +197,7 @@ const ProfilePage: React.FC = () => {
                                     </Stack>
                                 </Stack>
 
+                                {updatedUser.role.includes("tutor") && (
                                 <Stack gap={2}>
                                     <Stack gap={0}>
                                         <Card.Title mb="2">Academic Information</Card.Title>
@@ -226,7 +227,7 @@ const ProfilePage: React.FC = () => {
                                             </NativeSelect.Root>
                                         </Field.Root>
                                     </Stack>
-                                </Stack>
+                                </Stack>)}
                                 
                             </Card.Body>
                             <Card.Footer>
@@ -235,70 +236,72 @@ const ProfilePage: React.FC = () => {
                         </Box>
                     </Card.Root>
 
-                    <Card.Root colorPalette="yellow" flexDirection="row" width="35rem" overflow="hidden" maxW="xl" variant="outline" size="sm">
-                        <Box width={"100%"}>
-                            <Card.Body>
-                                <Stack gap={2}>
-                                    <Stack gap={0}>
-                                        <Card.Title mb="2">Previous Work Experience</Card.Title>
-                                        <Card.Description>View, add, or edit your work experience here.</Card.Description>
-                                    </Stack>
-                                    <Separator size="md" />
-                                    <Stack gap={2} padding={4}>
-                                        <Field.Root orientation="horizontal" disabled={isDisabled}>
-                                            <Field.Label>Role</Field.Label>
-                                            <Input name="role" placeholder="Role" value={newPreviousRole.role} onChange={handleChange}/>
-                                        </Field.Root>
-
-                                        <Field.Root orientation="horizontal" disabled={isDisabled}>
-                                            <Field.Label>Company</Field.Label>
-                                            <Input name="company" placeholder="Company" value={newPreviousRole.company} onChange={handleChange}/>
-                                        </Field.Root>
-
-                                        <Field.Root orientation="horizontal" disabled={isDisabled}>
-                                            <Field.Label>Start Date</Field.Label>
-                                            <Input type="date" name="startDate" value={newPreviousRole.startDate} onChange={handleChange}/>
-                                        </Field.Root>
-
-                                        <Field.Root orientation="horizontal" disabled={isDisabled}>
-                                            <Field.Label>End Date</Field.Label>
-                                            <Input type="date" name="endDate" value={newPreviousRole.endDate} onChange={handleChange}/>
-                                        </Field.Root>
-
-                                        <Field.Root orientation="horizontal" disabled={isDisabled}>
-                                            <Field.Label>Description</Field.Label>
-                                            <Textarea name="description" placeholder="Description" value={newPreviousRole.description} onChange={handleChange}/>
-                                        </Field.Root>
-
-                                        <Button onClick={handleAddExperience} colorScheme="yellow" disabled={isDisabled}>
-                                            {newPreviousRole.id ? "Save Experience" : "Add Experience"}
-                                        </Button>
-                                    </Stack>
-
-                                    <Separator size="md" />
+                    {updatedUser.role.includes("tutor") && (
+                        <Card.Root colorPalette="yellow" flexDirection="row" width="35rem" overflow="hidden" maxW="xl" variant="outline" size="sm">
+                            <Box width={"100%"}>
+                                <Card.Body>
                                     <Stack gap={2}>
-                                        {previousRoles?.map((prevRole) => (
-                                            <Card.Root colorPalette="yellow" flexDirection="row" overflow="hidden" maxW="xl" variant="outline" size="sm">
-                                                <IconButton position="absolute" right="0px" top="0px" disabled={isDisabled} aria-label="Edit" variant="ghost" colorScheme="yellow" size="sm" onClick={() => handleEditPreviousRole(prevRole.id)} >
-                                                    <LuPencil />
-                                                </IconButton>
-                                                <Box direction="row" key={prevRole.id} p={4}>
-                                                    <Text>{prevRole.role} at {prevRole.company}</Text>
-                                                    <Text>{new Date(prevRole.startDate).toLocaleDateString()} - {prevRole.endDate ? new Date(prevRole.endDate).toLocaleDateString() : "Present"}</Text>
-                                                    <Text>{prevRole.description}</Text>
-                                                    {/* <Button disabled={isDisabled} onClick={() => handleEditPreviousRole(prevRole.id)} colorScheme="yellow">Edit</Button> */}
-                                                </Box>
-                                            </Card.Root>
-                                        ))}
-                                    </Stack>
-                                    
-                                </Stack>
-                            </Card.Body>
-                            <Card.Footer>
-                            </Card.Footer>
-                        </Box>
-                    </Card.Root>
+                                        <Stack gap={0}>
+                                            <Card.Title mb="2">Previous Work Experience</Card.Title>
+                                            <Card.Description>View, add, or edit your work experience here.</Card.Description>
+                                        </Stack>
+                                        <Separator size="md" />
+                                        <Stack gap={2} padding={4}>
+                                            <Field.Root orientation="horizontal" disabled={isDisabled}>
+                                                <Field.Label>Role</Field.Label>
+                                                <Input name="role" placeholder="Role" value={newPreviousRole.role} onChange={handleChange}/>
+                                            </Field.Root>
 
+                                            <Field.Root orientation="horizontal" disabled={isDisabled}>
+                                                <Field.Label>Company</Field.Label>
+                                                <Input name="company" placeholder="Company" value={newPreviousRole.company} onChange={handleChange}/>
+                                            </Field.Root>
+
+                                            <Field.Root orientation="horizontal" disabled={isDisabled}>
+                                                <Field.Label>Start Date</Field.Label>
+                                                <Input type="date" name="startDate" value={newPreviousRole.startDate} onChange={handleChange}/>
+                                            </Field.Root>
+
+                                            <Field.Root orientation="horizontal" disabled={isDisabled}>
+                                                <Field.Label>End Date</Field.Label>
+                                                <Input type="date" name="endDate" value={newPreviousRole.endDate} onChange={handleChange}/>
+                                            </Field.Root>
+
+                                            <Field.Root orientation="horizontal" disabled={isDisabled}>
+                                                <Field.Label>Description</Field.Label>
+                                                <Textarea name="description" placeholder="Description" value={newPreviousRole.description} onChange={handleChange}/>
+                                            </Field.Root>
+
+                                            <Button onClick={handleAddExperience} colorScheme="yellow" disabled={isDisabled}>
+                                                {newPreviousRole.id ? "Save Experience" : "Add Experience"}
+                                            </Button>
+                                        </Stack>
+
+                                        <Separator size="md" />
+                                        <Stack gap={2}>
+                                            {previousRoles?.map((prevRole) => (
+                                                <Card.Root colorPalette="yellow" flexDirection="row" overflow="hidden" maxW="xl" variant="outline" size="sm">
+                                                    <IconButton position="absolute" right="0px" top="0px" disabled={isDisabled} aria-label="Edit" variant="ghost" colorScheme="yellow" size="sm" onClick={() => handleEditPreviousRole(prevRole.id)} >
+                                                        <LuPencil />
+                                                    </IconButton>
+                                                    <Box direction="row" key={prevRole.id} p={4}>
+                                                        <Text>{prevRole.role} at {prevRole.company}</Text>
+                                                        <Text>{new Date(prevRole.startDate).toLocaleDateString()} - {prevRole.endDate ? new Date(prevRole.endDate).toLocaleDateString() : "Present"}</Text>
+                                                        <Text>{prevRole.description}</Text>
+                                                    </Box>
+                                                </Card.Root>
+                                            ))}
+                                        </Stack>
+                                        
+                                    </Stack>
+                                </Card.Body>
+                                <Card.Footer>
+                                </Card.Footer>
+                            </Box>
+                        </Card.Root>
+                    )}
+
+                    {updatedUser.role.includes("tutor") && (
                     <Card.Root colorPalette="yellow" flexDirection="row" width="25rem" overflow="hidden" maxW="xl" variant="outline" size="sm">
                         <Box width={"100%"}>
                             <Card.Body>
@@ -354,8 +357,7 @@ const ProfilePage: React.FC = () => {
                             <Card.Footer>
                             </Card.Footer>
                         </Box>
-                    </Card.Root>
-
+                    </Card.Root>)}
 
                 </Stack>
             </Stack>
