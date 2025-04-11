@@ -36,6 +36,7 @@ const ProfilePage: React.FC = () => {
     const [previousRoles, setPreviousRoles] = useState<PreviousRoles[]>(updatedUser.previousRoles || []);
     const [applicants, setApplicants] = useState<Applicant[]>([]);
     const userApplicants = applicants.filter(applicant => applicant.userId === currentUser?.id); // Filter user's applications
+    const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
     useEffect(() => {
         const storedApplications = JSON.parse(localStorage.getItem("applicants") || "[]");
@@ -81,6 +82,7 @@ const ProfilePage: React.FC = () => {
             ...prevUser,
             [name]: value,
         }));
+        setHasUnsavedChanges(true);
     };
 
     // Function to handle changes to the new experience input fields
@@ -91,6 +93,7 @@ const ProfilePage: React.FC = () => {
             ...prevExperience,
             [name]: value,
         }));
+        setHasUnsavedChanges(true);
     };
 
     // Function to handle changes to the select input for role
@@ -100,7 +103,7 @@ const ProfilePage: React.FC = () => {
             ...prevUser,
             [name]: value,
         }));
-        
+        setHasUnsavedChanges(true);
     };
 
     // Function to handle adding a new experience
@@ -120,6 +123,7 @@ const ProfilePage: React.FC = () => {
         const savedUser = { ...currentUser, ...updatedUser, previousRoles: previousRoles }; // Merge currentUser and updatedUser
         updateUserInLocalStorage(savedUser);
         setIsEditing(false);
+        setHasUnsavedChanges(false);
     };
 
     const handleEditPreviousRole = (id: string) => {
