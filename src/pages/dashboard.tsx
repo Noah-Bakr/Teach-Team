@@ -3,21 +3,19 @@ import TutorPage from "@/pages/tutor";
 import { useAuth } from "@/context/AuthContext";
 import { Applicant } from "@/types/types";
 import { useEffect, useState } from "react";
-import { DEFAULT_APPLICANTS } from "@/types/testData";
-
 
 const DashboardPage: React.FC = () => {
     const [applications, setApplications] = useState<Applicant[]>([]);
 
+    // Read applicants from localStorage
     useEffect(() => {
-    // Initialize applications from localStorage or use defaults
-    const storedApplicants = localStorage.getItem("applicants");
-    if (!storedApplicants) {
-        localStorage.setItem("applicants", JSON.stringify(DEFAULT_APPLICANTS));
-        setApplications(DEFAULT_APPLICANTS);
-    } else {
-        setApplications(JSON.parse(storedApplicants));
-    }
+        const storedApplicants = localStorage.getItem("applicants");
+        if (storedApplicants) {
+            setApplications(JSON.parse(storedApplicants));
+        } else {
+            // Fallback in case of error (should not occur because DataInitializer is used)
+            setApplications([]);
+        }
     }, []);
 
 
