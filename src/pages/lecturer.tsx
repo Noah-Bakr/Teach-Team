@@ -10,7 +10,7 @@ import ApplicantsTable from "@/components/ApplicantsTable";
 import VisualRepresentation from '../components/VisualRepresentation';
 import { useUserLookup } from "@/utils/userLookup";
 import { useCourseLookup } from "@/utils/courseLookup";
-
+import { SimpleGrid } from "@chakra-ui/react";
 
 const LecturerPage: React.FC = () => {
     // Use dummy applicants for initial state
@@ -196,12 +196,14 @@ const LecturerPage: React.FC = () => {
             {/* Selected Applicants Grouped by Course */}
             <Box mb={8}>
                 <Heading size="md" mb={2}>Selected Applicants</Heading>
+
                 {Object.entries(selectedByCourse).length === 0 ? (
                     <Text>No Applicants Selected, Please choose to proceed.</Text>
                 ) : (
                     Object.entries(selectedByCourse).map(([course, apps]) => (
-                        <Box key={course} mb={6}>
+                        <Box key={course} mb={1}>
                             <Heading size="sm" mb={2}>Course: {course}</Heading>
+                            <SimpleGrid minChildWidth="sm" columns={[1, null, 2]} columnGap="4" rowGap="0">
                             {apps.map(applicant => (
                                 <SelectedApplicantCard
                                     key={applicant.id}
@@ -211,6 +213,7 @@ const LecturerPage: React.FC = () => {
                                     handleCommentChange={handleCommentChange}
                                 />
                             ))}
+                            </SimpleGrid>
                         </Box>
                     ))
                 )}
