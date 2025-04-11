@@ -61,6 +61,9 @@ You can use the following test account to log in as a lecturer:
 
 You can use the following test account to log in as an admin:
 
+> [!NOTE]
+> Implementations for the admin have not been deployed yet.
+
 | Email | Password |
 | --- | --- |
 | `admin@example.com` | `Cart@21-c0ding` |
