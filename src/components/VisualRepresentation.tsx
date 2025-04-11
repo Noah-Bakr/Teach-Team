@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Box, Heading, Text, Flex, VStack } from "@chakra-ui/react";
+import {Box, Heading, Text, Flex, VStack, Avatar} from "@chakra-ui/react";
 import { Applicant } from "@/types/types";
 import { useUserLookup } from "@/utils/userLookup";
 
@@ -56,17 +56,23 @@ const VisualRepresentation: React.FC<VisualRepresentationProps> = ({ applicants 
             <Flex justify="space-around" align="flex-start">
                 {/* Most Selected Users */}
                 <VStack flex="1">
-                    <Heading size="sm">Most Selected User(s)</Heading>
+                    <Heading as="h3">Most Selected User(s)</Heading>
                     {mostSelectedUserIds.length > 0 ? (
                         mostSelectedUserIds.map((uid) => (
                             <Box
                                 key={uid}
-                                p={2}
+                                p={3}
                                 borderWidth="1px"
                                 borderRadius="md"
-                                w="100%"
+                                w="90%"
                                 textAlign="center"
+                                minH="130px"
                             >
+                                {/* Avatar for the user */}
+                                <Avatar.Root>
+                                    <Avatar.Image src={userLookup[uid]?.avatar}
+                                              mb={2}/>
+                                </Avatar.Root>
                                 <Text fontWeight="bold">{getUserName(uid)}</Text>
                                 <Text>
                                     Selected in {maxCount} course{maxCount > 1 ? "s" : ""}
@@ -80,17 +86,22 @@ const VisualRepresentation: React.FC<VisualRepresentationProps> = ({ applicants 
 
                 {/* Least Selected Users */}
                 <VStack flex="1">
-                    <Heading size="sm">Least Selected User(s)</Heading>
+                    <Heading as="h3">Least Selected User(s)</Heading>
                     {leastSelectedUserIds.length > 0 ? (
                         leastSelectedUserIds.map((uid) => (
                             <Box
                                 key={uid}
-                                p={2}
+                                p={3}
                                 borderWidth="1px"
                                 borderRadius="md"
-                                w="100%"
+                                w="90%"
                                 textAlign="center"
+                                minH="130px"
                             >
+                                <Avatar.Root>
+                                    <Avatar.Image src={userLookup[uid]?.avatar}
+                                                  mb={2}/>
+                                </Avatar.Root>
                                 <Text fontWeight="bold">{getUserName(uid)}</Text>
                                 <Text>
                                     Selected in {minCount} course{minCount > 1 ? "s" : ""}
@@ -104,17 +115,22 @@ const VisualRepresentation: React.FC<VisualRepresentationProps> = ({ applicants 
 
                 {/* Not Selected Users */}
                 <VStack flex="1">
-                    <Heading size="sm">Not Selected</Heading>
+                    <Heading as="h3">Not Selected</Heading>
                     {notSelectedEntries.length > 0 ? (
                         notSelectedEntries.map(([uid]) => (
                             <Box
                                 key={uid}
-                                p={2}
+                                p={3}
                                 borderWidth="1px"
                                 borderRadius="md"
-                                w="100%"
+                                w="90%"
                                 textAlign="center"
+                                minH="130px"
                             >
+                                <Avatar.Root>
+                                    <Avatar.Image src={userLookup[uid]?.avatar}
+                                                  mb={2}/>
+                                </Avatar.Root>
                                 <Text>{getUserName(uid)}</Text>
                             </Box>
                         ))
