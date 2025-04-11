@@ -33,7 +33,7 @@ const ProfilePage: React.FC = () => {
         endDate: "",
         description: "",
     });
-    const [previousRoles, setPreviousRoles] = useState<PreviousRoles[]>(updatedUser.previousRoles);
+    const [previousRoles, setPreviousRoles] = useState<PreviousRoles[]>(updatedUser.previousRoles || []);
     const [applicants, setApplicants] = useState<Applicant[]>([]);
     const userApplicants = applicants.filter(applicant => applicant.userId === currentUser?.id); // Filter user's applications
 
@@ -60,7 +60,7 @@ const ProfilePage: React.FC = () => {
                 availability: currentUser.availability,
                 previousRoles: currentUser.previousRoles,
             });
-            setPreviousRoles(currentUser.previousRoles);
+            setPreviousRoles(currentUser.previousRoles || []);
         }
     }, [currentUser]);
     
@@ -132,8 +132,6 @@ const ProfilePage: React.FC = () => {
     return (
         <div>
             <Stack gap={8}>
-
-
                 <Stack gap={4} direction={"row"} width={"90rem"} wrap="wrap">
                     <Card.Root colorPalette="yellow" flexDirection="row" width="25rem" overflow="hidden" maxW="xl" variant="outline" size="sm">
                         <Box width={"100%"}>
