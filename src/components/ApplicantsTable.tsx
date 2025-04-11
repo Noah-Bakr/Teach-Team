@@ -56,7 +56,7 @@ const ApplicantsTable: React.FC<ApplicantsTableProps> = ({ applicants, toggleSel
                         <Table.Cell>
                             <Button variant="solid"
                                     size="sm"
-                                    colorScheme={applicant.selected ? 'red' : 'green'}
+                                    style={{ backgroundColor: '#fddf49' }}
                                     onClick={() => toggleSelect(applicant.id)}>
                                 {applicant.selected ? 'Deselect' : 'Select'}
                             </Button>
