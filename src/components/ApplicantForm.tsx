@@ -75,13 +75,15 @@ const ApplicantForm: React.FC<ApplicantFormProps> = ({ closeForm, course }) => {
     const existingApplications = JSON.parse(localStorage.getItem("applicants") || "[]");
 
     // Filter the selected previous roles based on the current user's previous roles
-    const filteredRoles = (currentUser?.previousRoles || []).filter(previousRole => selectedPreviousRoles.includes(previousRole.id))
-      .map((role, index) => ({...role, id: (index + 1).toString()})); // Ensure each role has a unique ID, starting from 1
+    const filteredRoles = (currentUser?.previousRoles || [])
+        .filter(previousRole => selectedPreviousRoles.includes(previousRole.id))
+        .map((role, index) => ({...role, id: (index + 1).toString()})); // Ensure each role has a unique ID, starting from 1
 
 
     // Create a new application with previous form data and other data to parse
     const newApplication = {
       ...formData,
+      userId: currentUser?.id || "",
       courseId: course.id,
       date: new Date().toISOString(), // Add a timestamp for the application
       previousRoles: filteredRoles,
