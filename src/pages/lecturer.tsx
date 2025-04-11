@@ -13,8 +13,11 @@ import { useCourseLookup } from "@/utils/courseLookup";
 import { SimpleGrid } from "@chakra-ui/react";
 
 const LecturerPage: React.FC = () => {
-    // Use dummy applicants for initial state
-    const [applicants, setApplicants] = useState<Applicant[]>(DEFAULT_APPLICANTS);
+    // Use a lazy initialiser: try to load from localStorage; if missing, fall back to DEFAULT_APPLICANTS.
+    const [applicants, setApplicants] = useState<Applicant[]>(() => {
+        const stored = localStorage.getItem('applicants');
+        return stored ? JSON.parse(stored) : DEFAULT_APPLICANTS;
+    });
 
     // State to track validation errors for applicants by id
     const [errors, setErrors] = useState<{
@@ -25,14 +28,6 @@ const LecturerPage: React.FC = () => {
     const [search, setSearch] = useState<string>('');
     const [sortBy, setSortBy] = useState<string>('');
 
-    // Load saved applicants from localStorage
-    useEffect(() => {
-        const saved = localStorage.getItem('applicants');
-        if (saved) {
-            setApplicants(JSON.parse(saved));
-        }
-    }, []);
-
     // Save applicants state to localStorage when it changes.
     useEffect(() => {
         localStorage.setItem('applicants', JSON.stringify(applicants));
@@ -42,7 +37,7 @@ const LecturerPage: React.FC = () => {
     const toggleSelect = (id: string) => {
         setApplicants((prev) =>
             prev.map((app) =>
-                (app.id === id ? {...app, selected: !app.selected} : app))
+                app.id === id ? {...app, selected: !app.selected} : app)
         );
     };
 
