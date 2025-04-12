@@ -38,6 +38,9 @@ const ApplicantForm: React.FC<ApplicantFormProps> = ({ closeForm, course }) => {
     previousRoles: currentUser?.previousRoles || [],
   });
 
+  const [academicCredentialsError, setAcademicCredentialsError] = useState(false);
+  const [skillsError, setSkillsError] = useState(false);
+
   const [selectedPreviousRoles, setSelectedPreviousRoles] = useState<string[]>([]);
 
   // Handle the selected previous roles
@@ -97,6 +100,15 @@ const ApplicantForm: React.FC<ApplicantFormProps> = ({ closeForm, course }) => {
   };
 
   const handleSubmit = () => {
+    if (formData.academicCredentials === '') {
+      setAcademicCredentialsError(true);
+      return;
+    } else { setAcademicCredentialsError(false); }
+    if (formData.skills === undefined || formData.skills.length === 0 || formData.skills[0] === '') {
+      setSkillsError(true);
+        return;
+    } else { setSkillsError(false); }
+
     setLoading(true);
     saveApplicationToLocalStorage();
     toaster.create({title: "Application Submitted", description: `You have successfully applied for ${course.name}.`, type: "success", duration: 5000,});
@@ -137,7 +149,7 @@ const ApplicantForm: React.FC<ApplicantFormProps> = ({ closeForm, course }) => {
                           <Field.ErrorText>This field is required</Field.ErrorText>
                         </Field.Root> */}
                       {/* </Tooltip> */}
-                        <Field.Root className="InputFieldRoot">
+                        <Field.Root className="InputFieldRoot" invalid={academicCredentialsError} required>
                           <Field.Label>Academic Credentials<Field.RequiredIndicator /></Field.Label>
                           <Input name="academicCredentials" placeholder="Academic Credential" value={formData.academicCredentials} onChange={handleChange}/>
                           <Field.ErrorText>This field is required</Field.ErrorText>
@@ -179,9 +191,10 @@ const ApplicantForm: React.FC<ApplicantFormProps> = ({ closeForm, course }) => {
                           </>
                         )}
 
-                        <Field.Root className="InputFieldRoot">
+                        <Field.Root className="InputFieldRoot" invalid={skillsError} required>
                           <Field.Label>Skills</Field.Label>
                           <Input name="skills" placeholder="Skills (comma-separated)" value={formData.skills} onChange={handleChange}/>
+                          <Field.ErrorText>This field is required</Field.ErrorText>
                         </Field.Root>
 
                         <Field.Root className="InputFieldRoot" colorPalette={"yellow"}>
