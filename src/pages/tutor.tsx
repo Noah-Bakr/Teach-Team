@@ -3,6 +3,7 @@ import { DEFAULT_COURSES } from "@/types/testData";
 import { Badge, Box, Button, Card, HStack, Stack } from "@chakra-ui/react"
 import { useState } from "react";
 import ApplicantForm from '../components/ApplicantForm';
+import { useAuth } from "@/context/AuthContext";
 
 const TutorPage: React.FC = () => {
     // Lazy initialiser for courses: load from localStorage or fall back to DEFAULT_COURSES
@@ -11,6 +12,7 @@ const TutorPage: React.FC = () => {
         return saved ? JSON.parse(saved) : DEFAULT_COURSES;
     });
 
+    const { currentUser } = useAuth();
     const [isApplicantFormOpen, setIsApplicantFormOpen] = useState(false);
     const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
     
@@ -22,6 +24,14 @@ const TutorPage: React.FC = () => {
     const closeApplicantForm = () => {
         setIsApplicantFormOpen(false);
         setSelectedCourse(null);
+    };
+
+    // Check if the user has already applied for the course
+    const hasApplied = (courseId: string): boolean => {
+        const existingApplications = JSON.parse(localStorage.getItem("applicants") || "[]");
+        return existingApplications.some(
+            (application: any) => application.userId === currentUser?.id && application.courseId === courseId
+        );
     };
 
     return (
@@ -44,7 +54,7 @@ const TutorPage: React.FC = () => {
                                 </HStack>
                             </Card.Body>
                             <Card.Footer>
-                                <Button onClick={() => handleApplicantClick(course)}>Apply</Button>
+                                <Button disabled={hasApplied(course.id)} onClick={() => handleApplicantClick(course)}>{hasApplied(course.id) ? "Applied" : "Apply"}</Button>
                             </Card.Footer>
                         </Box>
                     </Card.Root>
