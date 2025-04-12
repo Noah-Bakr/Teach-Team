@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { Box, Heading, Text } from '@chakra-ui/react';
+import { Box, Heading, Text, SimpleGrid } from '@chakra-ui/react';
 import { Applicant } from '@/types/types';
 import { DEFAULT_APPLICANTS } from "@/types/testData";
 import SearchAndSortBar from "@/components/SearchAndSortBar";
@@ -10,7 +10,6 @@ import ApplicantsTable from "@/components/ApplicantsTable";
 import VisualRepresentation from '../components/VisualRepresentation';
 import { useUserLookup } from "@/utils/userLookup";
 import { useCourseLookup } from "@/utils/courseLookup";
-import { SimpleGrid } from "@chakra-ui/react";
 import "@/styles/Lecturer.css";
 import {CreamCard} from "@/components/CreamCard";
 
@@ -48,6 +47,7 @@ const LecturerPage: React.FC = () => {
 
        Validation:
             Rank: Must be a positive number.
+            Rank: Each rank value can only be selected once per course
             Comments: Must not exceed 200 characters.
      */
     function updateApplicantDetails(id: string, key: "rank", value: number): void;
