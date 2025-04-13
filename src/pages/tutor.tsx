@@ -43,9 +43,6 @@ const TutorPage: React.FC = () => {
                         <Box>
                             <Card.Body>
                                 <Card.Title mb="2">{course.name} | {course.id}</Card.Title>
-                                <Card.Description>
-                                    course description here
-                                </Card.Description>
                                 <HStack mt="4">
                                     {course.skills?.map((skill, index) => (
                                         <Badge key={index} m={1}>
