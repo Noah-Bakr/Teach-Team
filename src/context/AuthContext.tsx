@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { User  } from "../types/types";
+import { User  } from "@/types/types";
 import { toaster } from "@/components/ui/toaster";
 import { useRouter } from "next/router";
 

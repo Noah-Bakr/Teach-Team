@@ -1,13 +1,11 @@
 import { Button, AbsoluteCenter, Box, ButtonGroup, VStack, 
-  Input, Field, Heading, Text, CloseButton, Presence, useDisclosure, 
-  Checkbox, CheckboxGroup, Link} from "@chakra-ui/react";
-import { useState, useEffect, use } from "react";
+  Input, Field, Heading, Text, CloseButton, Presence, useDisclosure, Link} from "@chakra-ui/react";
+import { useState, useEffect } from "react";
 import { useRouter } from 'next/router';
 import { PasswordInput, PasswordStrengthMeter } from "@/components/ui/password-input";
 import { toaster } from "@/components/ui/toaster"
 import { LuExternalLink } from "react-icons/lu";
-import { useAuth } from "../context/AuthContext";
-import { log } from "console";
+import { useAuth } from "@/context/AuthContext";
 import "../styles/PopUpForm.css";
 
 interface LoginFormProps {
@@ -145,7 +143,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ closeForm }) => {
                                 <Button className="Button" colorPalette="yellow" variant="surface" onClick={() => { setLoading(false); onToggle(); closeForm(); }} >Cancel</Button>
                                 <Button className="Button" colorPalette="yellow" variant="solid" loading={loading} onClick={() => { handleLogin(); }} >Login</Button>
                             </ButtonGroup>
-                            <Text as="p" className="TextSmall">Don't have an account?&nbsp;
+                            <Text as="p" className="TextSmall">Don&apos;t have an account?&nbsp;
                                 <Link color="black" onClick={() => {toaster.create({ title: "Deployment Error", description: "The Sign Up form has not been deployed yet.", type: "info", duration: 6000 })}}>
                                 Sign Up <LuExternalLink />
                                 </Link>

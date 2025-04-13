@@ -7,7 +7,6 @@ import CustomFormControl from "./CustomFormControl";
 import { useUserLookup } from "@/utils/userLookup";
 import { useCourseLookup } from "@/utils/courseLookup";
 
-
 interface SelectedApplicantCardProps {
     applicant: Applicant;
     error?: { rank?: string; comment?: string };

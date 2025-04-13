@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import Link from 'next/link';
-import { Avatar, Button, Menu, Portal } from "@chakra-ui/react";
+import { Avatar, Menu, Portal } from "@chakra-ui/react";
 import "../styles/Navbar.css";
 import LoginForm from './LoginForm';
 import { useAuth } from '@/context/AuthContext';
@@ -29,15 +28,6 @@ const Navbar: React.FC = () => {
         <div>
             <nav className="navbar">
                 <ul className="nav-list">
-                    {/* <li>
-                        <Link href="/sign-up">Sign Up</Link>
-                    </li>
-                    <li>
-                        <Button onClick={handleLoginClick}>Log In</Button>
-                    </li>
-                    <li>
-                        <Link href="/sign-out">Sign Out</Link>
-                    </li> */}
                     <li>
                         <Menu.Root>
                             <Menu.Trigger>
@@ -53,7 +43,7 @@ const Navbar: React.FC = () => {
                                         <Menu.Item value="sign-up" onClick={() => {toaster.create({ title: "Deployment Error", description: "The Sign Up form has not been deployed yet.", type: "info", duration: 6000 })}}>Sign Up</Menu.Item></> : 
                                         <><Menu.Item value="dashboard" onClick={() => { router.push("/dashboard"); }}>Dashboard</Menu.Item>
                                         <Menu.Item value="profile" onClick={() => { router.push("/profile"); }}>Profile</Menu.Item>
-                                        <Menu.Item value="sign-out" color="fg.error"_hover={{ bg: "bg.error", color: "fg.error" }} onClick={handleSignOutClick}>Sign Out</Menu.Item></>}
+                                        <Menu.Item value="sign-out" color="fg.error" _hover={{ bg: "bg.error", color: "fg.error" }} onClick={handleSignOutClick}>Sign Out</Menu.Item></>}
                                     </Menu.Content>
                                 </Menu.Positioner>
                             </Portal>

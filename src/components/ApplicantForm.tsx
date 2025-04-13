@@ -1,16 +1,13 @@
 import { Button, AbsoluteCenter, Box, ButtonGroup, VStack, 
-  Input, Field, Heading, Text, CloseButton, Presence, useDisclosure, Link,
+  Input, Field, Heading, Text, CloseButton, Presence, useDisclosure,
   NativeSelect,
-  HStack,
   Checkbox} from "@chakra-ui/react";
 import { useState, useEffect } from "react";
 import { useRouter } from 'next/router';
 import { toaster } from "@/components/ui/toaster"
 import { useAuth } from "../context/AuthContext";
-import { log } from "console";
 import "../styles/PopUpForm.css";
 import { Course, Availability, User } from "@/types/types";
-import { Tooltip } from "./ui/tooltip";
 
 interface ApplicantFormProps {
   closeForm: () => void;
@@ -130,24 +127,6 @@ const ApplicantForm: React.FC<ApplicantFormProps> = ({ closeForm, course }) => {
                       <Heading className="Header" as="h1">Apply for {course.name}</Heading>
                       <Text className="Text" as="p">Please enter your details to apply.</Text>
                       <VStack className="InputStack" colorPalette={"yellow"}>
-                      {/* <Tooltip content="These details must be changed in the profile page"> */}
-                        {/* <Field.Root className="InputFieldRoot" disabled>
-                          <Field.Label>First Name<Field.RequiredIndicator /></Field.Label>
-                          <Input name="firstName" placeholder="First Name" value={formData.firstName} onChange={handleChange}/>
-                          <Field.ErrorText>This field is required</Field.ErrorText>
-                        </Field.Root>
-
-                        <Field.Root className="InputFieldRoot" disabled>
-                          <Field.Label>Last Name<Field.RequiredIndicator /></Field.Label>
-                          <Input name="lastName" placeholder="Last Name" value={formData.lastName} onChange={handleChange}/>
-                          <Field.ErrorText>This field is required</Field.ErrorText>
-                        </Field.Root>
-
-                        <Field.Root className="InputFieldRoot" disabled>
-                          <Field.Label>Email<Field.RequiredIndicator /></Field.Label>
-                          <Input name="email" placeholder="Email" value={formData.email} onChange={handleChange}/>
-                          <Field.ErrorText>This field is required</Field.ErrorText>
-                        </Field.Root> */}
                       {/* </Tooltip> */}
                         <Field.Root className="InputFieldRoot" invalid={academicCredentialsError} required>
                           <Field.Label>Academic Credentials<Field.RequiredIndicator /></Field.Label>
