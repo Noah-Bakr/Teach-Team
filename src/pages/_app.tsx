@@ -6,7 +6,7 @@ import { Provider } from '@/components/ui/provider';
 import { Toaster } from "@/components/ui/toaster"
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { AuthProvider } from "../context/AuthContext";
+import { AuthProvider } from "@/context/AuthContext";
 import DataInitialiser from "@/components/DataInitialiser";
 
 export default function App({ Component, pageProps }: AppProps) {
