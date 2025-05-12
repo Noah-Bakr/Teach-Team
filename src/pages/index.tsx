@@ -3,16 +3,25 @@ import {CreamCard} from "@/components/CreamCard";
 import { toaster } from "@/components/ui/toaster";
 import { useState } from "react";
 import LoginForm from '@/components/LoginForm';
+import SignUpForm from "@/components/SignUpForm";
 
 export default function Home() {
+    // State variables for login
     const [isLoginFormOpen, setIsLoginFormOpen] = useState(false);
-
     const handleLoginClick = () => {
         setIsLoginFormOpen(true);
     };
-
     const closeLoginForm = () => {
         setIsLoginFormOpen(false);
+    };
+
+    // State variables for sign up
+    const [isSignUpFormOpen, setIsSignUpFormOpen] = useState(false);
+    const handleSignUpClick = () => {
+        setIsSignUpFormOpen(true);
+    };
+    const closeSignUpForm = () => {
+        setIsSignUpFormOpen(false);
     };
 
   return (
@@ -29,7 +38,7 @@ export default function Home() {
                             TeachTeam makes the process efficient and transparent.
                         </Text>
                         <Flex gap={4} mt={3} justify="center">
-                                <Button as="a" style={{ backgroundColor: '#fddf49' }} onClick={() => {toaster.create({ title: "Deployment Error", description: "The Sign Up form has not been deployed yet.", type: "info", duration: 6000 })}}>
+                                <Button as="a" style={{ backgroundColor: '#fddf49' }} onClick={handleSignUpClick}>
                                     Sign Up
                                 </Button>
 
@@ -65,6 +74,7 @@ export default function Home() {
                 </Box>
             </Box>
             {isLoginFormOpen && <LoginForm closeForm={closeLoginForm} />}
+            {isSignUpFormOpen && <SignUpForm closeForm={closeSignUpForm} />}
      </Box>
    );
 }
