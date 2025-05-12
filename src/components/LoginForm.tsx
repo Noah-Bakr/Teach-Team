@@ -2,7 +2,7 @@ import { Button, AbsoluteCenter, Box, ButtonGroup, VStack,
   Input, Field, Heading, Text, CloseButton, Presence, useDisclosure, Link} from "@chakra-ui/react";
 import { useState, useEffect } from "react";
 import { useRouter } from 'next/router';
-import { PasswordInput, PasswordStrengthMeter } from "@/components/ui/password-input";
+import { PasswordInput } from "@/components/ui/password-input";
 import { toaster } from "@/components/ui/toaster"
 import { LuExternalLink } from "react-icons/lu";
 import { useAuth } from "@/context/AuthContext";
@@ -19,7 +19,6 @@ const LoginForm: React.FC<LoginFormProps> = ({ closeForm, openSignUpForm }) => {
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [passwordStrength, setPasswordStrength] = useState(0);
     const [emailError, setEmailError] = useState(false);
     const [passwordError, setPasswordError] = useState(false);
 
