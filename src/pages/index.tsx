@@ -10,6 +10,7 @@ export default function Home() {
     const [isLoginFormOpen, setIsLoginFormOpen] = useState(false);
     const handleLoginClick = () => {
         setIsLoginFormOpen(true);
+        setIsSignUpFormOpen(false);
     };
     const closeLoginForm = () => {
         setIsLoginFormOpen(false);
@@ -19,6 +20,7 @@ export default function Home() {
     const [isSignUpFormOpen, setIsSignUpFormOpen] = useState(false);
     const handleSignUpClick = () => {
         setIsSignUpFormOpen(true);
+        setIsLoginFormOpen(false);
     };
     const closeSignUpForm = () => {
         setIsSignUpFormOpen(false);
@@ -73,7 +75,7 @@ export default function Home() {
                     </Flex>
                 </Box>
             </Box>
-            {isLoginFormOpen && <LoginForm closeForm={closeLoginForm} />}
+            {isLoginFormOpen && <LoginForm closeForm={closeLoginForm} openSignUpForm={handleSignUpClick}/>}
             {isSignUpFormOpen && <SignUpForm closeForm={closeSignUpForm} />}
      </Box>
    );

@@ -10,9 +10,10 @@ import "../styles/PopUpForm.css";
 
 interface LoginFormProps {
   closeForm: () => void;
+  openSignUpForm: () => void;
 }
 
-const LoginForm: React.FC<LoginFormProps> = ({ closeForm }) => {
+const LoginForm: React.FC<LoginFormProps> = ({ closeForm, openSignUpForm }) => {    
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
 
@@ -23,26 +24,8 @@ const LoginForm: React.FC<LoginFormProps> = ({ closeForm }) => {
     const [passwordError, setPasswordError] = useState(false);
 
     const router = useRouter();
-    const { login, currentUser } = useAuth();
+    const { login } = useAuth();
     const { open, onToggle } = useDisclosure();
-
-    const hasUpperCase = /[A-Z]/.test(password);
-    const hasLowerCase = /[a-z]/.test(password);
-    const hasNumber = /\d/.test(password);
-    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
-    const hasCorrectLength = password.length >= 8 && password.length <= 100;
-    //   const hasNoCommonWords = !/(password|123456|qwerty|abc123|letmein|welcome|iloveyou)/i.test(password); //Will change to check to database
-    //   const hasNoEmail = !email || !password.includes(email.split("@")[0]);
-    //   const hasNoUsername = !password.includes(currentUser?.username || "");
-    //   const hasNoFirstName = !password.includes(currentUser?.firstName || "");
-    //   const hasNoLastName = !password.includes(currentUser?.lastName || "");
-
-    const validations = [
-        hasUpperCase, hasLowerCase, hasNumber, hasSpecialChar, hasCorrectLength 
-        //, hasNoCommonWords, hasNoEmail, hasNoUsername, hasNoFirstName, hasNoLastName
-    ];
-
-    const totalValidations = validations.length;
 
     //Wake on show
     useEffect(() => {
@@ -56,21 +39,6 @@ const LoginForm: React.FC<LoginFormProps> = ({ closeForm }) => {
         }
     }, [error]);
 
-    // Password strength calculation
-    // This function calculates the password strength based on the number of validations passed
-    const incrementStrength = () => {
-        const passedValidations = validations.filter(validation => validation).length;
-
-        const strengthPercentage = (passedValidations / totalValidations) * 4;
-        setPasswordStrength(Math.round(strengthPercentage));
-        console.log("Password strength: ", strengthPercentage);
-    };
-
-    //Password validation
-    useEffect(() => {
-        incrementStrength();
-    }, [password]);
-
     const handleLogin = () => {
         // Check if email and password are empty. "return" prevents the rest of the function from executing
         if (email === '') {
@@ -83,11 +51,6 @@ const LoginForm: React.FC<LoginFormProps> = ({ closeForm }) => {
         } else { setPasswordError(false); }
 
         setError("");
-
-        if (passwordStrength !== 4) {
-            toaster.create({ title: "Password Strength", description: "Password is weak. Please use a stronger password.", type: "warning", duration: 5000 });
-            return;
-        }
 
         const success = login(email, password);
         if (success) {
@@ -123,28 +86,12 @@ const LoginForm: React.FC<LoginFormProps> = ({ closeForm }) => {
                                 <PasswordInput className="Input" placeholder="Password" variant={"outline"} value={password} onChange={(e) => setPassword(e.target.value)}/>
                                 <Field.ErrorText>This field is required</Field.ErrorText>
                             </Field.Root>
-                            <PasswordStrengthMeter className="PasswordStrengthMeter" value={passwordStrength} />
-                            {/* <CheckboxGroup className="LoginInputFieldRoot">
-                            {[
-                                { label: "Contains an uppercase letter", passed: hasUpperCase },
-                                { label: "Contains a lowercase letter", passed: hasLowerCase },
-                                { label: "Contains a number", passed: hasNumber },
-                                { label: "Contains a special character", passed: hasSpecialChar },
-                                { label: "Has a length between 8 and 100 characters", passed: hasCorrectLength }
-                            ].map((validation, index) => (
-                                <Checkbox.Root key={index} value={validation.label} isChecked={validation.passed}>
-                                    <Checkbox.HiddenInput />
-                                    <Checkbox.Control />
-                                    <Checkbox.Label>{validation.label}</Checkbox.Label>
-                                </Checkbox.Root>
-                            ))}
-                            </CheckboxGroup> */}
                             <ButtonGroup className="ButtonGroup">
                                 <Button className="Button" colorPalette="yellow" variant="surface" onClick={() => { setLoading(false); onToggle(); closeForm(); }} >Cancel</Button>
                                 <Button className="Button" colorPalette="yellow" variant="solid" loading={loading} onClick={() => { handleLogin(); }} >Login</Button>
                             </ButtonGroup>
                             <Text as="p" className="TextSmall">Don&apos;t have an account?&nbsp;
-                                <Link color="black" onClick={() => {toaster.create({ title: "Deployment Error", description: "The Sign Up form has not been deployed yet.", type: "info", duration: 6000 })}}>
+                                <Link color="black" onClick={openSignUpForm}>
                                 Sign Up <LuExternalLink />
                                 </Link>
                             </Text>
