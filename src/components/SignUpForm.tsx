@@ -1,19 +1,16 @@
-import { Button, AbsoluteCenter, Box, ButtonGroup, VStack, 
-  Input, Field, Heading, Text, CloseButton, Presence, useDisclosure, Link,
-  Checkbox,
-  CheckboxGroup,
-  VisuallyHidden,
-  useCheckbox} from "@chakra-ui/react";
+import { Button, AbsoluteCenter, Box, ButtonGroup, VStack, Input, 
+    Field, Heading, Text, CloseButton, Presence, useDisclosure, Link, Checkbox,
+    NativeSelect} from "@chakra-ui/react";
 import { useState, useEffect } from "react";
 import { useRouter } from 'next/router';
 import { PasswordInput, PasswordStrengthMeter } from "@/components/ui/password-input";
+import { Roles } from "@/types/types";
 import { toaster } from "@/components/ui/toaster"
-import { LuExternalLink } from "react-icons/lu";
 import { useAuth } from "@/context/AuthContext";
 import "../styles/PopUpForm.css";
 
 interface SignUpFormProps {
-  closeForm: () => void;
+    closeForm: () => void;
 }
 
 const SignUpForm: React.FC<SignUpFormProps> = ({ closeForm }) => {
@@ -112,46 +109,84 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ closeForm }) => {
             animationStyle={{ _open: "scale-fade-in", _closed: "scale-fade-out" }}
             animationDuration="moderate">
                 <AbsoluteCenter colorPalette={"yellow"}>
-                    <Box className="Box">
+                    <Box className="Box" scrollbar="hidden" maxH="700px" overflowY="auto">
                         <VStack className="FormStack" colorPalette={"yellow"}>
                             <CloseButton className="CloseButton" variant="ghost" colorPalette="black" onClick={() => { onToggle(); closeForm(); }}/>
                             <Heading className="Header" as="h1">Sign Up</Heading>
                             <Text className="Text" as="p">Please enter your details to create an account.</Text>
                             <VStack className="InputStack">
-                            <Field.Root className="InputFieldRoot" invalid={emailError} required>
-                                <Field.Label>Email <Field.RequiredIndicator /></Field.Label>
-                                <Input className="LoginInput" placeholder="name@example.com" variant="outline" value={email} onChange={(e) => setEmail(e.target.value)}/>
-                                <Field.ErrorText>This field is required</Field.ErrorText>
-                            </Field.Root>
-                            <Field.Root className="InputFieldRoot" invalid={passwordError} required>
-                                <Field.Label>Password <Field.RequiredIndicator /></Field.Label>
-                                <PasswordInput className="Input" placeholder="Password" variant={"outline"} value={password} onChange={(e) => setPassword(e.target.value)}/>
-                                <Field.ErrorText>This field is required</Field.ErrorText>
-                            </Field.Root>
-                            <PasswordStrengthMeter className="PasswordStrengthMeter" value={passwordStrength} />
-                            {[
-                                { label: "Contains an uppercase letter", passed: hasUpperCase },
-                                { label: "Contains a lowercase letter", passed: hasLowerCase },
-                                { label: "Contains a number", passed: hasNumber },
-                                { label: "Contains a special character", passed: hasSpecialChar },
-                                { label: "Has a length between 8 and 100 characters", passed: hasCorrectLength }
-                            ].map((validation, index) => (
-                                <Checkbox.Root className="InputFieldRoot" key={index} value={validation.label} checked={validation.passed} readOnly>
-                                    <Checkbox.HiddenInput />
-                                    <Checkbox.Control />
-                                    <Checkbox.Label>{validation.label}</Checkbox.Label>
-                                </Checkbox.Root>
-                            ))}
-                            
-                            <ButtonGroup className="ButtonGroup">
-                                <Button className="Button" colorPalette="yellow" variant="surface" onClick={() => { setLoading(false); onToggle(); closeForm(); }} >Cancel</Button>
-                                <Button className="Button" colorPalette="yellow" variant="solid" loading={loading} onClick={() => { handleSignUp(); }} >Login</Button>
-                            </ButtonGroup>
-                            <Text as="p" className="TextSmall">Don&apos;t have an account?&nbsp;
-                                <Link color="black" onClick={() => {toaster.create({ title: "Deployment Error", description: "The Sign Up form has not been deployed yet.", type: "info", duration: 6000 })}}>
-                                Sign Up <LuExternalLink />
-                                </Link>
-                            </Text>
+                                <Field.Root className="InputFieldRoot" invalid={emailError} required>
+                                    <Field.Label>First Name <Field.RequiredIndicator /></Field.Label>
+                                    <Input className="LoginInput" placeholder="John" variant="outline" value={email} onChange={(e) => setEmail(e.target.value)}/>
+                                    <Field.ErrorText>This field is required</Field.ErrorText>
+                                </Field.Root>
+
+                                <Field.Root className="InputFieldRoot" invalid={emailError} required>
+                                    <Field.Label>Last Name <Field.RequiredIndicator /></Field.Label>
+                                    <Input className="LoginInput" placeholder="Doe" variant="outline" value={email} onChange={(e) => setEmail(e.target.value)}/>
+                                    <Field.ErrorText>This field is required</Field.ErrorText>
+                                </Field.Root>
+
+                                <Field.Root className="InputFieldRoot" invalid={emailError} required>
+                                    <Field.Label>Username <Field.RequiredIndicator /></Field.Label>
+                                    <Input className="LoginInput" placeholder="johndoe" variant="outline" value={email} onChange={(e) => setEmail(e.target.value)}/>
+                                    <Field.ErrorText>This field is required</Field.ErrorText>
+                                </Field.Root>
+
+                                <Field.Root className="InputFieldRoot" required>
+                                    <Field.Label>Role <Field.RequiredIndicator /></Field.Label>
+                                    <NativeSelect.Root>
+                                        <NativeSelect.Field name="role" placeholder="Select a role">
+                                            {Roles.map((role) => (
+                                                <option key={role} value={role}>{role}</option>
+                                            ))}
+                                        </NativeSelect.Field>
+                                        <NativeSelect.Indicator />
+                                    </NativeSelect.Root>
+                                    <Field.ErrorText>This field is required</Field.ErrorText>
+                                </Field.Root>
+
+                                <Field.Root className="InputFieldRoot" invalid={emailError} required>
+                                    <Field.Label>Email <Field.RequiredIndicator /></Field.Label>
+                                    <Input className="LoginInput" placeholder="name@example.com" variant="outline" value={email} onChange={(e) => setEmail(e.target.value)}/>
+                                    <Field.ErrorText>This field is required</Field.ErrorText>
+                                </Field.Root>
+
+                                <Field.Root className="InputFieldRoot" invalid={passwordError} required>
+                                    <Field.Label>Password <Field.RequiredIndicator /></Field.Label>
+                                    <PasswordInput className="Input" placeholder="Password" variant={"outline"} value={password} onChange={(e) => setPassword(e.target.value)}/>
+                                    <Field.ErrorText>This field is required</Field.ErrorText>
+                                </Field.Root>
+                                <PasswordStrengthMeter className="PasswordStrengthMeter" value={passwordStrength} />
+                                {[
+                                    { label: "Contains an uppercase letter", passed: hasUpperCase },
+                                    { label: "Contains a lowercase letter", passed: hasLowerCase },
+                                    { label: "Contains a number", passed: hasNumber },
+                                    { label: "Contains a special character", passed: hasSpecialChar },
+                                    { label: "Has a length between 8 and 100 characters", passed: hasCorrectLength }
+                                ].map((validation, index) => (
+                                    <Checkbox.Root className="InputFieldRoot" key={index} value={validation.label} checked={validation.passed} readOnly>
+                                        <Checkbox.HiddenInput />
+                                        <Checkbox.Control />
+                                        <Checkbox.Label>{validation.label}</Checkbox.Label>
+                                    </Checkbox.Root>
+                                ))}
+
+                                <Field.Root className="InputFieldRoot" invalid={emailError} required>
+                                    <Field.Label>Confirm Password <Field.RequiredIndicator /></Field.Label>
+                                    <PasswordInput className="Input" placeholder="Password" variant={"outline"} value={email} onChange={(e) => setEmail(e.target.value)}/>
+                                    <Field.ErrorText>This field is required</Field.ErrorText>
+                                </Field.Root>
+                                
+                                <ButtonGroup className="ButtonGroup">
+                                    <Button className="Button" colorPalette="yellow" variant="surface" onClick={() => { setLoading(false); onToggle(); closeForm(); }} >Cancel</Button>
+                                    <Button className="Button" colorPalette="yellow" variant="solid" loading={loading} onClick={() => { handleSignUp(); }} >Login</Button>
+                                </ButtonGroup>
+                                {/* <Text as="p" className="TextSmall">Don&apos;t have an account?&nbsp;
+                                    <Link color="black" onClick={() => {toaster.create({ title: "Deployment Error", description: "The Sign Up form has not been deployed yet.", type: "info", duration: 6000 })}}>
+                                    Sign Up <LuExternalLink />
+                                    </Link>
+                                </Text> */}
                             </VStack>
                         </VStack>
                     </Box>
