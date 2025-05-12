@@ -26,8 +26,8 @@ export default function Home() {
         setIsSignUpFormOpen(false);
     };
 
-  return (
-     <Box position="relative" >
+return (
+    <Box position="relative" >
             {/* Main Content */}
             <Box as="main" p={3}>
                 <Flex direction="column" align="center" textAlign="center">
@@ -54,22 +54,22 @@ export default function Home() {
                     <Flex direction={["column", "row"]} gap={8}>
                         <Box flex="1">
                             <CreamCard>
-                               <Heading size="md" mb={3}>For Tutor Applicants</Heading>
-                               <Text>
-                                   Build a detailed profile that highlights your academic achievements, relevant
-                                   skills, and any previous teaching or tutoring experience. Our intuitive application
-                                   form ensures that your qualifications are fully represented.
-                               </Text>
+                                <Heading size="md" mb={3}>For Tutor Applicants</Heading>
+                                <Text>
+                                    Build a detailed profile that highlights your academic achievements, relevant
+                                    skills, and any previous teaching or tutoring experience. Our intuitive application
+                                    form ensures that your qualifications are fully represented.
+                                </Text>
                             </CreamCard>
                         </Box>
                         <Box flex="1">
                             <CreamCard>
-                               <Heading size="md" mb={3}>For Lecturers</Heading>
-                               <Text>
-                                   Quickly review and assess tutor applications. With features to rank, comment,
-                                   and select candidates based on your detailed analysis, TeachTeam helps you
-                                   make well‑informed hiring decisions.
-                               </Text>
+                                <Heading size="md" mb={3}>For Lecturers</Heading>
+                                <Text>
+                                    Quickly review and assess tutor applications. With features to rank, comment,
+                                    and select candidates based on your detailed analysis, TeachTeam helps you
+                                    make well‑informed hiring decisions.
+                                </Text>
                             </CreamCard>
                         </Box>
                     </Flex>
@@ -77,6 +77,6 @@ export default function Home() {
             </Box>
             {isLoginFormOpen && <LoginForm closeForm={closeLoginForm} openSignUpForm={handleSignUpClick}/>}
             {isSignUpFormOpen && <SignUpForm closeForm={closeSignUpForm} />}
-     </Box>
-   );
+    </Box>
+    );
 }
