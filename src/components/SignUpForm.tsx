@@ -1,6 +1,7 @@
 import { Button, AbsoluteCenter, Box, ButtonGroup, VStack, Input, 
     Field, Heading, Text, CloseButton, Presence, useDisclosure, Link, Checkbox,
-    NativeSelect} from "@chakra-ui/react";
+    NativeSelect,
+    HStack} from "@chakra-ui/react";
 import { useState, useEffect } from "react";
 import { useRouter } from 'next/router';
 import { PasswordInput, PasswordStrengthMeter } from "@/components/ui/password-input";
@@ -19,13 +20,26 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ closeForm }) => {
 
     // State variables for email, password, and their validation
     const [email, setEmail] = useState("");
+    const [emailError, setEmailError] = useState(false);
+
     const [password, setPassword] = useState("");
     const [passwordStrength, setPasswordStrength] = useState(0);
-    const [emailError, setEmailError] = useState(false);
     const [passwordError, setPasswordError] = useState(false);
 
+    const [firstName, setFirstName] = useState("");
+    const [firstNameError, setFirstNameError] = useState(false);
+
+    const [lastName, setLastName] = useState("");
+    const [lastNameError, setLastNameError] = useState(false);
+
+    const [username, setUsername] = useState("");
+    const [usernameError, setUsernameError] = useState(false);
+
+    const [confirmPassword, setConfirmPassword] = useState("");
+    const [confirmPasswordError, setConfirmPasswordError] = useState(false);
+
     const router = useRouter();
-    const { login, currentUser } = useAuth();
+    const { login } = useAuth();
     const { open, onToggle } = useDisclosure();
 
     const hasUpperCase = /[A-Z]/.test(password);
@@ -52,7 +66,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ closeForm }) => {
     }, []);
 
     useEffect(() => {
-        if (error == "Invalid email or password") {
+        if (error !== "") {
         toaster.create({title: error, type: "error", duration: 5000});
         setError("");
         }
@@ -65,7 +79,6 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ closeForm }) => {
 
         const strengthPercentage = (passedValidations / totalValidations) * 4;
         setPasswordStrength(Math.round(strengthPercentage));
-        console.log("Password strength: ", strengthPercentage);
     };
 
     //Password validation
@@ -83,6 +96,27 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ closeForm }) => {
             setPasswordError(true);
             return;
         } else { setPasswordError(false); }
+        if (firstName === '') {
+            setFirstNameError(true);
+            return;
+        } else { setFirstNameError(false); }
+        if (lastName === '') {
+            setLastNameError(true);
+            return;
+        } else { setLastNameError(false); }
+        if (username === '') {
+            setUsernameError(true);
+            return;
+        } else { setUsernameError(false); }
+        if (confirmPassword === '') {
+            setConfirmPasswordError(true);
+            return;
+        } else { setConfirmPasswordError(false); }
+
+        if (password !== confirmPassword) {
+            setError("Passwords do not match");
+            return;
+        } else { setError(""); }
 
         setError("");
 
@@ -115,34 +149,21 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ closeForm }) => {
                             <Heading className="Header" as="h1">Sign Up</Heading>
                             <Text className="Text" as="p">Please enter your details to create an account.</Text>
                             <VStack className="InputStack">
-                                <Field.Root className="InputFieldRoot" invalid={emailError} required>
+                                <Field.Root className="InputFieldRoot" invalid={firstNameError} required>
                                     <Field.Label>First Name <Field.RequiredIndicator /></Field.Label>
-                                    <Input className="LoginInput" placeholder="John" variant="outline" value={email} onChange={(e) => setEmail(e.target.value)}/>
+                                    <Input className="LoginInput" placeholder="John" variant="outline" value={firstName} onChange={(e) => setFirstName(e.target.value)}/>
                                     <Field.ErrorText>This field is required</Field.ErrorText>
                                 </Field.Root>
 
-                                <Field.Root className="InputFieldRoot" invalid={emailError} required>
+                                <Field.Root className="InputFieldRoot" invalid={lastNameError} required>
                                     <Field.Label>Last Name <Field.RequiredIndicator /></Field.Label>
-                                    <Input className="LoginInput" placeholder="Doe" variant="outline" value={email} onChange={(e) => setEmail(e.target.value)}/>
+                                    <Input className="LoginInput" placeholder="Doe" variant="outline" value={lastName} onChange={(e) => setLastName(e.target.value)}/>
                                     <Field.ErrorText>This field is required</Field.ErrorText>
                                 </Field.Root>
 
-                                <Field.Root className="InputFieldRoot" invalid={emailError} required>
+                                <Field.Root className="InputFieldRoot" invalid={usernameError} required>
                                     <Field.Label>Username <Field.RequiredIndicator /></Field.Label>
-                                    <Input className="LoginInput" placeholder="johndoe" variant="outline" value={email} onChange={(e) => setEmail(e.target.value)}/>
-                                    <Field.ErrorText>This field is required</Field.ErrorText>
-                                </Field.Root>
-
-                                <Field.Root className="InputFieldRoot" required>
-                                    <Field.Label>Role <Field.RequiredIndicator /></Field.Label>
-                                    <NativeSelect.Root>
-                                        <NativeSelect.Field name="role" placeholder="Select a role">
-                                            {Roles.map((role) => (
-                                                <option key={role} value={role}>{role}</option>
-                                            ))}
-                                        </NativeSelect.Field>
-                                        <NativeSelect.Indicator />
-                                    </NativeSelect.Root>
+                                    <Input className="LoginInput" placeholder="johndoe" variant="outline" value={username} onChange={(e) => setUsername(e.target.value)}/>
                                     <Field.ErrorText>This field is required</Field.ErrorText>
                                 </Field.Root>
 
@@ -158,6 +179,8 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ closeForm }) => {
                                     <Field.ErrorText>This field is required</Field.ErrorText>
                                 </Field.Root>
                                 <PasswordStrengthMeter className="PasswordStrengthMeter" value={passwordStrength} />
+
+                                <VStack className="CheckboxStack">
                                 {[
                                     { label: "Contains an uppercase letter", passed: hasUpperCase },
                                     { label: "Contains a lowercase letter", passed: hasLowerCase },
@@ -165,22 +188,23 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ closeForm }) => {
                                     { label: "Contains a special character", passed: hasSpecialChar },
                                     { label: "Has a length between 8 and 100 characters", passed: hasCorrectLength }
                                 ].map((validation, index) => (
-                                    <Checkbox.Root className="InputFieldRoot" key={index} value={validation.label} checked={validation.passed} readOnly>
+                                    <Checkbox.Root className="CheckboxStack" key={index} value={validation.label} checked={validation.passed} readOnly>
                                         <Checkbox.HiddenInput />
                                         <Checkbox.Control />
                                         <Checkbox.Label>{validation.label}</Checkbox.Label>
                                     </Checkbox.Root>
                                 ))}
+                                </VStack>
 
-                                <Field.Root className="InputFieldRoot" invalid={emailError} required>
+                                <Field.Root className="InputFieldRoot" invalid={confirmPasswordError} required>
                                     <Field.Label>Confirm Password <Field.RequiredIndicator /></Field.Label>
-                                    <PasswordInput className="Input" placeholder="Password" variant={"outline"} value={email} onChange={(e) => setEmail(e.target.value)}/>
+                                    <PasswordInput className="Input" placeholder="Password" variant={"outline"} value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)}/>
                                     <Field.ErrorText>This field is required</Field.ErrorText>
                                 </Field.Root>
                                 
                                 <ButtonGroup className="ButtonGroup">
                                     <Button className="Button" colorPalette="yellow" variant="surface" onClick={() => { setLoading(false); onToggle(); closeForm(); }} >Cancel</Button>
-                                    <Button className="Button" colorPalette="yellow" variant="solid" loading={loading} onClick={() => { handleSignUp(); }} >Login</Button>
+                                    <Button className="Button" colorPalette="yellow" variant="solid" loading={loading} onClick={() => { handleSignUp(); }} >Sign Up</Button>
                                 </ButtonGroup>
                                 {/* <Text as="p" className="TextSmall">Don&apos;t have an account?&nbsp;
                                     <Link color="black" onClick={() => {toaster.create({ title: "Deployment Error", description: "The Sign Up form has not been deployed yet.", type: "info", duration: 6000 })}}>
