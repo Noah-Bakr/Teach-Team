@@ -77,6 +77,14 @@
     color: black;
 }
 
+.CheckboxStack {
+    width: 300px;
+    color: black;
+    align-items: flex-start;
+    justify-content: flex-start;
+    font-size: x-small;
+}
+
 .PasswordStrengthMeter {
     width: 300px;
     color: black;
