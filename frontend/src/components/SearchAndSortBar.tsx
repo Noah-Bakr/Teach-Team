@@ -1,6 +1,6 @@
 import React from "react";
 import { Flex, Input } from "@chakra-ui/react";
-import NativeSortSelect from "../components/NativeSortSelect";
+import NativeSortSelect from "./NativeSortSelect";
 
 interface SearchAndSortBarProps {
     search: string;
