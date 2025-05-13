@@ -23,7 +23,11 @@ Make sure you have **Node.js (v18+)** and npm installed. Then run:
 npm install
 ```
 
-### 3. Run the Server
+### 3. Configure the Database
+
+Navigate to the file `.env.example` inside the `backend` directory and follow the instructions provided
+
+### 4. Run the Server
 
 ```bash
 npm start
