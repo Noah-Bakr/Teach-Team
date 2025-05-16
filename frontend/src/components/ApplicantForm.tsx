@@ -35,6 +35,10 @@ const ApplicantForm: React.FC<ApplicantFormProps> = ({ closeForm, course }) => {
     previousRoles: currentUser?.previousRoles || [],
   });
 
+  const [skillsInput, setSkillsInput] = useState(
+    (currentUser?.skills || []).join(", ")
+  );
+
   const [academicCredentialsError, setAcademicCredentialsError] = useState(false);
   const [skillsError, setSkillsError] = useState(false);
 
@@ -51,10 +55,20 @@ const ApplicantForm: React.FC<ApplicantFormProps> = ({ closeForm, course }) => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
+    if (name === "skills") {
+      setSkillsInput(value); // Update raw string
+
+      const skillsArray = value.split(',').map(skill => skill.trim()).filter(skill => skill !== "");
+      setFormData((prevData) => ({
+        ...prevData,
+        skills: skillsArray, // Update formData with parsed array
+      }));
+    } else {
+      setFormData((prevData) => ({
+        ...prevData,
+        [name]: value,
+      }));
+    }
   };
 
   const handleEventChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -78,8 +92,7 @@ const ApplicantForm: React.FC<ApplicantFormProps> = ({ closeForm, course }) => {
     const filteredRoles = (currentUser?.previousRoles || [])
         .filter(previousRole => selectedPreviousRoles.includes(previousRole.id))
         .map((role, index) => ({...role, id: (index + 1).toString()})); // Ensure each role has a unique ID, starting from 1
-
-
+        
     // Create a new application with previous form data and other data to parse
     const newApplication = {
       ...formData,
@@ -172,7 +185,7 @@ const ApplicantForm: React.FC<ApplicantFormProps> = ({ closeForm, course }) => {
 
                         <Field.Root className="InputFieldRoot" invalid={skillsError} required>
                           <Field.Label>Skills</Field.Label>
-                          <Input name="skills" placeholder="Skills (comma-separated)" value={formData.skills} onChange={handleChange}/>
+                          <Input name="skills" placeholder="Skills (comma-separated)" value={skillsInput} onChange={handleChange}/>
                           <Field.ErrorText>This field is required</Field.ErrorText>
                         </Field.Root>
 
