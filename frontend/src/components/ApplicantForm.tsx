@@ -35,6 +35,8 @@ const ApplicantForm: React.FC<ApplicantFormProps> = ({ closeForm, course }) => {
     previousRoles: currentUser?.previousRoles || [],
   });
 
+  // Initialize the skills input with the current user's skills
+  // This will be a comma-separated string for the input field
   const [skillsInput, setSkillsInput] = useState(
     (currentUser?.skills || []).join(", ")
   );
@@ -55,9 +57,10 @@ const ApplicantForm: React.FC<ApplicantFormProps> = ({ closeForm, course }) => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
+
+    // Handle the change for the skills input separately
     if (name === "skills") {
       setSkillsInput(value); // Update raw string
-
       const skillsArray = value.split(',').map(skill => skill.trim()).filter(skill => skill !== "");
       setFormData((prevData) => ({
         ...prevData,
@@ -92,7 +95,7 @@ const ApplicantForm: React.FC<ApplicantFormProps> = ({ closeForm, course }) => {
     const filteredRoles = (currentUser?.previousRoles || [])
         .filter(previousRole => selectedPreviousRoles.includes(previousRole.id))
         .map((role, index) => ({...role, id: (index + 1).toString()})); // Ensure each role has a unique ID, starting from 1
-        
+
     // Create a new application with previous form data and other data to parse
     const newApplication = {
       ...formData,
