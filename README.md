@@ -21,6 +21,8 @@ Make sure you have **Node.js (v18+)** and npm installed. Then run:
 
 ```bash
 npm install react react-dom next
+npm i --save-dev @types/node
+
 
 ```
 
