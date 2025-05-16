@@ -20,7 +20,8 @@ cd s3575564-s4095646-a2
 Make sure you have **Node.js (v18+)** and npm installed. Then run:
 
 ```bash
-npm install
+npm install react react-dom next
+
 ```
 
 ### 3. Configure the Database
