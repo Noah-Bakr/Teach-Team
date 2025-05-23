@@ -1,18 +1,57 @@
-import { Entity, Column, OneToMany, PrimaryGeneratedColumn } from "typeorm";
-import { Application } from "./Application";
+import { Entity, PrimaryGeneratedColumn, JoinTable, Column, OneToMany, ManyToMany } from 'typeorm';
+import { Skills } from './Skills';
+import { Application } from './Application';
+import { User } from './User';
+import { SkillsCourse} from "./SkillsCourse";
 
-@Entity()
+@Entity('Course')
 export class Course {
-    @PrimaryGeneratedColumn({ type: "int" })
-    user_id: number;
+    @PrimaryGeneratedColumn()
+    course_id: number;
 
-    @Column({ type: "varchar", length: 40 })
-    name: string;
+    @Column({ length: 150 })
+    course_name: string;
 
-    @Column({ type: "varchar", length: 150, nullable: true })
-    skills: string[];
+    @Column({ unique: true, length: 50 })
+    course_code: string;
 
-    // One course to many applications
-    @OneToMany(() => Application, (application) => application.course)
+    @Column({ type: 'enum', enum: ['1', '2'], length: 20 })
+    semester: '1' | '2';
+
+    // Many-to-Many relationship with Skills
+    // A course can have many skills, and a skill can be associated with many courses
+    @ManyToMany(() => Skills, skill => skill.courses)
+    skills: Skills[];
+
+    // One course can have many applications (One-to-Many relationship)
+    @OneToMany(() => Application, application => application.course)
     applications: Application[];
+
+    // Many courses can have many lecturers (Many-to-Many relationship)
+    @ManyToMany(() => User, user => user.courses)
+    lecturers: User[];
+
+    // One course can have many skills (Many-to-Many relationship through SkillsCourse)
+    @OneToMany(() => SkillsCourse, skillsCourse => skillsCourse.course)
+    skillsCourses: SkillsCourse[];
 }
+
+
+// import { Entity, Column, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+// import { Application } from "./Application";
+//
+// @Entity()
+// export class Course {
+//     @PrimaryGeneratedColumn({ type: "int" })
+//     user_id: number;
+//
+//     @Column({ type: "varchar", length: 40 })
+//     name: string;
+//
+//     @Column({ type: "varchar", length: 150, nullable: true })
+//     skills: string[];
+//
+//     // One course to many applications
+//     @OneToMany(() => Application, (application) => application.course)
+//     applications: Application[];
+// }
