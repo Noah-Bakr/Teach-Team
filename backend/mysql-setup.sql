@@ -3,7 +3,7 @@ CREATE TABLE `User` (
                         username   VARCHAR(255) NOT NULL UNIQUE,
                         email      VARCHAR(255) NOT NULL UNIQUE,
                         password   VARCHAR(255) NOT NULL,
-                        created_at DATE,
+                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                         first_name VARCHAR(255),
                         last_name  VARCHAR(255),
                         avatar     VARCHAR(255),
@@ -14,7 +14,7 @@ CREATE TABLE `User` (
 
 CREATE TABLE `Role` (
                         role_id   INT(10) NOT NULL AUTO_INCREMENT,
-                        role_name ENUM('admin', 'lecturer', 'tutor') NOT NULL,
+                        role_name ENUM('admin', 'lecturer', 'candidate') NOT NULL,
                         PRIMARY KEY (role_id)
 );
 
@@ -22,7 +22,7 @@ CREATE TABLE `Course` (
                           course_id   INT(10) NOT NULL AUTO_INCREMENT,
                           course_name VARCHAR(255) NOT NULL,
                           course_code VARCHAR(255) NOT NULL UNIQUE,
-                          semester    VARCHAR(255) NOT NULL,
+                          semester    ENUM('1', '2') NOT NULL,
                           PRIMARY KEY (course_id)
 );
 
