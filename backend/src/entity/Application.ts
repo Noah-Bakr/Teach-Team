@@ -8,10 +8,10 @@ export class Application {
     @PrimaryGeneratedColumn()
     application_id: number;
 
-    @Column({ type: 'enum', enum: ['tutor', 'lab_assistant'], length: 50 })
+    @Column({ type: 'enum', enum: ['tutor', 'lab_assistant']})
     position_type: 'tutor' | 'lab_assistant';
 
-    @Column({ type: 'enum', enum: ['pending', 'accepted', 'rejected'], length: 50 })
+    @Column({ type: 'enum', enum: ['pending', 'accepted', 'rejected']})
     status: 'pending' | 'accepted' | 'rejected';
 
     @Column('date')
@@ -20,7 +20,7 @@ export class Application {
     @Column('boolean')
     selected: boolean;
 
-    @Column({ type: 'enum', enum: ['Full-Time', 'Part-Time', 'Not Available'], length: 50 })
+    @Column({ type: 'enum', enum: ['Full-Time', 'Part-Time', 'Not Available']})
     availability: 'Full-Time' | 'Part-Time' | 'Not Available';
 
     @Column('int', { nullable: true })
