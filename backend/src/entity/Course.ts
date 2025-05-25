@@ -15,7 +15,7 @@ export class Course {
     @Column({ unique: true, length: 50 })
     course_code: string;
 
-    @Column({ type: 'enum', enum: ['1', '2'], length: 20 })
+    @Column({ type: 'enum', enum: ['1', '2']})
     semester: '1' | '2';
 
     // Many-to-Many relationship with Skills
