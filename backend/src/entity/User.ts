@@ -21,7 +21,9 @@ export class User {
     @Column({ length: 255 })
     password: string;
 
-    @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+    @CreateDateColumn({
+        type: 'datetime',
+    })
     created_at: Date;
 
     @Column({ length: 100 })
