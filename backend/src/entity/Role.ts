@@ -6,7 +6,7 @@ export class Role {
     @PrimaryGeneratedColumn()
     role_id: number;
 
-    @Column({ type: 'enum', enum: ['admin', 'lecturer', 'candidate'], length: 50 })
+    @Column({ type: 'enum', enum: ['admin', 'lecturer', 'candidate']})
     role_name: 'admin' | 'lecturer' | 'candidate';
 
     // One role can be assigned to many users (One-to-Many relationship)
