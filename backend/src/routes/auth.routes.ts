@@ -12,6 +12,14 @@ router.post("/signUp", async (req, res) => {
     await authController.signUp(req, res);
 });
 
+router.post("/logout", async (req, res) => {
+    await authController.logout(req, res);
+});
+
+router.get("/me", async (req, res) => {
+    await authController.getCurrentUser(req, res);
+});
+
 router.get("/users", async (req, res) => {
     await authController.getAllUsers(req, res);
 });
