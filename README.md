@@ -158,14 +158,12 @@ s3575564-s4095646-a2/
 │
 ├── backend/                        # Backend API and database logic
 │   ├── src/
+│   │   ├── controller/             # Controller logic for routes
 │   │   ├── entity/                 # TypeORM entities (User, Course, Application, Skills, Role)
 │   │   ├── routes/                 # Express route handlers
-│   │   ├── controllers/            # Controller logic for routes
-│   │   ├── middleware/             # Express middleware (auth, error handling)
-│   │   ├── utils/                  # Backend utility functions
+│   │   ├── seeds/                  # Database seeding scripts (test data)
 │   │   ├── data-source.ts          # TypeORM data source configuration
-│   │   ├── seed.ts                 # Database seeding script
-│   │   └── app.ts                  # Express app entry point
+│   │   └── index.ts                # Application configuration
 │   ├── .env                        # Environment variables (not committed)
 │   ├── package.json                # Backend dependencies and scripts
 │   └── tsconfig.json               # TypeScript config for backend
@@ -177,6 +175,7 @@ s3575564-s4095646-a2/
 │   │   │   └── ui/                 # Chakra UI components
 │   │   ├── context/                # Global data (e.g., AuthContext)
 │   │   ├── pages/                  # Home, TutorPage, LecturerPage, SignIn, SignUp
+|   |   ├── services                # API files for backend connection
 │   │   ├── styles/                 # CSS files (e.g., globals, Navbar)
 │   │   ├── types/                  # TypeScript interfaces (e.g., Applicants, Courses)
 │   │   └── utils/                  # Helpers (e.g., userLookup)
