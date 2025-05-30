@@ -30,24 +30,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       const response = await authApi.loginUser(email, password);
 
-      if (!response.ok) {
-        throw new Error("Login failed. Please check your credentials.");
-      }
-
-      const data = await response.json();
-      setCurrentUser(data.user);
+      const user = {
+        id: response.user.user_id,
+        username: response.user.username,
+        firstName: response.user.first_name,
+        lastName: response.user.last_name,
+        email: response.user.email,
+        avatar: response.user.avatar,
+        password: '',
+        role: [],
+      };
+      setCurrentUser(user);
 
       toaster.create({
         title: "Sign in Successful",
-        description: `Welcome back, ${data.user.firstName || "User"}!`,
+        description: `Welcome back, ${user.firstName || "User"}!`,
         type: "success",
         duration: 5000,
       });
 
       return true;
     } catch (err: any) {
-        setError(err.message);
-        return false;
+      const errorMessage = err.message || "Login failed. Please check your credentials.";
+      setError(errorMessage);
+      return false;
     } finally {
         setLoading(false);
     }

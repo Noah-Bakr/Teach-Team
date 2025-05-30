@@ -4,7 +4,7 @@ import { AuthController } from '../controller/AuthController';
 const router = Router();
 const authController = new AuthController();
 
-router.get("/login", async (req, res) => {
+router.post("/login", async (req, res) => {
     await authController.login(req, res);
 });
 
