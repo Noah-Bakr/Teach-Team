@@ -104,51 +104,42 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  // sign up function
   const signUp = async (firstName: string, lastName: string, username: string, email: string, password: string ): Promise<boolean> => {
     setLoading(true);
     setError(null);
-
+  
     try {
-      const response = await authApi.createUser(
-        firstName,
-        lastName,
-        username,
-        email,
-        password,
-      );
-
-      if (!response.ok) {
-        throw new Error("Sign up failed. Please check your details.");
-      }
-
-      setCurrentUser({
-        id: response.user.user_id,
-        username: response.user.username,
-        firstName: response.user.first_name,
-        lastName: response.user.last_name,
-        email: response.user.email,
-        avatar: response.user.avatar,
+      const data = await authApi.createUser(firstName, lastName, username, email, password);
+  
+      const user = {
+        id: data.user.user_id,
+        username: data.user.username,
+        firstName: data.user.first_name,
+        lastName: data.user.last_name,
+        email: data.user.email,
+        avatar: data.user.avatar,
         password: '',
         role: [],
-      });
-
-      console.log("Sending a oaster:", response.user);
+      };
+  
+      setCurrentUser(user);
+  
       toaster.create({
         title: "Sign up Successful",
-        description: `Welcome, ${currentUser?.firstName || "User"}!`,
+        description: `Welcome, ${user.firstName || "User"}!`,
         type: "success",
         duration: 5000,
       });
-
+  
       return true;
     } catch (err: any) {
-      setError(err.message);
+      setError(err.message || "Something went wrong");
       return false;
     } finally {
       setLoading(false);
     }
-  }
+  };
+  
 
   return (
     <AuthContext.Provider value={{ currentUser, loading, error, login, logout, updateUserInDatabase, signUp }}>
