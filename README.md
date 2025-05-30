@@ -175,7 +175,7 @@ s3575564-s4095646-a2/
 │   │   │   └── ui/                 # Chakra UI components
 │   │   ├── context/                # Global data (e.g., AuthContext)
 │   │   ├── pages/                  # Home, TutorPage, LecturerPage, SignIn, SignUp
-|   |   ├── services                # API files for backend connection
+│   │   ├── services                # API files for backend connection
 │   │   ├── styles/                 # CSS files (e.g., globals, Navbar)
 │   │   ├── types/                  # TypeScript interfaces (e.g., Applicants, Courses)
 │   │   └── utils/                  # Helpers (e.g., userLookup)
