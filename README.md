@@ -221,5 +221,4 @@ All images, icons, and avatars used in the project are sourced from royalty-free
 
 ## Team Info
 
-Bodene Downie | s3575564
-Noah Bakr | s4095646
+Bodene Downie | s3575564<br>Noah Bakr | s4095646
