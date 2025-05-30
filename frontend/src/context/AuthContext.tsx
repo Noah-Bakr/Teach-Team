@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import { User  } from "@/types/types";
 import { toaster } from "@/components/ui/toaster";
 import { useRouter } from "next/router";
+import { authApi } from "@/services/api";
 
 interface AuthContextType {
   currentUser: User | null;
@@ -10,6 +11,7 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<boolean>;
   logout: () => void;
   updateUserInDatabase: (userToUpdate: User) => Promise<void>;
+  signUp: (firstName: string, lastName: string, username: string, email: string, password: string) => Promise<boolean>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -26,13 +28,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setError(null);
 
     try {
-      const response = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      });
+      const response = await authApi.loginUser(email, password);
 
       if (!response.ok) {
         throw new Error("Login failed. Please check your credentials.");
@@ -65,7 +61,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const updateUserInDatabase = async (userToUpdate: User) => {
     try {
-      const response = await fetch(`/api/users/${userToUpdate.id}`, {
+      const response = await fetch(`/auth/users/${userToUpdate.id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -109,9 +105,53 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   // sign up function
+  const signUp = async (firstName: string, lastName: string, username: string, email: string, password: string ): Promise<boolean> => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await authApi.createUser(
+        firstName,
+        lastName,
+        username,
+        email,
+        password,
+      );
+
+      if (!response.ok) {
+        throw new Error("Sign up failed. Please check your details.");
+      }
+
+      setCurrentUser({
+        id: response.user.user_id,
+        username: response.user.username,
+        firstName: response.user.first_name,
+        lastName: response.user.last_name,
+        email: response.user.email,
+        avatar: response.user.avatar,
+        password: '',
+        role: [],
+      });
+
+      console.log("Sending a oaster:", response.user);
+      toaster.create({
+        title: "Sign up Successful",
+        description: `Welcome, ${currentUser?.firstName || "User"}!`,
+        type: "success",
+        duration: 5000,
+      });
+
+      return true;
+    } catch (err: any) {
+      setError(err.message);
+      return false;
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
-    <AuthContext.Provider value={{ currentUser, loading, error, login, logout, updateUserInDatabase }}>
+    <AuthContext.Provider value={{ currentUser, loading, error, login, logout, updateUserInDatabase, signUp }}>
       {children}
     </AuthContext.Provider>
   );
