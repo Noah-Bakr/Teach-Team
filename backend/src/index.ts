@@ -4,6 +4,7 @@ import { AppDataSource } from "./data-source";
 import commentRoutes from './routes/comment.routes';
 import authRoutes from './routes/auth.routes';
 import cors from "cors";
+import { seed } from "./seeds/seed";
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -21,12 +22,13 @@ app.use("/api/comments", commentRoutes);
 app.use("/api/auth", authRoutes);
 
 AppDataSource.initialize()
-    .then(() => {
+    .then(async () => {
         console.log("Data Source has been initialized!");
+        await seed();                // ← seed once
         app.listen(PORT, () => {
             console.log(`Server is running on port ${PORT}`);
         });
     })
-    .catch((error) =>
-        console.log("Error during Data Source initialization:", error)
-    );
+    .catch((err) => {
+        console.error("Error during Data Source initialization:", err);
+    });
