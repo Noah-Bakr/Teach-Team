@@ -28,12 +28,6 @@ const LoginForm: React.FC<LoginFormProps> = ({ closeForm, openSignUpForm }) => {
         onToggle();
     }, []);
 
-    useEffect(() => {
-        if (error == "Invalid email or password") {
-        toaster.create({title: error, type: "error", duration: 5000});
-        }
-    }, [error]);
-
     const handleLogin = async () => {
         // Check if email and password are empty. "return" prevents the rest of the function from executing
         if (email === '') {
