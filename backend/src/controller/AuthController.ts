@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { AppDataSource } from '../data-source';
 import { User } from '../entity/User';
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 
 export class AuthController {
     private userRepository = AppDataSource.getRepository(User);
@@ -15,7 +16,10 @@ export class AuthController {
     async login(req: Request, res: Response) {
         const { email, password } = req.body;
 
-        const user = await this.userRepository.findOne({ where: { email } });
+        const user = await this.userRepository.findOne({
+            where: { email },
+            relations: ['role'],
+        });
 
         if (!user) {
             return res.status(401).json({ message: 'Invalid email or password' });
@@ -26,6 +30,19 @@ export class AuthController {
         if (!isPasswordValid) {
             return res.status(401).json({ message: 'Invalid email or password' });
         }
+
+        const token = jwt.sign(
+            { userId: user.user_id, role: user.role.role_name },
+            process.env.JWT_SECRET!,
+            { expiresIn: "1h" }
+        );
+
+        res.cookie("token", token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "strict",
+            maxAge: 3600000,
+        });
 
         const { password: _, ...userWithoutPassword } = user;
         return res.status(200).json({ message: 'Login successful', user: userWithoutPassword });
@@ -139,7 +156,7 @@ export class AuthController {
         try {
             const user = await this.userRepository.findOne({
             where: { user_id: userId },
-            relations: ["role"], // 👈 include the role relation
+            relations: ["role"],
             });
 
             if (!user) {
@@ -152,6 +169,43 @@ export class AuthController {
         } catch (error) {
             return res.status(500).json({ message: "Failed to fetch user", error });
         }
+    }
+
+    /**
+     * Retrieves the current authenticated user
+     * @param req - Express request object
+     * @param res - Express response object
+     * @returns JSON response containing the current user data or error message
+     */
+    async getCurrentUser(req: Request, res: Response) {
+        const token = req.cookies.token;
+        if (!token) return res.status(401).json({ message: "Not authenticated" });
+
+        try {
+            const payload: any = jwt.verify(token, process.env.JWT_SECRET!);
+            const user = await this.userRepository.findOne({
+                where: { user_id: payload.userId },
+                relations: ['role'],
+            });
+
+            if (!user) return res.status(404).json({ message: "User not found" });
+
+            const { password, ...userWithoutPassword } = user;
+            return res.status(200).json({ user: userWithoutPassword });
+        } catch (err) {
+            return res.status(401).json({ message: "Invalid token" });
+        }
+    }
+
+    /**
+     * Handles user logout
+     * @param req - Express request object
+     * @param res - Express response object
+     * @returns JSON response with success message
+     */
+    async logout(req: Request, res: Response) {
+        res.clearCookie("token");
+        res.status(200).json({ message: "Logged out" });
     }
 
 }
