@@ -17,20 +17,52 @@ cd s3575564-s4095646-a2
 
 ### 2. Install Dependencies
 
-Make sure you have **Node.js (v18+)** and npm installed. Then run:
+Open two terminals and navigate one to the `backend` directory, and the other to the `frontend` directory.
+Make sure you have **Node.js (v18+)** and npm installed. Then for each directory, run:
 
-```bash
+<!-- ```bash
 npm install react react-dom next
 npm i --save-dev @types/node
+``` -->
 
-
+```bash
+npm install
 ```
 
-### 3. Configure the Database
+### 3. Configure the Environment (Database and JWT)
 
-Navigate to the file `.env.example` inside the `backend` directory and follow the instructions provided
+#### Step 1: Create a `.env` File
+
+Duplicate the provided `.env.example` file and rename it to `.env`:
+
+```bash
+copy .env.sample .env
+```
+
+#### Step 2: Generate a Secure JWT Secret Key
+
+To securely generate a symmetric key for JWT authentication, open the terminal in Visual Studio (or any PowerShell-enabled terminal) and run the following code:
+
+```bash
+$cryptoProvider = New-Object System.Security.Cryptography.RNGCryptoServiceProvider
+$key = New-Object byte[] 64
+$cryptoProvider.GetBytes($key)
+$jwtSecret = [Convert]::ToBase64String($key)
+"`nJWT_SECRET=$jwtSecret" | Out-File -FilePath .env -Encoding ASCII -Append
+```
+
+This will append a strong, base64-encoded symmetric key to your .env file as a new line:
+
+```bash
+JWT_SECRET=this1is2an3example4symmetric5key6string7
+```
+
+> [!CAUTION]
+> Never commit your `.env` file to git.
 
 ### 4. Run the Server
+
+For each directory, in the terminal, run:
 
 ```bash
 npm start
@@ -122,15 +154,39 @@ Once logged in, you'll be redirected to the appropriate dashboard based on your 
 ## Project Structure
 
 ```bash
-src/
+s3575564-s4095646-a2/
 │
-├── components/       # Header, Footer, Forms, Lists
-        └── ui/       # Chakra UI components
-├── context/          # Global data (e.g., AuthContext)
-├── pages/            # Home, TutorPage, LecturerPage, SignIn, SignUp
-├── styles/           # CSS files (e.g., globals, Navbar)
-├── types/            # TypeScript interfaces (e.g., Applicants, Courses)
-└── utils/            # Helpers
+├── backend/                        # Backend API and database logic
+│   ├── src/
+│   │   ├── entity/                 # TypeORM entities (User, Course, Application, Skills, Role)
+│   │   ├── routes/                 # Express route handlers
+│   │   ├── controllers/            # Controller logic for routes
+│   │   ├── middleware/             # Express middleware (auth, error handling)
+│   │   ├── utils/                  # Backend utility functions
+│   │   ├── data-source.ts          # TypeORM data source configuration
+│   │   ├── seed.ts                 # Database seeding script
+│   │   └── app.ts                  # Express app entry point
+│   ├── .env                        # Environment variables (not committed)
+│   ├── package.json                # Backend dependencies and scripts
+│   └── tsconfig.json               # TypeScript config for backend
+│
+├── frontend/                       # Frontend React/Next.js app
+│   ├── public/                     # Static assets (images, favicon, etc.)
+│   ├── src/
+│   │   ├── components/             # Header, Footer, Forms, Lists
+│   │   │   └── ui/                 # Chakra UI components
+│   │   ├── context/                # Global data (e.g., AuthContext)
+│   │   ├── pages/                  # Home, TutorPage, LecturerPage, SignIn, SignUp
+│   │   ├── styles/                 # CSS files (e.g., globals, Navbar)
+│   │   ├── types/                  # TypeScript interfaces (e.g., Applicants, Courses)
+│   │   └── utils/                  # Helpers (e.g., userLookup)
+│   ├── .env                        # Frontend environment variables (not committed)
+│   ├── package.json                # Frontend dependencies and scripts
+│   └── tsconfig.json               # TypeScript config for frontend
+│
+├── .gitignore                      # Files and folders to ignore in git
+├── README.md                       # Project documentation and instructions
+└── package-lock.json               # Dependency lock file
 ```
 
 ---
@@ -148,6 +204,8 @@ src/
 | `@emotion/styled` | Required by Chakra UI |
 | `framer-motion` | Animation support (pop ups) |
 | `@testing-library/react` | Unit testing library |
+| `jsonwebtoken` | Library to sign, verify, and decode JSON Web Tokens |
+| `cookie-parser` | Middleware to parse cookies from incoming HTTP requests |
 
 ---
 
