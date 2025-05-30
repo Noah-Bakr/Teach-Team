@@ -23,6 +23,36 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [error, setError] = useState<string | null>("");
   const router = useRouter();
 
+  useEffect(() => {
+    const fetchSessionUser = async () => {
+      setLoading(true);
+      try {
+        const response = await authApi.getCurrentUser();
+
+        const user = {
+          id: response.user.user_id,
+          username: response.user.username,
+          firstName: response.user.first_name,
+          lastName: response.user.last_name,
+          email: response.user.email,
+          avatar: response.user.avatar,
+          password: '',
+          role: response.user.role ? [response.user.role.role_name] : [],
+        };
+
+        setCurrentUser(user);
+      } catch (err: any) {
+        console.warn("No session found or invalid token.");
+        setCurrentUser(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSessionUser();
+  }, []);
+
+
   const login = async (email: string, password: string): Promise<boolean> => {
     setLoading(true);
     setError(null);
@@ -51,19 +81,32 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       return true;
     } catch (err: any) {
-      const errorMessage = err.message || "Login failed. Please check your credentials.";
+      const errorMessage = err.response && err.response.status === 401
+        ? "Invalid email or password. Please try again."
+        : err.message || "Login failed. Please check your credentials.";
+
       setError(errorMessage);
+
+      toaster.create({
+        title: "Login Failed",
+        description: errorMessage,
+        type: "error",
+        duration: 5000,
+      });
+
       return false;
     } finally {
         setLoading(false);
     }
   };
 
-    const logout = () => {
-      setCurrentUser(null);
-      toaster.create({ title: "Sign out Successful", description: `We hope to see you back soon, ${currentUser?.firstName}!`, type: "success", duration: 5000 });
-      router.push("/");
+  const logout = async () => {
+    await authApi.logout();
+    setCurrentUser(null);
+    toaster.create({ title: "Sign out Successful", description: `We hope to see you back soon, ${currentUser?.firstName}!`, type: "success", duration: 5000 });
+    router.push("/");
   };
+
 
   const updateUserInDatabase = async (userToUpdate: User) => {
     try {
