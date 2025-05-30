@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToOne, JoinColumn, CreateDateColumn } from 'typeorm';
 import { User } from './User';
 import { Course } from './Course';
 import { Comment} from "./Comment";
@@ -14,7 +14,7 @@ export class Application {
     @Column({ type: 'enum', enum: ['pending', 'accepted', 'rejected']})
     status: 'pending' | 'accepted' | 'rejected';
 
-    @Column('date')
+    @CreateDateColumn({ type: 'timestamp' })
     applied_at: Date;
 
     @Column('boolean')
