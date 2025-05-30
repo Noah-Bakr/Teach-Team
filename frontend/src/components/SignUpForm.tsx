@@ -5,7 +5,6 @@ import { Button, AbsoluteCenter, Box, ButtonGroup, VStack, Input,
 import { useState, useEffect } from "react";
 import { useRouter } from 'next/router';
 import { PasswordInput, PasswordStrengthMeter } from "./ui/password-input";
-import { Roles } from "../types/types";
 import { toaster } from "./ui/toaster"
 import { useAuth } from "../context/AuthContext";
 import "../styles/PopUpForm.css";
@@ -15,9 +14,6 @@ interface SignUpFormProps {
 }
 
 const SignUpForm: React.FC<SignUpFormProps> = ({ closeForm }) => {
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState('');
-
     // State variables for email, password, and their validation
     const [email, setEmail] = useState("");
     const [emailError, setEmailError] = useState(false);
@@ -38,8 +34,10 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ closeForm }) => {
     const [confirmPassword, setConfirmPassword] = useState("");
     const [confirmPasswordError, setConfirmPasswordError] = useState(false);
 
+    const [signUpError, setSignUpError] = useState("");
+
     const router = useRouter();
-    const { login } = useAuth();
+    const { signUp, loading, error } = useAuth();
     const { open, onToggle } = useDisclosure();
 
     const hasUpperCase = /[A-Z]/.test(password);
@@ -65,12 +63,18 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ closeForm }) => {
         onToggle();
     }, []);
 
+    // Show error message if there is an error (frontend - SignUp)
     useEffect(() => {
-        if (error !== "") {
-        toaster.create({title: error, type: "error", duration: 5000});
-        setError("");
+        if (signUpError !== "") {
+        toaster.create({title: signUpError, type: "error", duration: 5000});
         }
-    }, [error]);
+    }, [signUpError]);
+
+    useEffect(() => {
+        if (error && error.trim() !== "") {
+            toaster.create({ title: error, type: "error", duration: 5000 });
+        }
+    }, [error]);    
 
     // Password strength calculation
     // This function calculates the password strength based on the number of validations passed
@@ -86,7 +90,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ closeForm }) => {
         incrementStrength();
     }, [password]);
 
-    const handleSignUp = () => {
+    const handleSignUp = async () => {
         // Check if email and password are empty. "return" prevents the rest of the function from executing
         if (firstName === '') {
             setFirstNameError(true);
@@ -114,25 +118,22 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ closeForm }) => {
         } else { setConfirmPasswordError(false); }
 
         if (password !== confirmPassword) {
-            setError("Passwords do not match");
+            setSignUpError("Passwords do not match");
             return;
-        } else { setError(""); }
+        } else { setSignUpError(""); }
 
-        setError("");
 
         if (passwordStrength !== 4) {
             toaster.create({ title: "Password Strength", description: "Password is weak. Please use a stronger password.", type: "warning", duration: 5000 });
             return;
         }
 
-        //TODO: Add sign up logic here
-        const success = false;
+        const success = await signUp(firstName, lastName, username, email, password);
+        
         if (success) {
             router.push("/dashboard");
             onToggle();
             closeForm();
-        } else {
-            setError("Invalid email or password");
         }
     };
 
@@ -204,14 +205,9 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ closeForm }) => {
                                 </Field.Root>
                                 
                                 <ButtonGroup className="ButtonGroup">
-                                    <Button className="Button" colorPalette="yellow" variant="surface" onClick={() => { setLoading(false); onToggle(); closeForm(); }} >Cancel</Button>
+                                    <Button className="Button" colorPalette="yellow" variant="surface" onClick={() => { onToggle(); closeForm(); }} >Cancel</Button>
                                     <Button className="Button" colorPalette="yellow" variant="solid" loading={loading} onClick={() => { handleSignUp(); }} >Sign Up</Button>
                                 </ButtonGroup>
-                                {/* <Text as="p" className="TextSmall">Don&apos;t have an account?&nbsp;
-                                    <Link color="black" onClick={() => {toaster.create({ title: "Deployment Error", description: "The Sign Up form has not been deployed yet.", type: "info", duration: 6000 })}}>
-                                    Sign Up <LuExternalLink />
-                                    </Link>
-                                </Text> */}
                             </VStack>
                         </VStack>
                     </Box>

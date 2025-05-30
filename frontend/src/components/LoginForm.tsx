@@ -13,17 +13,14 @@ interface LoginFormProps {
   openSignUpForm: () => void;
 }
 
-const LoginForm: React.FC<LoginFormProps> = ({ closeForm, openSignUpForm }) => {    
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState('');
-
+const LoginForm: React.FC<LoginFormProps> = ({ closeForm, openSignUpForm }) => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [emailError, setEmailError] = useState(false);
     const [passwordError, setPasswordError] = useState(false);
 
     const router = useRouter();
-    const { login } = useAuth();
+    const { login, loading, error } = useAuth();
     const { open, onToggle } = useDisclosure();
 
     //Wake on show
@@ -34,11 +31,10 @@ const LoginForm: React.FC<LoginFormProps> = ({ closeForm, openSignUpForm }) => {
     useEffect(() => {
         if (error == "Invalid email or password") {
         toaster.create({title: error, type: "error", duration: 5000});
-        setError("");
         }
     }, [error]);
 
-    const handleLogin = () => {
+    const handleLogin = async () => {
         // Check if email and password are empty. "return" prevents the rest of the function from executing
         if (email === '') {
             setEmailError(true);
@@ -49,15 +45,12 @@ const LoginForm: React.FC<LoginFormProps> = ({ closeForm, openSignUpForm }) => {
             return;
         } else { setPasswordError(false); }
 
-        setError("");
+        const success = await login(email, password);
 
-        const success = login(email, password);
         if (success) {
-            router.push("/dashboard");
-            onToggle();
-            closeForm();
-        } else {
-            setError("Invalid email or password");
+        router.push("/dashboard");
+        onToggle();
+        closeForm();
         }
     };
 
@@ -86,7 +79,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ closeForm, openSignUpForm }) => {
                                 <Field.ErrorText>This field is required</Field.ErrorText>
                             </Field.Root>
                             <ButtonGroup className="ButtonGroup">
-                                <Button className="Button" colorPalette="yellow" variant="surface" onClick={() => { setLoading(false); onToggle(); closeForm(); }} >Cancel</Button>
+                                <Button className="Button" colorPalette="yellow" variant="surface" onClick={() => { onToggle(); closeForm(); }} >Cancel</Button>
                                 <Button className="Button" colorPalette="yellow" variant="solid" loading={loading} onClick={() => { handleLogin(); }} >Login</Button>
                             </ButtonGroup>
                             <Text as="p" className="TextSmall">Don&apos;t have an account?&nbsp;
