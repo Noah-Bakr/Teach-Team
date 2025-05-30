@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { AppDataSource } from '../data-source';
 import { User } from '../entity/User';
+import bcrypt from 'bcrypt';
 
 export class AuthController {
     private userRepository = AppDataSource.getRepository(User);
@@ -20,7 +21,16 @@ export class AuthController {
             return res.status(401).json({ message: 'Invalid email or password' });
         }
 
-        return res.status(200).json({ message: 'Login successful', user });
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+
+        if (!isPasswordValid) {
+            return res.status(401).json({ message: 'Invalid email or password' });
+        }
+
+        const { password: _, ...userWithoutPassword } = user;
+        return res.status(200).json({ message: 'Login successful', user: userWithoutPassword });
+
+        // return res.status(200).json({ message: 'Login successful', user });
     }
 
     /**
@@ -30,18 +40,31 @@ export class AuthController {
      * @returns JSON response with success message and user data or error message
      */
     async signUp(req: Request, res: Response) {
-        const { email, password } = req.body;
+        const { firstName, lastName, username, email, password } = req.body;
 
-        const existingUser = await this.userRepository.findOne({ where: { email } });
+        const existingEmail = await this.userRepository.findOne({ where: { email } });
+        const existingUsername = await this.userRepository.findOne({ where: { username } });
 
-        if (existingUser) {
-            return res.status(400).json({ message: 'Email already in use' });
+        if (existingEmail || existingUsername) {
+        return res.status(400).json({ message: 'Email or username already in use' });
         }
 
-        const newUser = this.userRepository.create({ email, password });
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        const newUser = this.userRepository.create({
+            first_name: firstName,
+            last_name: lastName,
+            username,
+            email,
+            password: hashedPassword,
+        });
+
         await this.userRepository.save(newUser);
 
-        return res.status(201).json({ message: 'User registered successfully', user: newUser });
+        const { password: _, ...userWithoutPassword } = newUser;
+        return res.status(201).json({ message: 'User registered successfully', user: userWithoutPassword });
+
+        // return res.status(201).json({ message: 'User registered successfully', user: newUser });
     }
 
     /**
@@ -89,6 +112,10 @@ export class AuthController {
 
             if (!user) {
                 return res.status(404).json({ message: 'User not found' });
+            }
+
+            if (updates.password) {
+                updates.password = await bcrypt.hash(updates.password, 10);
             }
 
             Object.assign(user, updates); // Merge updates into the user object
