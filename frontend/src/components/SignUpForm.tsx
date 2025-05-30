@@ -71,10 +71,10 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ closeForm }) => {
     }, [signUpError]);
 
     useEffect(() => {
-        if (error !== "") {
-        toaster.create({title: error, type: "error", duration: 5000});
+        if (error && error.trim() !== "") {
+            toaster.create({ title: error, type: "error", duration: 5000 });
         }
-    }, [error]);
+    }, [error]);    
 
     // Password strength calculation
     // This function calculates the password strength based on the number of validations passed

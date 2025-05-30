@@ -20,7 +20,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [currentUser, setCurrentUser] = useState<User | (null)>(null);
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>("");
   const router = useRouter();
 
   const login = async (email: string, password: string): Promise<boolean> => {
@@ -133,7 +133,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   
       return true;
     } catch (err: any) {
-      setError(err.message || "Something went wrong");
+      const errorMessage = err.message || "Something went wrong. Please try again.";
+      setError(errorMessage);
       return false;
     } finally {
       setLoading(false);
