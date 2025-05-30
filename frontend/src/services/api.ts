@@ -22,7 +22,11 @@ export const authApi = {
         return response.data;
     },
     getAllUsers: async () => {
-        const response = await api.get("/users");
+        const response = await api.get("/auth/users");
         return response.data;
-    }
+    },
+    getUserById: async (id: string) => {
+        const response = await api.get(`/auth/users/${id}`);
+        return response.data;
+    },
 };

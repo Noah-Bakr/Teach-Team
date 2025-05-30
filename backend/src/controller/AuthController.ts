@@ -126,4 +126,32 @@ export class AuthController {
             return res.status(500).json({ message: 'Failed to update user', error });
         }
     }
+
+    /**
+     * Retrieves a user by ID
+     * @param req - Express request object containing user ID in params
+     * @param res - Express response object
+     * @returns JSON response containing the user data or error message
+     */
+    async getUserById(req: Request, res: Response) {
+        const userId = parseInt(req.params.id);
+
+        try {
+            const user = await this.userRepository.findOne({
+            where: { user_id: userId },
+            relations: ["role"], // 👈 include the role relation
+            });
+
+            if (!user) {
+            return res.status(404).json({ message: "User not found" });
+            }
+
+            const { password, ...userWithoutPassword } = user;
+
+            return res.status(200).json(userWithoutPassword);
+        } catch (error) {
+            return res.status(500).json({ message: "Failed to fetch user", error });
+        }
+    }
+
 }

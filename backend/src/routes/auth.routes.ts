@@ -17,7 +17,7 @@ router.get("/users", async (req, res) => {
 });
 
 router.get("/users/:id", async (req, res) => {
-    await authController.updateUser(req, res);
+    await authController.getUserById(req, res);
 });
 
 router.delete("/users/:id", async (req, res) => {

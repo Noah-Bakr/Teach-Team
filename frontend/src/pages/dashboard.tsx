@@ -1,42 +1,45 @@
 import LecturerPage from "@/pages/lecturer";
 import TutorPage from "@/pages/tutor";
 import { useAuth } from "@/context/AuthContext";
-import { Applicant } from "@/types/types";
 import { useEffect, useState } from "react";
+import { authApi } from "@/services/api";
 
 const DashboardPage: React.FC = () => {
-    const [applications, setApplications] = useState<Applicant[]>([]);
-
-    // Read applicants from localStorage
-    useEffect(() => {
-        const storedApplicants = localStorage.getItem("applicants");
-        if (storedApplicants) {
-            setApplications(JSON.parse(storedApplicants));
-        } else {
-            // Fallback in case of error (should not occur because DataInitializer is used)
-            setApplications([]);
-        }
-    }, []);
-
-
     const { currentUser } = useAuth();
+    const [userRole, setUserRole] = useState<string | null>(null);
+    const [loading, setLoading] = useState(true);
 
-    if (!currentUser) {
-        return <div>Please log in to view this page.</div>;
+    useEffect(() => {
+        const fetchUserRole = async () => {
+        if (!currentUser) return;
+
+        try {
+            const userData = await authApi.getUserById(currentUser.id);
+            setUserRole(userData.role?.role_name || null);
+        } catch (error) {
+            console.error("Failed to fetch user role:", error);
+            setUserRole(null);
+        } finally {
+            setLoading(false);
+        }
+        };
+
+        fetchUserRole();
+    }, [currentUser]);
+
+    if (!currentUser || loading) {
+        return <div>Loading user data...</div>;
     }
 
-    if (currentUser.role.includes("lecturer")) {
-        return (<LecturerPage />);
+    if (userRole === "lecturer") {
+        return <LecturerPage />;
     }
 
-    if (currentUser.role.includes("tutor")) {
-        return (<TutorPage />);
+    if (userRole === "candidate") {
+        return <TutorPage />;
     }
 
-    return (
-        <div>Please log in to view this page.</div>
-    );
-    
+    return <div>Unauthorized: Role not recognized.</div>;
 };
 
 export default DashboardPage;
