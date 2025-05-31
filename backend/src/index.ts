@@ -6,6 +6,17 @@ import authRoutes from './routes/auth.routes';
 import cors from "cors";
 import { seed } from "./seeds/seed";
 import cookieParser from "cookie-parser";
+import academicCredentialRoutes from "./routes/academicCredential.routes";
+import academicCredentialUserRoutes from "./routes/academicCredentialUser.routes";
+import applicationRoutes from "./routes/application.routes";
+import lecturerCourseRoutes from "./routes/lecturerCourse.routes";
+import previousRoleRoutes from "./routes/previousRole.routes";
+import roleRoutes from "./routes/role.routes";
+import skillsRoutes from "./routes/skills.routes";
+import applicationRankingRoutes from "./routes/applicationRanking.routes";
+import skillsCourseRoutes from "./routes/skillsCourse.routes";
+import courseRoutes from "./routes/course.routes";
+import userRoutes from "./routes/user.routes";
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -20,8 +31,19 @@ app.get("/ping", (_req: Request, res: Response) => {
 });
 
 // Routes
-app.use("/api/comments", commentRoutes);
+app.use("/api/academic-credentials", academicCredentialRoutes);
+app.use("/api/academic-credentials-users", academicCredentialUserRoutes);
+app.use("/api/applications", applicationRoutes);
+app.use("/api/application-rankings", applicationRankingRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/comments", commentRoutes);
+app.use("/api/courses", courseRoutes);
+app.use("/api/lecturer-course", lecturerCourseRoutes);
+app.use("/api/previous-roles", previousRoleRoutes);
+app.use("/api/roles", roleRoutes);
+app.use("/api/skills", skillsRoutes);
+app.use("/api/skills-courses", skillsCourseRoutes);
+app.use("/api/users", userRoutes);
 
 AppDataSource.initialize()
     .then(async () => {
