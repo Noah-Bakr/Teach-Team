@@ -192,19 +192,29 @@ s3575564-s4095646-a2/
 
 ## Dependencies
 
-| Package | Description |
-| --- | --- |
-| `react` | JavaScript library for building UI |
-| `react-dom` | DOM rendering for React |
-| `typescript` | Static typing |
-| `jest` | Testing framework |
-| `@chakra-ui/react` | Component library for styling |
-| `@emotion/react` | Required by Chakra UI |
-| `@emotion/styled` | Required by Chakra UI |
-| `framer-motion` | Animation support (pop ups) |
-| `@testing-library/react` | Unit testing library |
-| `jsonwebtoken` | Library to sign, verify, and decode JSON Web Tokens |
-| `cookie-parser` | Middleware to parse cookies from incoming HTTP requests |
+| Package                   | Description                                                        |
+|---------------------------|--------------------------------------------------------------------|
+| `react`                   | JavaScript library for building UI                                 |
+| `react-dom`               | DOM rendering for React                                            |
+| `next`                    | React framework for SSR and routing                                |
+| `typescript`              | Static typing for JavaScript                                       |
+| `jest`                    | Testing framework                                                  |
+| `@testing-library/react`  | Unit testing library for React components                          |
+| `@chakra-ui/react`        | Component library for styling                                      |
+| `@emotion/react`          | Required by Chakra UI                                              |
+| `@emotion/styled`         | Required by Chakra UI                                              |
+| `framer-motion`           | Animation support (pop ups)                                        |
+| `axios`                   | HTTP client for making requests to the backend API                 |
+| `jsonwebtoken`            | Library to sign, verify, and decode JSON Web Tokens                |
+| `cookie-parser`           | Middleware to parse cookies from incoming HTTP requests            |
+| `bcrypt`                  | Password hashing library                                           |
+| `express`                 | Web framework for Node.js backend                                  |
+| `typeorm`                 | ORM for TypeScript and JavaScript (backend, MySQL)                 |
+| `mysql2`                  | MySQL client for Node.js (used by TypeORM)                         |
+| `dotenv`                  | Loads environment variables from `.env` files                      |
+| `cors`                    | Middleware for enabling CORS                                       |
+| `nodemon`                 | Utility that automatically restarts the server on file changes     |
+| `eslint`                  | Linter for JavaScript/TypeScript                                   |
 
 ---
 
