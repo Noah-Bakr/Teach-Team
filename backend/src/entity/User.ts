@@ -6,6 +6,7 @@ import { AcademicCredentialUser } from './AcademicCredentialUser';
 import { Course } from './Course';
 import { PreviousRole } from './PreviousRole';
 import { Comment } from './Comment';
+import { ApplicationRanking} from "./ApplicationRanking";
 
 @Entity('User')
 export class User {
@@ -63,56 +64,7 @@ export class User {
     // Many comments can be made by one lecturer (Many-to-One relationship)
     @OneToMany(() => Comment, comment => comment.lecturer)
     comments: Comment[];
+
+    @OneToMany(() => ApplicationRanking, (ranking) => ranking.lecturer)
+    rankings: ApplicationRanking[];
 }
-
-
-
-
-
-// import { Entity, Column, OneToMany, PrimaryGeneratedColumn, JoinTable } from "typeorm";
-// import { Application } from "./Application";
-// import { PreviousRole } from "./PreviousRole";
-//
-// @Entity()
-// export class User {
-//     @PrimaryGeneratedColumn({ type: "int" })
-//     user_id: number;
-//
-//     @Column({ type: "varchar", length: 40 })
-//     username: string;
-//
-//     @Column({ type: "varchar", length: 40 })
-//     first_name: string;
-//
-//     @Column({ type: "varchar", length: 40 })
-//     last_name: string;
-//
-//     @Column({ type: "varchar", length: 150, nullable: true })
-//     avatar: string;
-//
-//     @Column({ type: "varchar", length: 254, unique: true })
-//     email: string;
-//
-//     @Column({ type: "varchar", length: 254 })
-//     password: string;
-//
-//     @Column({ type: "varchar", length: 100 })
-//     role: string[];
-//
-//     @Column(() => PreviousRole)
-//     previousRoles: PreviousRole[];
-//
-//     @Column({ type: "varchar", length: 100, nullable: true })
-//     academicCredentials: string;
-//
-//     @Column({ type: "varchar", length: 150, nullable: true })
-//     skills: string[];
-//
-//     @Column({ type: "varchar", length: 25, nullable: true })
-//     availability: string[];
-//
-//     // One user to many applications
-//     @OneToMany(() => Application, (application) => application.user)
-//     @JoinTable()
-//     applications: Application[];
-// }
