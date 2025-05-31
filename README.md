@@ -207,7 +207,7 @@ s3575564-s4095646-a2/
 | `axios`                   | HTTP client for making requests to the backend API                 |
 | `jsonwebtoken`            | Library to sign, verify, and decode JSON Web Tokens                |
 | `cookie-parser`           | Middleware to parse cookies from incoming HTTP requests            |
-| `bcrypt`                  | Password hashing library                                           |
+| `argon2`                  | Password hashing library                                           |
 | `express`                 | Web framework for Node.js backend                                  |
 | `typeorm`                 | ORM for TypeScript and JavaScript (backend, MySQL)                 |
 | `mysql2`                  | MySQL client for Node.js (used by TypeORM)                         |
