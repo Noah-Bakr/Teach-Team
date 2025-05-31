@@ -16,7 +16,7 @@ export class AcademicCredential {
     start_date: Date;
 
     @Column('date', { nullable: true })
-    end_date: Date;
+    end_date: Date | null;
 
     @Column('text', { nullable: true })
     description: string;
