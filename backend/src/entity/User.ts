@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToOne, JoinColumn, CreateDateColumn, ManyToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToOne, JoinColumn, CreateDateColumn, UpdateDateColumn, ManyToMany } from 'typeorm';
 import { Role } from './Role';
 import { Skills } from './Skills';
 import { Application } from './Application';
@@ -26,6 +26,11 @@ export class User {
         type: 'datetime',
     })
     created_at: Date;
+
+    @UpdateDateColumn({
+        type: 'datetime',
+    })
+    updated_at: Date;
 
     @Column({ length: 100 })
     first_name: string;
