@@ -1,4 +1,12 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import {
+    Entity,
+    PrimaryGeneratedColumn,
+    Column,
+    ManyToOne,
+    JoinColumn,
+    CreateDateColumn,
+    UpdateDateColumn
+} from 'typeorm';
 import { Application } from './Application';
 import { User } from './User';
 
@@ -10,10 +18,10 @@ export class Comment {
     @Column('text')
     comment: string;
 
-    @Column('date')
+    @CreateDateColumn({ type: 'timestamp' })
     created_at: Date;
 
-    @Column('date')
+    @UpdateDateColumn({ type: 'timestamp' })
     updated_at: Date;
 
     // Many comments can be linked to one application (Many-to-One relationship)
