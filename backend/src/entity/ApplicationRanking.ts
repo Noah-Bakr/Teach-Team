@@ -5,7 +5,7 @@ import {
     ManyToOne,
     JoinColumn,
     CreateDateColumn,
-    Index,
+    Index, UpdateDateColumn,
 } from 'typeorm';
 import { User } from './User';
 import { Application } from './Application';
@@ -27,6 +27,9 @@ export class ApplicationRanking {
 
     @CreateDateColumn({ type: 'timestamp' })
     reviewed_at: Date;
+
+    @UpdateDateColumn({ type: 'timestamp' })
+    updated_at: Date;
 
     // Many rankings are created by one lecturer (Many-to-One relationship)
     @ManyToOne(() => User, (user) => user.rankings)
