@@ -17,7 +17,7 @@ import {
     SEED_LECTURER_COURSES
 } from "./testData";
 
-import * as bcrypt from "bcrypt";
+import * as argon2 from "argon2";
 
 export async function seed() {
     const ds = AppDataSource;
@@ -89,7 +89,7 @@ export async function seed() {
             continue;
         }
 
-        const pwdHash = await bcrypt.hash(u.password, 10);
+        const pwdHash = await argon2.hash(u.password);
         const user = userRepo.create({
             username: u.username,
             email: u.email,
@@ -111,6 +111,38 @@ export async function seed() {
                 .add(u.skill_ids);
         }
 
+        // // academic credentials
+        // if (u.academic_credentials?.length) {
+        //     const credRepo = ds.getRepository(AcademicCredential);
+        //     const acUserRepo = ds.getRepository(AcademicCredentialUser);
+
+        //     for (const ac of u.academic_credentials) {
+        //         // 1) create the credential
+        //         const credential = await credRepo.save({
+        //             degree_name: ac.degree_name,
+        //             institution: ac.institution,
+        //             start_date: ac.start_date,
+        //             end_date: ac.end_date,
+        //             description: ac.description,
+        //         });
+
+        //         await userRepo
+        //             .createQueryBuilder()
+        //             .relation(User, "academicCredentialUsers")
+        //             .of(user)
+        //             .add({
+        //                 user_id: user.user_id,
+        //                 academic_id: credential.academic_id,
+        //             });
+
+        //         // 2) save the join row
+        //         await acUserRepo.save({
+        //             user: saved,
+        //             academicCredential: credential,
+        //         });
+        //     }
+        // }
+
         // academic credentials
         if (u.academic_credentials?.length) {
             const credRepo = ds.getRepository(AcademicCredential);
@@ -126,15 +158,6 @@ export async function seed() {
                     description: ac.description,
                 });
 
-                await userRepo
-                    .createQueryBuilder()
-                    .relation(User, "academicCredentialUsers")
-                    .of(user)
-                    .add({
-                        user_id: user.user_id,
-                        academic_id: credential.academic_id,
-                    });
-
                 // 2) save the join row
                 await acUserRepo.save({
                     user: saved,
@@ -142,6 +165,7 @@ export async function seed() {
                 });
             }
         }
+
 
 
         // previous roles
