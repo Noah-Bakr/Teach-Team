@@ -36,7 +36,7 @@ npm install
 Duplicate the provided `.env.example` file and rename it to `.env`:
 
 ```bash
-copy .env.sample .env
+copy .env.example .env
 ```
 
 #### Step 2: Generate a Secure JWT Secret Key
