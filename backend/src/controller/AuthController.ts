@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
 import { AppDataSource } from '../data-source';
 import { User } from '../entity/User';
-import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import * as argon2 from "argon2";
 
 export class AuthController {
     private userRepository = AppDataSource.getRepository(User);
@@ -25,7 +25,7 @@ export class AuthController {
             return res.status(401).json({ message: 'Invalid email or password' });
         }
 
-        const isPasswordValid = await bcrypt.compare(password, user.password);
+        const isPasswordValid = await argon2.verify(user.password, password);
 
         if (!isPasswordValid) {
             return res.status(401).json({ message: 'Invalid email or password' });
@@ -66,7 +66,7 @@ export class AuthController {
         return res.status(400).json({ message: 'Email or username already in use' });
         }
 
-        const hashedPassword = await bcrypt.hash(password, 10);
+        const hashedPassword = await argon2.hash(password);
 
         const newUser = this.userRepository.create({
             first_name: firstName,
@@ -132,7 +132,7 @@ export class AuthController {
             }
 
             if (updates.password) {
-                updates.password = await bcrypt.hash(updates.password, 10);
+                updates.password = await argon2.hash(updates.password);
             }
 
             Object.assign(user, updates); // Merge updates into the user object
