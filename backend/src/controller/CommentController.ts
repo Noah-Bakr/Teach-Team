@@ -3,6 +3,7 @@ import { AppDataSource } from '../data-source';
 import { Comment } from '../entity/Comment';
 import { Application } from '../entity/Application';
 import { User } from '../entity/User';
+import { CreateCommentDto, UpdateCommentDto } from '../dto/comment.dto';
 
 export class CommentController {
     private commentRepository = AppDataSource.getRepository(Comment);
@@ -72,18 +73,18 @@ export class CommentController {
      *   - lecturer_id    (number, required)
      */
     async createComment(req: Request, res: Response) {
-        const { comment, application_id, lecturer_id } = req.body;
+        const { comment, application_id, lecturer_id } = req.body as CreateCommentDto;
 
-        // Basic validation
-        if (
-            typeof comment !== 'string' ||
-            typeof application_id !== 'number' ||
-            typeof lecturer_id !== 'number'
-        ) {
-            return res.status(400).json({
-                message: 'comment (string), application_id (number), and lecturer_id (number) are required',
-            });
-        }
+        // // Basic validation
+        // if (
+        //     typeof comment !== 'string' ||
+        //     typeof application_id !== 'number' ||
+        //     typeof lecturer_id !== 'number'
+        // ) {
+        //     return res.status(400).json({
+        //         message: 'comment (string), application_id (number), and lecturer_id (number) are required',
+        //     });
+        // }
 
         try {
             // Verify that the referenced Application exists
@@ -142,14 +143,14 @@ export class CommentController {
                 return res.status(404).json({ message: 'Comment not found' });
             }
 
-            const { comment: newText } = req.body;
-            if (newText !== undefined) {
-                if (typeof newText !== 'string') {
-                    return res.status(400).json({ message: 'comment must be a string' });
-                }
-                existing.comment = newText;
-                existing.updated_at = new Date();
-            }
+            const { comment: newText } = req.body as UpdateCommentDto;
+            // if (newText !== undefined) {
+            //     if (typeof newText !== 'string') {
+            //         return res.status(400).json({ message: 'comment must be a string' });
+            //     }
+            //     existing.comment = newText;
+            //     existing.updated_at = new Date();
+            // }
 
             const updated = await this.commentRepository.save(existing);
             return res.status(200).json(updated);
