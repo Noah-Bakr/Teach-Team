@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { AppDataSource } from '../data-source';
 import { Skills } from '../entity/Skills';
+import { CreateSkillDto, UpdateSkillDto } from '../dto/skills.dto';
 
 export class SkillsController {
     private skillsRepository = AppDataSource.getRepository(Skills);
@@ -66,19 +67,19 @@ export class SkillsController {
      *   - skill_name  (string, required, max length 100)
      */
     async createSkill(req: Request, res: Response) {
-        const { skill_name } = req.body;
+        const { skill_name } = req.body as CreateSkillDto;
 
-        // Validate skill_name
-        if (typeof skill_name !== 'string' || skill_name.trim().length === 0) {
-            return res
-                .status(400)
-                .json({ message: 'skill_name (string) is required' });
-        }
-        if (skill_name.length > 100) {
-            return res
-                .status(400)
-                .json({ message: 'skill_name must not exceed 100 characters' });
-        }
+        // // Validate skill_name
+        // if (typeof skill_name !== 'string' || skill_name.trim().length === 0) {
+        //     return res
+        //         .status(400)
+        //         .json({ message: 'skill_name (string) is required' });
+        // }
+        // if (skill_name.length > 100) {
+        //     return res
+        //         .status(400)
+        //         .json({ message: 'skill_name must not exceed 100 characters' });
+        // }
 
         try {
             // Check for existing skill_name (optional: enforce unique constraint)
@@ -125,18 +126,18 @@ export class SkillsController {
                 return res.status(404).json({ message: 'Skill not found' });
             }
 
-            const { skill_name: newName } = req.body;
+            const { skill_name: newName } = req.body as UpdateSkillDto;
             if (newName !== undefined) {
-                if (typeof newName !== 'string' || newName.trim().length === 0) {
-                    return res
-                        .status(400)
-                        .json({ message: 'skill_name must be a non-empty string' });
-                }
-                if (newName.length > 100) {
-                    return res
-                        .status(400)
-                        .json({ message: 'skill_name must not exceed 100 characters' });
-                }
+                // if (typeof newName !== 'string' || newName.trim().length === 0) {
+                //     return res
+                //         .status(400)
+                //         .json({ message: 'skill_name must be a non-empty string' });
+                // }
+                // if (newName.length > 100) {
+                //     return res
+                //         .status(400)
+                //         .json({ message: 'skill_name must not exceed 100 characters' });
+                // }
                 existing.skill_name = newName;
             }
 
