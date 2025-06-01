@@ -1,15 +1,10 @@
 import { Router } from 'express';
 import { PreviousRoleController } from '../controller/PreviousRoleController';
+import { validateDto } from '../middleware/validate';
+import { CreatePreviousRoleDto, UpdatePreviousRoleDto } from '../dto/previousRole.dto';
 
 const router = Router();
 const previousRolesController = new PreviousRoleController();
-
-// Base path for all previous-roles routes:
-//   e.g. GET    /previous-roles
-//         GET    /previous-roles/:id
-//         POST   /previous-roles
-//         PUT    /previous-roles/:id
-//         DELETE /previous-roles/:id
 
 router.get("/previous-roles", async (req, res) => {
     await previousRolesController.getAllPreviousRoles(req, res);
@@ -19,11 +14,11 @@ router.get("/previous-roles/:id", async (req, res) => {
     await previousRolesController.getPreviousRoleById(req, res);
 });
 
-router.post("/previous-roles", async (req, res) => {
+router.post("/previous-roles", validateDto(CreatePreviousRoleDto, 'body'), async (req, res) => {
     await previousRolesController.createPreviousRole(req, res);
 });
 
-router.put("/previous-roles/:id", async (req, res) => {
+router.put("/previous-roles/:id", validateDto(UpdatePreviousRoleDto, 'body'), async (req, res) => {
     await previousRolesController.updatePreviousRole(req, res);
 });
 

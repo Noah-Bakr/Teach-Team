@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { AppDataSource } from '../data-source';
 import { PreviousRole } from '../entity/PreviousRole';
 import { User } from '../entity/User';
+import { CreatePreviousRoleDto, UpdatePreviousRoleDto } from '../dto/previousRole.dto';
 
 export class PreviousRoleController {
     private previousRoleRepository = AppDataSource.getRepository(PreviousRole);
@@ -84,20 +85,20 @@ export class PreviousRoleController {
             end_date,
             description,
             user_id,
-        } = req.body;
+        } = req.body as CreatePreviousRoleDto;
 
-        // Basic validation of required fields
-        if (
-            typeof previous_role !== 'string' ||
-            typeof company !== 'string' ||
-            !start_date ||
-            typeof user_id !== 'number'
-        ) {
-            return res.status(400).json({
-                message:
-                    'previous_role (string), company (string), start_date (YYYY-MM-DD), and user_id (number) are required',
-            });
-        }
+        // // Basic validation of required fields
+        // if (
+        //     typeof previous_role !== 'string' ||
+        //     typeof company !== 'string' ||
+        //     !start_date ||
+        //     typeof user_id !== 'number'
+        // ) {
+        //     return res.status(400).json({
+        //         message:
+        //             'previous_role (string), company (string), start_date (YYYY-MM-DD), and user_id (number) are required',
+        //     });
+        // }
 
         try {
             // Verify that the referenced User exists
@@ -111,8 +112,8 @@ export class PreviousRoleController {
                 previous_role,
                 company,
                 start_date: new Date(start_date),
-                end_date: end_date ? new Date(end_date) : null,
-                description: description ?? null,
+                end_date: end_date ? new Date(end_date) : undefined,
+                description: description ?? undefined,
                 user,
             });
 
@@ -163,7 +164,7 @@ export class PreviousRoleController {
                 start_date: newStartDate,
                 end_date: newEndDate,
                 description: newDescription,
-            } = req.body;
+            } = req.body as UpdatePreviousRoleDto;
 
             // Update only provided fields
             if (newRoleName !== undefined) {
