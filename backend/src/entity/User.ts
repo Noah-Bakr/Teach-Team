@@ -1,8 +1,8 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToOne, JoinColumn, CreateDateColumn, UpdateDateColumn, ManyToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToOne, JoinTable, JoinColumn, CreateDateColumn, UpdateDateColumn, ManyToMany } from 'typeorm';
 import { Role } from './Role';
 import { Skills } from './Skills';
 import { Application } from './Application';
-import { AcademicCredentialUser } from './AcademicCredentialUser';
+import { AcademicCredential } from './AcademicCredential';
 import { Course } from './Course';
 import { PreviousRole } from './PreviousRole';
 import { Comment } from './Comment';
@@ -47,19 +47,22 @@ export class User {
     role: Role;
 
     // Many users can have many skills (Many-to-Many relationship)
-    @ManyToMany(() => Skills, skill => skill.users)
+    @ManyToMany(() => Skills, (skill) => skill.users, {eager: true})
+    @JoinTable()
     skills: Skills[];
 
     // One user can have many applications (One-to-Many relationship)
     @OneToMany(() => Application, application => application.user)
     applications: Application[];
 
-    // One user can have many academic credentials (One-to-Many relationship)
-    @OneToMany(() => AcademicCredentialUser, academicCredentialUser => academicCredentialUser.user)
-    academicCredentialUsers: AcademicCredentialUser[];
+    // Many users can have many academic credentials (Many-to-Many relationship)
+    @ManyToMany(() => AcademicCredential, (academicCredential) => academicCredential.users, {eager: true})
+    @JoinTable()
+    academicCredentials: AcademicCredential[];
 
     // Many lecturers can be assigned to many courses (Many-to-Many relationship)
-    @ManyToMany(() => Course, course => course.lecturers)
+    @ManyToMany(() => Course, (course) => course.lecturers, {eager: true})
+    @JoinTable()
     courses: Course[];
 
     // One user can have many previous roles (One-to-Many relationship)
