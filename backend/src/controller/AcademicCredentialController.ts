@@ -15,7 +15,7 @@ export class AcademicCredentialController {
     async getAllAcademicCredentials(req: Request, res: Response) {
         try {
             const credentials = await this.credentialRepository.find({
-                relations: ['academicCredentialUsers'],
+                relations: ['users'],
                 order: { start_date: 'DESC' },
             });
             return res.status(200).json(credentials);
@@ -41,7 +41,7 @@ export class AcademicCredentialController {
         try {
             const credential = await this.credentialRepository.findOne({
                 where: { academic_id: id },
-                relations: ['academicCredentialUsers'],
+                relations: ['users'],
             });
 
             if (!credential) {
@@ -172,3 +172,4 @@ export class AcademicCredentialController {
         }
     }
 }
+
