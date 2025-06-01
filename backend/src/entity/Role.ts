@@ -10,6 +10,6 @@ export class Role {
     role_name: 'admin' | 'lecturer' | 'candidate';
 
     // One role can be assigned to many users (One-to-Many relationship)
-    @OneToMany(() => User, user => user.role)
+    @OneToMany(() => User, user => user.role, { eager: true })
     users: User[];
 }
