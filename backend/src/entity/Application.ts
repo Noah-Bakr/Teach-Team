@@ -28,19 +28,19 @@ export class Application {
     rank: number;
 
     // Many applications can be made by a user, but each application belongs to one user (Many-to-One relationship)
-    @ManyToOne(() => User, user => user.applications)
+    @ManyToOne(() => User, user => user.applications, { eager: true })
     @JoinColumn({ name: 'user_id' })
     user: User;
 
     // Many applications can be for the same course, but each application is for one course (Many-to-One relationship)
-    @ManyToOne(() => Course, course => course.applications)
+    @ManyToOne(() => Course, course => course.applications, { eager: true })
     @JoinColumn({ name: 'course_id' })
     course: Course;
 
     // One application can have many comments (One-to-Many relationship)
-    @OneToMany(() => Comment, comment => comment.application)
+    @OneToMany(() => Comment, (comment) => comment.application, { eager: true })
     comments: Comment[];
 
-    @OneToMany(() => ApplicationRanking, (ranking) => ranking.application)
+    @OneToMany(() => ApplicationRanking, (ranking) => ranking.application, { eager: true })
     rankings: ApplicationRanking[];
 }
