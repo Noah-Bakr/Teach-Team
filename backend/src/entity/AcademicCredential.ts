@@ -1,5 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
-import { AcademicCredentialUser } from './AcademicCredentialUser';
+import { Entity, PrimaryGeneratedColumn, Column, JoinTable, ManyToMany } from 'typeorm';
+import { User } from './User';
 
 @Entity('AcademicCredential')
 export class AcademicCredential {
@@ -21,7 +21,7 @@ export class AcademicCredential {
     @Column('text', { nullable: true })
     description: string;
 
-    // One academic credential can be associated with many users (One-to-Many relationship)
-    @OneToMany(() => AcademicCredentialUser, academicCredentialUser => academicCredentialUser.academicCredential)
-    academicCredentialUsers: AcademicCredentialUser[];
+    // Many academic credential can be associated with many users (Many-to-Many relationship)
+    @ManyToMany(() => User, (user) => user.academicCredentials)
+    users: User[];
 }
