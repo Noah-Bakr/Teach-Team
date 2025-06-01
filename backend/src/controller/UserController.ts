@@ -2,18 +2,21 @@ import { Request, Response } from 'express';
 import { AppDataSource } from '../data-source';
 import { User } from '../entity/User';
 import { Role } from '../entity/Role';
+import { Skills } from '../entity/Skills';
+import { AcademicCredential } from '../entity/AcademicCredential';
+import { Course } from '../entity/Course';
 
 export class UserController {
     private userRepository = AppDataSource.getRepository(User);
     private roleRepository = AppDataSource.getRepository(Role);
+    private skillsRepository = AppDataSource.getRepository(Skills);
+    private credentialRepository = AppDataSource.getRepository(AcademicCredential);
+    private courseRepository = AppDataSource.getRepository(Course);
 
     /**
-     * GET /users
-     * Fetch all users, including related Role, Skills, Applications, AcademicCredentialUsers,
-     * Courses, PreviousRoles, and Comments.
-     * @param req  - Express Request object
-     * @param res  - Express Response object
-     * @returns    HTTP 200 + JSON array of User, or HTTP 500 + error
+     * GET /user
+     * Fetch all users, including their role, skills, applications, academicCredentials,
+     * courses, previousRoles, comments, and rankings.
      */
     async getAllUsers(req: Request, res: Response) {
         try {
@@ -22,10 +25,11 @@ export class UserController {
                     'role',
                     'skills',
                     'applications',
-                    'academicCredentialUsers',
+                    'academicCredentials',
                     'courses',
                     'previousRoles',
                     'comments',
+                    'rankings',
                 ],
                 order: { created_at: 'DESC' },
             });
@@ -37,11 +41,8 @@ export class UserController {
     }
 
     /**
-     * GET /users/:id
-     * Fetch one user by its ID.
-     * @param req  - Express Request object (expects `:id` in params)
-     * @param res  - Express Response object
-     * @returns    HTTP 200 + JSON object, HTTP 404 if not found, or HTTP 400/500 + error
+     * GET /user/:id
+     * Fetch a single user by ID, including all related arrays.
      */
     async getUserById(req: Request, res: Response) {
         const userId = parseInt(req.params.id, 10);
@@ -56,10 +57,11 @@ export class UserController {
                     'role',
                     'skills',
                     'applications',
-                    'academicCredentialUsers',
+                    'academicCredentials',
                     'courses',
                     'previousRoles',
                     'comments',
+                    'rankings',
                 ],
             });
 
@@ -167,7 +169,7 @@ export class UserController {
             const newUser = this.userRepository.create({
                 username,
                 email,
-                password, // In production, hash before saving!
+                password,
                 first_name,
                 last_name,
                 avatar: avatar ?? null,
@@ -358,11 +360,12 @@ export class UserController {
                 where: { user_id: userId },
                 relations: [
                     'applications',
-                    'academicCredentialUsers',
+                    'academicCredentials',
                     'courses',
                     'previousRoles',
                     'comments',
                     'skills',
+                    'rankings',
                 ],
             });
             if (!existing) {
@@ -377,6 +380,237 @@ export class UserController {
         } catch (error) {
             console.error(`Error deleting user id=${userId}:`, error);
             return res.status(500).json({ message: 'Error deleting user', error });
+        }
+    }
+
+    /**
+     * POST /user/:id/skills
+     * Attach one or more skills to this user.
+     * Body: { skillIds: number[] }
+     */
+    async addSkillsToUser(req: Request, res: Response) {
+        const userId = parseInt(req.params.id, 10);
+        const { skillIds } = req.body;
+
+        if (isNaN(userId) || !Array.isArray(skillIds)) {
+            return res.status(400).json({ message: 'Invalid user ID or skillIds' });
+        }
+
+        try {
+            const user = await this.userRepository.findOneBy({ user_id: userId });
+            if (!user) return res.status(404).json({ message: 'User not found' });
+
+            // Validate each skillId
+            for (const sid of skillIds) {
+                const skill = await this.skillsRepository.findOneBy({ skill_id: sid });
+                if (!skill) {
+                    return res.status(400).json({ message: `Skill ID ${sid} not found` });
+                }
+            }
+
+            // Attach from owning side (User)
+            await this.userRepository
+                .createQueryBuilder()
+                .relation(User, 'skills')
+                .of(userId)
+                .add(skillIds);
+
+            const updated = await this.userRepository.findOne({
+                where: { user_id: userId },
+                relations: ['skills'],
+            });
+            return res.status(200).json(updated);
+        } catch (error) {
+            console.error(`Error adding skills to user ${userId}:`, error);
+            return res.status(500).json({ message: 'Error adding skills to user', error });
+        }
+    }
+
+    /**
+     * DELETE /user/:id/skills/:skillId
+     * Detach a single skill from this user.
+     */
+    async removeSkillFromUser(req: Request, res: Response) {
+        const userId = parseInt(req.params.id, 10);
+        const skillId = parseInt(req.params.skillId, 10);
+
+        if (isNaN(userId) || isNaN(skillId)) {
+            return res.status(400).json({ message: 'Invalid user ID or skill ID' });
+        }
+
+        try {
+            const user = await this.userRepository.findOneBy({ user_id: userId });
+            if (!user) return res.status(404).json({ message: 'User not found' });
+
+            await this.userRepository
+                .createQueryBuilder()
+                .relation(User, 'skills')
+                .of(userId)
+                .remove(skillId);
+
+            const updated = await this.userRepository.findOne({
+                where: { user_id: userId },
+                relations: ['skills'],
+            });
+            return res.status(200).json(updated);
+        } catch (error) {
+            console.error(`Error removing skill ${skillId} from user ${userId}:`, error);
+            return res.status(500).json({ message: 'Error removing skill from user', error });
+        }
+    }
+
+    /**
+     * POST /user/:id/academic-credentials
+     * Attach one or more academic credentials to this user.
+     * Body: { credentialIds: number[] }
+     */
+    async addCredentialsToUser(req: Request, res: Response) {
+        const userId = parseInt(req.params.id, 10);
+        const { credentialIds } = req.body;
+
+        if (isNaN(userId) || !Array.isArray(credentialIds)) {
+            return res.status(400).json({ message: 'Invalid user ID or credentialIds' });
+        }
+
+        try {
+            const user = await this.userRepository.findOneBy({ user_id: userId });
+            if (!user) return res.status(404).json({ message: 'User not found' });
+
+            for (const cid of credentialIds) {
+                const cred = await this.credentialRepository.findOneBy({ academic_id: cid });
+                if (!cred) {
+                    return res.status(400).json({ message: `AcademicCredential ID ${cid} not found` });
+                }
+            }
+
+            await this.userRepository
+                .createQueryBuilder()
+                .relation(User, 'academicCredentials')
+                .of(userId)
+                .add(credentialIds);
+
+            const updated = await this.userRepository.findOne({
+                where: { user_id: userId },
+                relations: ['academicCredentials'],
+            });
+            return res.status(200).json(updated);
+        } catch (error) {
+            console.error(`Error adding credentials to user ${userId}:`, error);
+            return res
+                .status(500)
+                .json({ message: 'Error adding academic credentials to user', error });
+        }
+    }
+
+    /**
+     * DELETE /user/:id/academic-credentials/:credentialId
+     * Detach a single academic credential from this user.
+     */
+    async removeCredentialFromUser(req: Request, res: Response) {
+        const userId = parseInt(req.params.id, 10);
+        const credentialId = parseInt(req.params.credentialId, 10);
+
+        if (isNaN(userId) || isNaN(credentialId)) {
+            return res.status(400).json({ message: 'Invalid user ID or credential ID' });
+        }
+
+        try {
+            const user = await this.userRepository.findOneBy({ user_id: userId });
+            if (!user) return res.status(404).json({ message: 'User not found' });
+
+            await this.userRepository
+                .createQueryBuilder()
+                .relation(User, 'academicCredentials')
+                .of(userId)
+                .remove(credentialId);
+
+            const updated = await this.userRepository.findOne({
+                where: { user_id: userId },
+                relations: ['academicCredentials'],
+            });
+            return res.status(200).json(updated);
+        } catch (error) {
+            console.error(
+                `Error removing academic credential ${credentialId} from user ${userId}:`,
+                error
+            );
+            return res
+                .status(500)
+                .json({ message: 'Error removing academic credential from user', error });
+        }
+    }
+
+    /**
+     * POST /user/:id/courses
+     * Attach one or more courses to this user (lecturer).
+     * Body: { courseIds: number[] }
+     */
+    async addCoursesToUser(req: Request, res: Response) {
+        const userId = parseInt(req.params.id, 10);
+        const { courseIds } = req.body;
+
+        if (isNaN(userId) || !Array.isArray(courseIds)) {
+            return res.status(400).json({ message: 'Invalid user ID or courseIds' });
+        }
+
+        try {
+            const user = await this.userRepository.findOneBy({ user_id: userId });
+            if (!user) return res.status(404).json({ message: 'User not found' });
+
+            for (const cid of courseIds) {
+                const course = await this.courseRepository.findOneBy({ course_id: cid });
+                if (!course) {
+                    return res.status(400).json({ message: `Course ID ${cid} not found` });
+                }
+            }
+
+            await this.userRepository
+                .createQueryBuilder()
+                .relation(User, 'courses')
+                .of(userId)
+                .add(courseIds);
+
+            const updated = await this.userRepository.findOne({
+                where: { user_id: userId },
+                relations: ['courses'],
+            });
+            return res.status(200).json(updated);
+        } catch (error) {
+            console.error(`Error adding courses to user ${userId}:`, error);
+            return res.status(500).json({ message: 'Error adding courses to user', error });
+        }
+    }
+
+    /**
+     * DELETE /user/:id/courses/:courseId
+     * Detach a single course from this user (lecturer).
+     */
+    async removeCourseFromUser(req: Request, res: Response) {
+        const userId = parseInt(req.params.id, 10);
+        const courseId = parseInt(req.params.courseId, 10);
+
+        if (isNaN(userId) || isNaN(courseId)) {
+            return res.status(400).json({ message: 'Invalid user ID or course ID' });
+        }
+
+        try {
+            const user = await this.userRepository.findOneBy({ user_id: userId });
+            if (!user) return res.status(404).json({ message: 'User not found' });
+
+            await this.userRepository
+                .createQueryBuilder()
+                .relation(User, 'courses')
+                .of(userId)
+                .remove(courseId);
+
+            const updated = await this.userRepository.findOne({
+                where: { user_id: userId },
+                relations: ['courses'],
+            });
+            return res.status(200).json(updated);
+        } catch (error) {
+            console.error(`Error removing course ${courseId} from user ${userId}:`, error);
+            return res.status(500).json({ message: 'Error removing course from user', error });
         }
     }
 }
