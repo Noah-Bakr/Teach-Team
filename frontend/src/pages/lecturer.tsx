@@ -3,6 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Heading, Text, SimpleGrid } from '@chakra-ui/react';
 import { Applicant } from '@/types/types';
+import { Course, User } from "@/types/types";
+import { fetchAllApplications, Application as RawApp } from "@/services/applicationApi";
 import { DEFAULT_APPLICANTS } from "@/types/testData";
 import SearchAndSortBar from "@/components/SearchAndSortBar";
 import SelectedApplicantCard from "@/components/SelectedApplicantCard";
@@ -13,26 +15,64 @@ import { useCourseLookup } from "@/utils/courseLookup";
 import "@/styles/Lecturer.css";
 import {CreamCard} from "@/components/CreamCard";
 
-const LecturerPage: React.FC = () => {
-    // Use a lazy initialiser: try to load from localStorage; if missing, fall back to DEFAULT_APPLICANTS.
-    const [applicants, setApplicants] = useState<Applicant[]>(() => {
-        const stored = localStorage.getItem('applicants');
-        return stored ? JSON.parse(stored) : DEFAULT_APPLICANTS;
-    });
+//import { fetchAllUsers } from "@/services/userApi";
+//import { fetchAllCourses } from "@/services/courseApi";
 
-    // State to track validation errors for applicants by id
-    const [errors, setErrors] = useState<{
-        [id: string]: { rank?: string; comment?: string };
-    }>({});
+
+const LecturerPage: React.FC = () => {
+    // // Use a lazy initialiser: try to load from localStorage; if missing, fall back to DEFAULT_APPLICANTS.
+    // const [applicants, setApplicants] = useState<Applicant[]>(() => {
+    //     const stored = localStorage.getItem('applicants');
+    //     return stored ? JSON.parse(stored) : DEFAULT_APPLICANTS;
+    // });
+    //
+    // // State to track validation errors for applicants by id
+    // const [errors, setErrors] = useState<{
+    //     [id: string]: { rank?: string; comment?: string };
+    // }>({});
+
+    const [applicants, setApplicants] = useState<Applicant[]>([]);
+    const [errors, setErrors] = useState<{ [id: string]: { rank?: string; comment?: string } }>({});
 
     // State for search & sort
     const [search, setSearch] = useState<string>('');
     const [sortBy, setSortBy] = useState<string>('');
 
-    // Save applicants state to localStorage when it changes.
+    const userLookup = useUserLookup();
+    const courseLookup = useCourseLookup();
+
+    // Fetch raw applications and then map into front-end Applicant objects:
     useEffect(() => {
-        localStorage.setItem('applicants', JSON.stringify(applicants));
-    }, [applicants]);
+        (async () => {
+            try {
+                const resp = await fetchAllApplications();
+                const apps: RawApp[] = resp.data;
+
+                const mapped: Applicant[] = apps.map((app) => ({
+                    id: String(app.application_id),
+                    userId: String(app.user.user_id),
+                    courseId: String(app.course.course_id),
+                    date: app.applied_at,                       // string
+                    availability: app.availability,             // single enum string
+                    skills: (app.user as any).skills || [],     // assume you have user.skills in lookup
+                    academicCredentials: [],                    // if you need them, fetch separately
+                    previousRoles: [],                          // same as above
+                    selected: false,                            // front-end only
+                    rank: app.rank ?? undefined,
+                    comment: "",
+                }));
+
+                setApplicants(mapped);
+            } catch (err) {
+                console.error(err);
+            }
+        })();
+    }, []);
+
+    // // Save applicants state to localStorage when it changes.
+    // useEffect(() => {
+    //     localStorage.setItem('applicants', JSON.stringify(applicants));
+    // }, [applicants]);
 
     // Toggle Selection for Applicant
     const toggleSelect = (id: string) => {
@@ -121,10 +161,6 @@ const LecturerPage: React.FC = () => {
         }
     };
 
-    // Use the custom hooks for user and course lookups
-    const userLookup = useUserLookup();
-    const courseLookup = useCourseLookup();
-
     // Helper function to get users full name
     const getUserName = (userId: string): string => {
         const user = userLookup[userId];
@@ -138,7 +174,18 @@ const LecturerPage: React.FC = () => {
         return course ? course.name : courseId;
     };
 
-    // Filter -Combine Applicants field into a searchable string
+    // // Filter -Combine Applicants field into a searchable string
+    // const filteredApplicants = applicants.filter((applicant) => {
+    //     const lowercaseSearch = search.toLowerCase();
+    //     return (
+    //         getUserName(applicant.userId).toLowerCase().includes(lowercaseSearch) ||
+    //         applicant.courseId.toLowerCase().includes(lowercaseSearch) ||
+    //         getCourseName(applicant.courseId).toLowerCase().includes(lowercaseSearch) ||
+    //         applicant.availability.join(" ").toLowerCase().includes(lowercaseSearch) ||
+    //         applicant.skills.join(' ').toLowerCase().includes(lowercaseSearch));
+    // });
+
+    // Filtering / sorting logic (adjust for the new single‐string availability)
     const filteredApplicants = applicants.filter((applicant) => {
         const lowercaseSearch = search.toLowerCase();
         return (
@@ -146,7 +193,8 @@ const LecturerPage: React.FC = () => {
             applicant.courseId.toLowerCase().includes(lowercaseSearch) ||
             getCourseName(applicant.courseId).toLowerCase().includes(lowercaseSearch) ||
             applicant.availability.join(" ").toLowerCase().includes(lowercaseSearch) ||
-            applicant.skills.join(' ').toLowerCase().includes(lowercaseSearch));
+            applicant.skills.join(' ').toLowerCase().includes(lowercaseSearch)
+        );
     });
 
     // Sort - If sortBy options selected, sort by filteredApplicants
