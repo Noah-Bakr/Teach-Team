@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { AppDataSource } from '../data-source';
 import { AcademicCredential } from '../entity/AcademicCredential';
+import { CreateAcademicCredentialDto, UpdateAcademicCredentialDto } from '../dto/academicCredential.dto';
 
 export class AcademicCredentialController {
     private credentialRepository = AppDataSource.getRepository(AcademicCredential);
@@ -69,21 +70,21 @@ export class AcademicCredentialController {
      *   - description  (string or null, optional)
      */
     async createAcademicCredential(req: Request, res: Response) {
-        const { degree_name, institution, start_date, end_date, description } = req.body;
+        const { degree_name, institution, start_date, end_date, description } = req.body as CreateAcademicCredentialDto;
 
-        if (!degree_name || !institution || !start_date) {
-            return res
-                .status(400)
-                .json({ message: 'degree_name, institution, and start_date are required' });
-        }
+        // if (!degree_name || !institution || !start_date) {
+        //     return res
+        //         .status(400)
+        //         .json({ message: 'degree_name, institution, and start_date are required' });
+        // }
 
         try {
             const newCredential = this.credentialRepository.create({
                 degree_name,
                 institution,
                 start_date: new Date(start_date),
-                end_date: end_date ? new Date(end_date) : null,
-                description: description ?? null,
+                end_date: end_date ? new Date(end_date) : undefined,
+                description: description ?? undefined,
             });
 
             const saved = await this.credentialRepository.save(newCredential);
@@ -123,7 +124,7 @@ export class AcademicCredentialController {
                 return res.status(404).json({ message: 'Academic credential not found' });
             }
 
-            const { degree_name, institution, start_date, end_date, description } = req.body;
+            const { degree_name, institution, start_date, end_date, description } = req.body as UpdateAcademicCredentialDto;
 
             if (degree_name !== undefined) existing.degree_name = degree_name;
             if (institution !== undefined) existing.institution = institution;
