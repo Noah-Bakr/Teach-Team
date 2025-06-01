@@ -80,10 +80,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       });
 
       return true;
-    } catch (err: any) {
-      const errorMessage = err.response && err.response.status === 401
-        ? "Invalid email or password. Please try again."
-        : err.message || "Login failed. Please check your credentials.";
+    } catch (err) {
+      let errorMessage = "Login failed. Please check your credentials.";
+
+      if (err instanceof Error) {
+        errorMessage = err.message;
+      }
+
+      if (typeof err === "object" && err !== null && "response" in err) {
+        const response = (err as { response?: { status?: number } }).response;
+        if (response?.status === 401) {
+          errorMessage = "Invalid email or password. Please try again.";
+        }
+      }
 
       setError(errorMessage);
 
@@ -140,8 +149,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         type: "success",
         duration: 5000,
       });
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Unknown error";
+      setError(message);
       toaster.create({
         title: "Update Failed",
         description: "Failed to update user details. Please try again.",
@@ -181,9 +191,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       });
   
       return true;
-    } catch (err: any) {
-      const errorMessage = err.message || "Something went wrong. Please try again.";
-      setError(errorMessage);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Unknown error occurred.";
+      setError(message);
       return false;
     } finally {
       setLoading(false);
