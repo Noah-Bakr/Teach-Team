@@ -3,6 +3,7 @@ import { AppDataSource } from '../data-source';
 import { Application } from '../entity/Application';
 import { User } from '../entity/User';
 import { Course } from '../entity/Course';
+import { CreateApplicationDto, UpdateApplicationDto } from '../dto/application.dto';
 
 export class ApplicationController {
     private applicationRepository = AppDataSource.getRepository(Application);
@@ -88,22 +89,22 @@ export class ApplicationController {
             user_id,
             course_id,
             rank,
-        } = req.body;
+        } = req.body as CreateApplicationDto;
 
-        // Basic validation of required fields
-        if (
-            !position_type ||
-            !status ||
-            typeof selected !== 'boolean' ||
-            !availability ||
-            typeof user_id !== 'number' ||
-            typeof course_id !== 'number'
-        ) {
-            return res.status(400).json({
-                message:
-                    'position_type, status, selected (boolean), availability, user_id (number), and course_id (number) are required',
-            });
-        }
+        // // Basic validation of required fields
+        // if (
+        //     !position_type ||
+        //     !status ||
+        //     typeof selected !== 'boolean' ||
+        //     !availability ||
+        //     typeof user_id !== 'number' ||
+        //     typeof course_id !== 'number'
+        // ) {
+        //     return res.status(400).json({
+        //         message:
+        //             'position_type, status, selected (boolean), availability, user_id (number), and course_id (number) are required',
+        //     });
+        // }
 
         try {
             // Verify that the referenced user exists
@@ -124,7 +125,7 @@ export class ApplicationController {
                 status,
                 selected,
                 availability,
-                rank: rank !== undefined ? rank : null,
+                rank: rank !== undefined ? rank : undefined,
                 user,
                 course,
             });
@@ -175,7 +176,7 @@ export class ApplicationController {
                 selected,
                 availability,
                 rank,
-            } = req.body;
+            } = req.body as UpdateApplicationDto;
 
             // Only update fields if they are provided in the request
             if (position_type !== undefined) existing.position_type = position_type;
