@@ -21,6 +21,7 @@ export class Course {
     // Many-to-Many relationship with Skills
     // A course can have many skills, and a skill can be associated with many courses
     @ManyToMany(() => Skills, skill => skill.courses)
+    @JoinTable()
     skills: Skills[];
 
     // One course can have many applications (One-to-Many relationship)
