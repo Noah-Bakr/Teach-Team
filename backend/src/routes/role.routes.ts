@@ -1,15 +1,10 @@
 import { Router } from 'express';
 import { RoleController } from '../controller/RoleController';
+import { validateDto } from '../middleware/validate';
+import { CreateRoleDto, UpdateRoleDto } from '../dto/role.dto';
 
 const router = Router();
 const roleController = new RoleController();
-
-// Base path for all roles routes:
-//   e.g. GET    /roles
-//         GET    /roles/:id
-//         POST   /roles
-//         PUT    /roles/:id
-//         DELETE /roles/:id
 
 router.get("/roles", async (req, res) => {
     await roleController.getAllRoles(req, res);
@@ -19,11 +14,11 @@ router.get("/roles/:id", async (req, res) => {
     await roleController.getRoleById(req, res);
 });
 
-router.post("/roles", async (req, res) => {
+router.post("/roles", validateDto(CreateRoleDto), async (req, res) => {
     await roleController.createRole(req, res);
 });
 
-router.put("/roles/:id", async (req, res) => {
+router.put("/roles/:id", validateDto(UpdateRoleDto), async (req, res) => {
     await roleController.updateRole(req, res);
 });
 

@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { AppDataSource } from '../data-source';
 import { Role } from '../entity/Role';
+import { CreateRoleDto, UpdateRoleDto } from '../dto/role.dto';
 
 export class RoleController {
     private roleRepository = AppDataSource.getRepository(Role);
@@ -64,17 +65,17 @@ export class RoleController {
      *   - role_name  ('admin' | 'lecturer' | 'candidate', required)
      */
     async createRole(req: Request, res: Response) {
-        const { role_name } = req.body;
+        const { role_name } = req.body as CreateRoleDto;
 
-        // Basic validation
-        const validRoles = ['admin', 'lecturer', 'candidate'] as const;
-        if (!role_name || !validRoles.includes(role_name)) {
-            return res.status(400).json({
-                message: `role_name is required and must be one of: ${validRoles.join(
-                    ', '
-                )}`,
-            });
-        }
+        // // Basic validation
+        // const validRoles = ['admin', 'lecturer', 'candidate'] as const;
+        // if (!role_name || !validRoles.includes(role_name)) {
+        //     return res.status(400).json({
+        //         message: `role_name is required and must be one of: ${validRoles.join(
+        //             ', '
+        //         )}`,
+        //     });
+        // }
 
         try {
             // Check for existing role_name (optional: enforce unique constraint)
@@ -119,14 +120,14 @@ export class RoleController {
                 return res.status(404).json({ message: 'Role not found' });
             }
 
-            const { role_name } = req.body;
-            const validRoles = ['admin', 'lecturer', 'candidate'] as const;
+            const { role_name } = req.body as UpdateRoleDto;
+            // const validRoles = ['admin', 'lecturer', 'candidate'] as const;
             if (role_name !== undefined) {
-                if (!validRoles.includes(role_name)) {
-                    return res.status(400).json({
-                        message: `role_name must be one of: ${validRoles.join(', ')}`,
-                    });
-                }
+                // if (!validRoles.includes(role_name)) {
+                //     return res.status(400).json({
+                //         message: `role_name must be one of: ${validRoles.join(', ')}`,
+                //     });
+                // }
                 existing.role_name = role_name;
             }
 
