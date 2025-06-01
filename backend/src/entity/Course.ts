@@ -2,7 +2,6 @@ import { Entity, PrimaryGeneratedColumn, JoinTable, Column, OneToMany, ManyToMan
 import { Skills } from './Skills';
 import { Application } from './Application';
 import { User } from './User';
-import { SkillsCourse} from "./SkillsCourse";
 
 @Entity('Course')
 export class Course {
@@ -20,7 +19,7 @@ export class Course {
 
     // Many-to-Many relationship with Skills
     // A course can have many skills, and a skill can be associated with many courses
-    @ManyToMany(() => Skills, skill => skill.courses)
+    @ManyToMany(() => Skills, (skill) => skill.courses, {eager: true})
     @JoinTable()
     skills: Skills[];
 
@@ -29,12 +28,8 @@ export class Course {
     applications: Application[];
 
     // Many courses can have many lecturers (Many-to-Many relationship)
-    @ManyToMany(() => User, user => user.courses)
+    @ManyToMany(() => User, (user) => user.courses)
     lecturers: User[];
-
-    // One course can have many skills (Many-to-Many relationship through SkillsCourse)
-    @OneToMany(() => SkillsCourse, skillsCourse => skillsCourse.course)
-    skillsCourses: SkillsCourse[];
 }
 
 
