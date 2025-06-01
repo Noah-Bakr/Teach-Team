@@ -1,50 +1,87 @@
-import { api } from './api';
+import axios from 'axios';
 
+const API_BASE = 'http://localhost:3001/api';
+
+//
+// Front-end shape of Comment as returned by the backend
+//
 export interface Comment {
     comment_id: number;
-    comment:     string;
-    created_at:  string;
-    updated_at:  string;
-    application: { application_id: number };
-    lecturer:    { user_id: number };
+    comment: string;
+    created_at: string; // ISO datetime
+    updated_at: string; // ISO datetime
+
+    application: {
+        application_id: number;
+        position_type: 'tutor' | 'lab_assistant';
+        status: 'pending' | 'accepted' | 'rejected';
+        applied_at: string;
+        selected: boolean;
+        availability: 'Full-Time' | 'Part-Time' | 'Not Available';
+        rank?: number | null;
+    };
+
+    lecturer: {
+        user_id: number;
+        username: string;
+        first_name: string;
+        last_name: string;
+        email: string;
+    };
 }
 
-export interface NewComment {
-    comment:        string;
+//
+// DTO for creating a new comment
+//
+export interface CreateCommentDto {
+    comment: string;
     application_id: number;
-    lecturer_id:    number;
+    lecturer_id: number;
 }
 
-export interface UpdateComment {
-    comment?: string;
+//
+// DTO for updating an existing comment
+//
+export interface UpdateCommentDto {
+    comment: string;
 }
 
-export const commentApi = {
-    async listAll(): Promise<Comment[]> {
-        const resp = await api.get<Comment[]>('/comments');
-        return resp.data;
-    },
+//
+// GET /comments
+// Fetch all comments
+//
+export function fetchAllComments() {
+    return axios.get<Comment[]>(`${API_BASE}/comments`);
+}
 
-    // get one by id
-    async getOne(id: number): Promise<Comment> {
-        const resp = await api.get<Comment>(`/comments/${id}`);
-        return resp.data;
-    },
+//
+// GET /comments/:id
+// Fetch a single comment by ID
+//
+export function fetchCommentById(id: number) {
+    return axios.get<Comment>(`${API_BASE}/comments/${id}`);
+}
 
-    // create
-    async create(data: NewComment): Promise<Comment> {
-        const resp = await api.post<Comment>('/comments', data);
-        return resp.data;
-    },
+//
+// POST /comments
+// Create a new comment
+//
+export function createComment(payload: CreateCommentDto) {
+    return axios.post<Comment>(`${API_BASE}/comments`, payload);
+}
 
-    // update partial
-    async update(id: number, data: UpdateComment): Promise<Comment> {
-        const resp = await api.put<Comment>(`/comments/${id}`, data);
-        return resp.data;
-    },
+//
+// PUT /comments/:id
+// Update an existing comment by ID
+//
+export function updateComment(id: number, payload: UpdateCommentDto) {
+    return axios.put<Comment>(`${API_BASE}/comments/${id}`, payload);
+}
 
-    // delete
-    async remove(id: number): Promise<void> {
-        await api.delete(`/comments/${id}`);
-    },
-};
+//
+// DELETE /comments/:id
+// Delete a comment by ID
+//
+export function deleteComment(id: number) {
+    return axios.delete<{ message: string }>(`${API_BASE}/comments/${id}`);
+}
