@@ -3,6 +3,7 @@ import { AppDataSource } from '../data-source';
 import { ApplicationRanking } from '../entity/ApplicationRanking';
 import { User } from '../entity/User';
 import { Application } from '../entity/Application';
+import { CreateApplicationRankingDto, UpdateApplicationRankingDto } from '../dto/applicationRanking.dto';
 
 export class ApplicationRankingController {
     private rankingRepository = AppDataSource.getRepository(ApplicationRanking);
@@ -86,18 +87,18 @@ export class ApplicationRankingController {
      *   - rank           (number, required)
      */
     async createApplicationRanking(req: Request, res: Response) {
-        const { lecturer_id, application_id, rank } = req.body;
+        const { lecturer_id, application_id, rank } = req.body as CreateApplicationRankingDto;
 
-        if (
-            typeof lecturer_id !== 'number' ||
-            typeof application_id !== 'number' ||
-            typeof rank !== 'number'
-        ) {
-            return res.status(400).json({
-                message:
-                    'lecturer_id (number), application_id (number), and rank (number) are required',
-            });
-        }
+        // if (
+        //     typeof lecturer_id !== 'number' ||
+        //     typeof application_id !== 'number' ||
+        //     typeof rank !== 'number'
+        // ) {
+        //     return res.status(400).json({
+        //         message:
+        //             'lecturer_id (number), application_id (number), and rank (number) are required',
+        //     });
+        // }
 
         try {
             // Verify that the referenced User (lecturer) exists and has role='lecturer'
@@ -176,11 +177,11 @@ export class ApplicationRankingController {
                     .json({ message: 'Application ranking not found' });
             }
 
-            const { rank: newRank } = req.body;
+            const { rank: newRank } = req.body as UpdateApplicationRankingDto;
             if (newRank !== undefined) {
-                if (typeof newRank !== 'number') {
-                    return res.status(400).json({ message: 'rank must be a number' });
-                }
+                // if (typeof newRank !== 'number') {
+                //     return res.status(400).json({ message: 'rank must be a number' });
+                // }
                 existingRanking.rank = newRank;
             }
 
