@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { AppDataSource } from '../data-source';
 import { Course } from '../entity/Course';
 import { Skills } from '../entity/Skills';
+import { CreateCourseDto, UpdateCourseDto } from '../dto/course.dto';
 
 export class CourseController {
     private courseRepository = AppDataSource.getRepository(Course);
@@ -36,6 +37,7 @@ export class CourseController {
         if (isNaN(courseId)) {
             return res.status(400).json({ message: 'Invalid course ID' });
         }
+
         try {
             const course = await this.courseRepository.findOne({
                 where: { course_id: courseId },
@@ -63,7 +65,7 @@ export class CourseController {
      *   - skillIds    (number[], optional)
      */
     async createCourse(req: Request, res: Response) {
-        const { course_code, course_name, semester, skillIds } = req.body;
+        const { course_code, course_name, semester, skillIds } = req.body as CreateCourseDto;
 
         if (!course_code || !course_name || !semester) {
             return res.status(400).json({
@@ -74,7 +76,7 @@ export class CourseController {
             const newCourse = this.courseRepository.create({
                 course_code,
                 course_name,
-                semester,
+                semester: semester as "1" | "2",
             });
             const savedCourse = await this.courseRepository.save(newCourse);
 
@@ -119,7 +121,7 @@ export class CourseController {
         if (isNaN(courseId)) {
             return res.status(400).json({ message: 'Invalid course ID' });
         }
-        const { course_code, course_name, semester, skillIds } = req.body;
+        const { course_code, course_name, semester, skillIds } = req.body as UpdateCourseDto;
 
         try {
             // 1) Find existing course
@@ -134,7 +136,7 @@ export class CourseController {
             // 2) Update basic fields if provided
             if (course_code !== undefined) course.course_code = course_code;
             if (course_name !== undefined) course.course_name = course_name;
-            if (semester !== undefined) course.semester = semester;
+            if (semester !== undefined) course.semester = semester as "1" | "2";
 
             // 3) Save base changes
             await this.courseRepository.save(course);
