@@ -1,4 +1,3 @@
-// src/entities/PreviousRole.ts
 import { Entity, PrimaryGeneratedColumn, JoinColumn, Column, ManyToOne } from 'typeorm';
 import { User } from './User';
 
@@ -23,7 +22,7 @@ export class PreviousRole {
     description: string;
 
     // Many PreviousRoles can belong to one User (Many-to-One relationship)
-    @ManyToOne(() => User, user => user.previousRoles)
+    @ManyToOne(() => User, user => user.previousRoles, { eager: true })
     @JoinColumn({ name: 'user_id' })
     user: User;
 }
