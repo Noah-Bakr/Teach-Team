@@ -3,6 +3,10 @@ import { AppDataSource } from '../data-source';
 import { User } from '../entity/User';
 import jwt from 'jsonwebtoken';
 import * as argon2 from "argon2";
+import { LoginDto } from '../dto/auth.dto';
+import { CreateUserDto } from '../dto/user.dto';
+
+// Login, Sign-Up, getCurrentUser, and Logout controller for user authentication
 
 export class AuthController {
     private userRepository = AppDataSource.getRepository(User);
@@ -14,11 +18,20 @@ export class AuthController {
      * @returns JSON response with success message and user data or error message
      */
     async login(req: Request, res: Response) {
-        const { email, password } = req.body;
+        const { email, password } = req.body as LoginDto;
 
         const user = await this.userRepository.findOne({
             where: { email },
-            relations: ['role'],
+            relations: [
+                    'role',
+                    'skills',
+                    'applications',
+                    'academicCredentials',
+                    'courses',
+                    'previousRoles',
+                    'comments',
+                    'rankings',
+                ],
         });
 
         if (!user) {
@@ -57,7 +70,7 @@ export class AuthController {
      * @returns JSON response with success message and user data or error message
      */
     async signUp(req: Request, res: Response) {
-        const { firstName, lastName, username, email, password } = req.body;
+        const { first_name, last_name, username, email, password } = req.body as CreateUserDto;
 
         const existingEmail = await this.userRepository.findOne({ where: { email } });
         const existingUsername = await this.userRepository.findOne({ where: { username } });
@@ -69,8 +82,8 @@ export class AuthController {
         const hashedPassword = await argon2.hash(password);
 
         const newUser = this.userRepository.create({
-            first_name: firstName,
-            last_name: lastName,
+            first_name: first_name,
+            last_name: last_name,
             username,
             email,
             password: hashedPassword,
@@ -84,16 +97,16 @@ export class AuthController {
         // return res.status(201).json({ message: 'User registered successfully', user: newUser });
     }
 
-    /**
-     * Retrieves all users
-     * @param req - Express request object
-     * @param res - Express response object
-     * @returns JSON response containing an array of all users
-     */
-    async getAllUsers(req: Request, res: Response) {
-        const users = await this.userRepository.find();
-        return res.status(200).json(users);
-    }
+    // /**
+    //  * Retrieves all users
+    //  * @param req - Express request object
+    //  * @param res - Express response object
+    //  * @returns JSON response containing an array of all users
+    //  */
+    // async getAllUsers(req: Request, res: Response) {
+    //     const users = await this.userRepository.find();
+    //     return res.status(200).json(users);
+    // }
 
     /**
      * Handles deleting a user by ID
@@ -115,63 +128,6 @@ export class AuthController {
     }
 
     /**
-     * Updates a user's details by ID
-     * @param req - Express request object containing user ID in params and updated fields in body
-     * @param res - Express response object
-     * @returns JSON response with success message and updated user data or error message
-     */
-    async updateUser(req: Request, res: Response) {
-        const userId = parseInt(req.params.id);
-        const updates = req.body;
-
-        try {
-            const user = await this.userRepository.findOne({ where: { user_id: userId } });
-
-            if (!user) {
-                return res.status(404).json({ message: 'User not found' });
-            }
-
-            if (updates.password) {
-                updates.password = await argon2.hash(updates.password);
-            }
-
-            Object.assign(user, updates); // Merge updates into the user object
-            const updatedUser = await this.userRepository.save(user);
-
-            return res.status(200).json({ message: 'User updated successfully', user: updatedUser });
-        } catch (error) {
-            return res.status(500).json({ message: 'Failed to update user', error });
-        }
-    }
-
-    /**
-     * Retrieves a user by ID
-     * @param req - Express request object containing user ID in params
-     * @param res - Express response object
-     * @returns JSON response containing the user data or error message
-     */
-    async getUserById(req: Request, res: Response) {
-        const userId = parseInt(req.params.id);
-
-        try {
-            const user = await this.userRepository.findOne({
-            where: { user_id: userId },
-            relations: ["role"],
-            });
-
-            if (!user) {
-            return res.status(404).json({ message: "User not found" });
-            }
-
-            const { password, ...userWithoutPassword } = user;
-
-            return res.status(200).json(userWithoutPassword);
-        } catch (error) {
-            return res.status(500).json({ message: "Failed to fetch user", error });
-        }
-    }
-
-    /**
      * Retrieves the current authenticated user
      * @param req - Express request object
      * @param res - Express response object
@@ -185,7 +141,16 @@ export class AuthController {
             const payload: any = jwt.verify(token, process.env.JWT_SECRET!);
             const user = await this.userRepository.findOne({
                 where: { user_id: payload.userId },
-                relations: ['role'],
+                relations: [
+                    'role',
+                    'skills',
+                    'applications',
+                    'academicCredentials',
+                    'courses',
+                    'previousRoles',
+                    'comments',
+                    'rankings',
+                ],
             });
 
             if (!user) return res.status(404).json({ message: "User not found" });
@@ -207,5 +172,62 @@ export class AuthController {
         res.clearCookie("token");
         res.status(200).json({ message: "Logged out" });
     }
+
+    // /**
+    //  * Updates a user's details by ID
+    //  * @param req - Express request object containing user ID in params and updated fields in body
+    //  * @param res - Express response object
+    //  * @returns JSON response with success message and updated user data or error message
+    //  */
+    // async updateUser(req: Request, res: Response) {
+    //     const userId = parseInt(req.params.id);
+    //     const updates = req.body;
+
+    //     try {
+    //         const user = await this.userRepository.findOne({ where: { user_id: userId } });
+
+    //         if (!user) {
+    //             return res.status(404).json({ message: 'User not found' });
+    //         }
+
+    //         if (updates.password) {
+    //             updates.password = await argon2.hash(updates.password);
+    //         }
+
+    //         Object.assign(user, updates); // Merge updates into the user object
+    //         const updatedUser = await this.userRepository.save(user);
+
+    //         return res.status(200).json({ message: 'User updated successfully', user: updatedUser });
+    //     } catch (error) {
+    //         return res.status(500).json({ message: 'Failed to update user', error });
+    //     }
+    // }
+
+    // /**
+    //  * Retrieves a user by ID
+    //  * @param req - Express request object containing user ID in params
+    //  * @param res - Express response object
+    //  * @returns JSON response containing the user data or error message
+    //  */
+    // async getUserById(req: Request, res: Response) {
+    //     const userId = parseInt(req.params.id);
+
+    //     try {
+    //         const user = await this.userRepository.findOne({
+    //         where: { user_id: userId },
+    //         relations: ["role"],
+    //         });
+
+    //         if (!user) {
+    //         return res.status(404).json({ message: "User not found" });
+    //         }
+
+    //         const { password, ...userWithoutPassword } = user;
+
+    //         return res.status(200).json(userWithoutPassword);
+    //     } catch (error) {
+    //         return res.status(500).json({ message: "Failed to fetch user", error });
+    //     }
+    // }
 
 }
