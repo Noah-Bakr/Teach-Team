@@ -5,16 +5,14 @@ import { User }     from "../entity/User";
 import { Skills }   from "../entity/Skills";
 import { Course }   from "../entity/Course";
 import { Application } from "../entity/Application";
-import { LecturerCourse } from "../entity/LecturerCourse";
 import { AcademicCredential }     from "../entity/AcademicCredential";
 import { PreviousRole }           from "../entity/PreviousRole";
-import { AcademicCredentialUser } from "../entity/AcademicCredentialUser";
+
 
 import {
     SEED_USERS,
     SEED_COURSES,
     SEED_APPLICATIONS,
-    SEED_LECTURER_COURSES
 } from "./testData";
 
 import * as argon2 from "argon2";
@@ -104,6 +102,12 @@ export async function seed() {
 
         // link skills
         if (u.skill_ids?.length) {
+            for (const sid of u.skill_ids) {
+                const s = await skillsRepo.findOneBy({ skill_id: sid });
+                if (!s) {
+                    console.warn(`   ! Skill ID ${sid} not found, skipping link.`);
+                }
+            }
             await userRepo
                 .createQueryBuilder()
                 .relation(User, "skills")
@@ -111,14 +115,11 @@ export async function seed() {
                 .add(u.skill_ids);
         }
 
-        // academic credentials
+        // Link academic credentials
         if (u.academic_credentials?.length) {
-            const credRepo = ds.getRepository(AcademicCredential);
-            const acUserRepo = ds.getRepository(AcademicCredentialUser);
-
             for (const ac of u.academic_credentials) {
-                // 1) create the credential
-                const credential = await credRepo.save({
+                // 1) create the AcademicCredential row
+                const credential = await ds.getRepository(AcademicCredential).save({
                     degree_name: ac.degree_name,
                     institution: ac.institution,
                     start_date: ac.start_date,
@@ -128,18 +129,9 @@ export async function seed() {
 
                 await userRepo
                     .createQueryBuilder()
-                    .relation(User, "academicCredentialUsers")
-                    .of(user)
-                    .add({
-                        user_id: user.user_id,
-                        academic_id: credential.academic_id,
-                    });
-
-                // 2) save the join row
-                await acUserRepo.save({
-                    user: saved,
-                    academicCredential: credential,
-                });
+                    .relation(User, "academicCredentials")
+                    .of(saved)
+                    .add(credential.academic_id);
             }
         }
 
@@ -192,30 +184,30 @@ export async function seed() {
     }
 
     //
-    // 6) LECTURER_COURSE
+    // // 6) LECTURER_COURSE
+    // //
+    // const lcRepo = ds.getRepository(LecturerCourse);
+    // for (const link of SEED_LECTURER_COURSES) {
+    //     const lect = await userRepo.findOneByOrFail({username: link.lecturerUsername});
+    //     const crs = await courseRepo.findOneByOrFail({course_code: link.courseCode});
     //
-    const lcRepo = ds.getRepository(LecturerCourse);
-    for (const link of SEED_LECTURER_COURSES) {
-        const lect = await userRepo.findOneByOrFail({username: link.lecturerUsername});
-        const crs = await courseRepo.findOneByOrFail({course_code: link.courseCode});
-
-        const exists = await lcRepo.findOne({
-            where: {
-                // match on the FK columns
-                user_id: lect.user_id,
-                course_id: crs.course_id,
-            }
-        });
-        if (exists) {
-            console.log(` -> LecturerCourse link ${link.lecturerUsername}–${link.courseCode} exists, skipping`);
-            continue;
-        }
-
-        // explicitly set the two PK columns:
-        await lcRepo.save({
-            user_id: lect.user_id,
-            course_id: crs.course_id,
-        });
-        console.log(` -> Seeded LecturerCourse ${link.lecturerUsername}–${link.courseCode}`);
-    }
+    //     const exists = await lcRepo.findOne({
+    //         where: {
+    //             // match on the FK columns
+    //             user_id: lect.user_id,
+    //             course_id: crs.course_id,
+    //         }
+    //     });
+    //     if (exists) {
+    //         console.log(` -> LecturerCourse link ${link.lecturerUsername}–${link.courseCode} exists, skipping`);
+    //         continue;
+    //     }
+    //
+    //     // explicitly set the two PK columns:
+    //     await lcRepo.save({
+    //         user_id: lect.user_id,
+    //         course_id: crs.course_id,
+    //     });
+    //     console.log(` -> Seeded LecturerCourse ${link.lecturerUsername}–${link.courseCode}`);
+    // }
 }
