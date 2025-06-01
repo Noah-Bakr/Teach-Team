@@ -11,11 +11,10 @@ export class Skills {
     skill_name: string;
 
     // Many users can have many skills (Many-to-Many relationship)
-    @ManyToMany(() => User, user => user.skills)
-    @JoinTable()
+    @ManyToMany(() => User, (user) => user.skills)
     users: User[];
 
     // Many courses can require many skills (Many-to-Many relationship)
-    @ManyToMany(() => Course, course => course.skills)
+    @ManyToMany(() => Course, (course) => course.skills)
     courses: Course[];
 }
