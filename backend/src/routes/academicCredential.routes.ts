@@ -6,23 +6,23 @@ import { CreateAcademicCredentialDto, UpdateAcademicCredentialDto } from '../dto
 const router = Router();
 const academicCredentialController = new AcademicCredentialController();
 
-router.get("/academic-credentials", async (req, res) => {
+router.get("/", async (req, res) => {
     await academicCredentialController.getAllAcademicCredentials(req, res);
 });
 
-router.get("/academic-credentials/:id", async (req, res) => {
+router.get("/:id", async (req, res) => {
     await academicCredentialController.getAcademicCredentialById(req, res);
 });
 
-router.post("/academic-credentials", validateDto(CreateAcademicCredentialDto), async (req, res) => {
+router.post("/", validateDto(CreateAcademicCredentialDto), async (req, res) => {
     await academicCredentialController.createAcademicCredential(req, res);
 });
 
-router.put("/academic-credentials/:id", validateDto(UpdateAcademicCredentialDto), async (req, res) => {
+router.put("/:id", validateDto(UpdateAcademicCredentialDto), async (req, res) => {
     await academicCredentialController.updateAcademicCredential(req, res);
 });
 
-router.delete("/academic-credentials/:id", async (req, res) => {
+router.delete("/:id", async (req, res) => {
     await academicCredentialController.deleteAcademicCredential(req, res);
 });
 
