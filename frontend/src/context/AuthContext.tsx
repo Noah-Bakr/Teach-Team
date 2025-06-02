@@ -178,7 +178,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         email: data.user.email,
         avatar: data.user.avatar,
         password: '',
-        role: [],
+        role: ["Candidate"], // set role to candidate by default
       };
   
       setCurrentUser(user);
