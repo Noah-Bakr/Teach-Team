@@ -21,7 +21,7 @@ const PORT = Number(process.env.PORT) || 3001;
 
 // (1) Log every request, to see exactly what path Express sees
 app.use((req, res, next) => {
-    console.log(`📥  Incoming request → ${req.method} ${req.path}`);
+    console.log(`Incoming request → ${req.method} ${req.path}`);
     next();
 });
 
