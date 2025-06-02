@@ -6,23 +6,23 @@ import { CreateApplicationRankingDto, UpdateApplicationRankingDto } from '../dto
 const router = Router();
 const applicationRankingController = new ApplicationRankingController();
 
-router.get("/application-ranking", async (req, res) => {
+router.get("/", async (req, res) => {
     await applicationRankingController.getAllApplicationRankings(req, res);
 });
 
-router.get("/application-ranking/:lecturer_id/:application_id", async (req, res) => {
+router.get("/:lecturer_id/:application_id", async (req, res) => {
     await applicationRankingController.getApplicationRankingByIds(req, res);
 });
 
-router.post("/application-ranking", validateDto(CreateApplicationRankingDto), async (req, res) => {
+router.post("/", validateDto(CreateApplicationRankingDto), async (req, res) => {
     await applicationRankingController.createApplicationRanking(req, res);
 });
 
-router.put("/application-ranking/:lecturer_id/:application_id", validateDto(UpdateApplicationRankingDto), async (req, res) => {
+router.put("/:lecturer_id/:application_id", validateDto(UpdateApplicationRankingDto), async (req, res) => {
     await applicationRankingController.updateApplicationRanking(req, res);
 });
 
-router.delete("/application-ranking/:lecturer_id/:application_id", async (req, res) => {
+router.delete("/:lecturer_id/:application_id", async (req, res) => {
     await applicationRankingController.deleteApplicationRanking(req, res);
 });
 
