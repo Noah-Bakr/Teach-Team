@@ -1,4 +1,4 @@
-export const Roles: string[] = ["admin", "lecturer", "tutor"];
+export const Roles: string[] = ['admin', 'lecturer', 'candidate'];
 export type Role = typeof Roles[number];
 export const Availability: string[] = ["Full-Time", "Part-Time", "Not Available"];
 export type Availability = typeof Availability[number];
