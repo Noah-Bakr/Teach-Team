@@ -19,7 +19,19 @@ export class AcademicCredentialController {
                 relations: ['users'],
                 order: { start_date: 'DESC' },
             });
-            return res.status(200).json(credentials);
+            const result = credentials.map(cred => ({
+                academic_id: cred.academic_id,
+                degree_name: cred.degree_name,
+                institution: cred.institution,
+                start_date: cred.start_date,
+                end_date: cred.end_date,
+                description: cred.description,
+                users: cred.users.map(u => ({
+                    user_id: u.user_id,
+                    username: u.username
+                }))
+            }));
+            return res.status(200).json(result);
         } catch (error) {
             console.error('Error fetching all academic credentials:', error);
             return res.status(500).json({ message: 'Error fetching academic credentials', error });
