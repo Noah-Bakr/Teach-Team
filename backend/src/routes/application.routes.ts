@@ -6,23 +6,23 @@ import { CreateApplicationDto, UpdateApplicationDto } from '../dto/application.d
 const router = Router();
 const applicationController = new ApplicationController();
 
-router.get("/application", async (req, res) => {
+router.get("/", async (req, res) => {
     await applicationController.getAllApplications(req, res);
 });
 
-router.get("/application/:id", async (req, res) => {
+router.get("/:id", async (req, res) => {
     await applicationController.getApplicationById(req, res);
 });
 
-router.post("/application", validateDto(CreateApplicationDto), async (req, res) => {
+router.post("/", validateDto(CreateApplicationDto), async (req, res) => {
     await applicationController.createApplication(req, res);
 });
 
-router.put("/application/:id", validateDto(UpdateApplicationDto), async (req, res) => {
+router.put("/:id", validateDto(UpdateApplicationDto), async (req, res) => {
     await applicationController.updateApplication(req, res);
 });
 
-router.delete("/application/:id", async (req, res) => {
+router.delete("/:id", async (req, res) => {
     await applicationController.deleteApplication(req, res);
 });
 
