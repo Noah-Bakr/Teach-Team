@@ -4,39 +4,43 @@ import {
     Course as BackendCourse,
     PreviousRole as BackendPrevRole,
     AcademicCredential as BackendAcadCred,
+    Review as BackendReview,
 } from '../api/userApi';
-import { UserUI } from '../../types/userTypes';
+import { UserUI, ReviewUI } from '../../types/userTypes';
 
-/**
- * Take a raw BackendSkill[] and return an array of just its names.
- */
+/** Helpers to extract string arrays **/
+
 function extractSkillNames(skills: BackendSkill[] | undefined): string[] {
     if (!Array.isArray(skills)) return [];
-    return skills.map(s => s.skill_name);
+    return skills.map((s) => s.skill_name);
 }
 
-/**
- * Take a raw BackendCourse[] and return an array of just its names.
- */
 function extractCourseNames(courses: BackendCourse[] | undefined): string[] {
     if (!Array.isArray(courses)) return [];
-    return courses.map(c => c.course_name);
+    return courses.map((c) => c.course_name);
 }
 
-/**
- * Take a raw BackendPrevRole[] and return an array of just its role titles.
- */
 function extractPreviousRoleTitles(prevRoles: BackendPrevRole[] | undefined): string[] {
     if (!Array.isArray(prevRoles)) return [];
-    return prevRoles.map(r => r.previous_role);
+    return prevRoles.map((r) => r.previous_role);
 }
 
-/**
- * Take a raw BackendAcadCred[] and return an array of just its degree_name.
- */
 function extractAcademicDegreeNames(acadCreds: BackendAcadCred[] | undefined): string[] {
     if (!Array.isArray(acadCreds)) return [];
-    return acadCreds.map(a => a.degree_name);
+    return acadCreds.map((a) => a.degree_name);
+}
+
+function mapRawReviews(rawReviews: BackendReview[] | undefined): ReviewUI[] | undefined {
+    if (!Array.isArray(rawReviews) || rawReviews.length === 0) return undefined;
+    return rawReviews.map((r) => ({
+        id: r.review_id,
+        rank: r.rank,
+        comment: r.comment,
+        reviewedAt: r.reviewed_at,
+        updatedAt: r.updated_at,
+        lecturerId: r.lecturer_id,
+        applicationId: r.application_id,
+    }));
 }
 
 /**
@@ -51,13 +55,13 @@ export function mapRawUserToUI(raw: BackendUser): UserUI {
         email: raw.email,
         avatar: raw.avatar,
 
-        // Collapse raw.role.role_name to a simple string
         role: raw.role.role_name,
 
-        // Convert nested arrays to string[]
         skills: extractSkillNames(raw.skills),
         courses: extractCourseNames(raw.courses),
         previousRoles: extractPreviousRoleTitles(raw.previousRoles),
         academicCredentials: extractAcademicDegreeNames(raw.academicCredentials),
+
+        reviews: mapRawReviews(raw.reviews),
     };
 }

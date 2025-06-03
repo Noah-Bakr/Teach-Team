@@ -1,7 +1,7 @@
 export interface Role {
     role_id: number;
     role_name: 'admin' | 'lecturer' | 'candidate';
-    users: any[];  // we’ll ignore this field in our mapper
+    users: any[]; // ignored by mapper
 }
 
 export interface Skill {
@@ -23,7 +23,7 @@ export interface PreviousRole {
     start_date: string;
     end_date: string | null;
     description: string | null;
-    user: { user_id: number }; // nested but we ignore it
+    user: { user_id: number };
 }
 
 export interface AcademicCredential {
@@ -44,25 +44,36 @@ export interface Comment {
     lecturer: { user_id: number; first_name: string; last_name: string };
 }
 
+export interface Review {
+    review_id: number;
+    lecturer_id: number;
+    application_id: number;
+    rank: number | null;
+    comment: string | null;
+    reviewed_at: string;
+    updated_at: string;
+}
+
 export interface User {
     user_id: number;
     username: string;
     email: string;
-    password: string;           // we will not include this in UI
+    password: string;
     created_at: string;
     updated_at: string;
     first_name: string;
     last_name: string;
     avatar: string | null;
 
-    role: Role;                  // nested object
-    skills: Skill[];             // nested array
-    applications: any[];         // we’ll ignore in UI
+    role: Role;
+    skills: Skill[];
+    applications: any[]; // ignored by mapper
     academicCredentials: AcademicCredential[];
     courses: Course[];
     previousRoles: PreviousRole[];
     comments: Comment[];
-    rankings: any[];
+    rankings: any[]; // ignored by mapper
+    reviews: Review[];
 }
 
 export interface CreateUserDto {

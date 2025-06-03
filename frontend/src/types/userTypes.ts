@@ -1,3 +1,13 @@
+export type ReviewUI = {
+    id: number;             // review_id
+    rank: number | null;
+    comment: string | null;
+    reviewedAt: string;     // ISO datetime
+    updatedAt: string;      // ISO datetime
+    lecturerId: number;
+    applicationId: number;
+};
+
 export type UserUI = {
     id: number;
     username: string;
@@ -8,9 +18,10 @@ export type UserUI = {
 
     role: 'admin' | 'lecturer' | 'candidate';
 
-    // Optional arrays of names only (no nested objects)
     skills?: string[];
-    courses?: string[];     // array of courses only for lecturers
-    previousRoles?: string[];     // array of previous_role titles
-    academicCredentials?: string[]; // array of degree_name
+    courses?: string[];
+    previousRoles?: string[];
+    academicCredentials?: string[];
+
+    reviews?: ReviewUI[];
 };

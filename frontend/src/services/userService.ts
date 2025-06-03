@@ -10,15 +10,15 @@ import { UserUI } from '../types/userTypes';
 const API_BASE = 'http://localhost:3001/api';
 
 /**
- * GET /user → UserUI[]
+ * GET /users → UserUI[]
  */
 export async function fetchAllUsers(): Promise<UserUI[]> {
     const resp = await axios.get<BackendUser[]>(`${API_BASE}/users`);
-    return resp.data.map(raw => mapRawUserToUI(raw));
+    return resp.data.map((raw) => mapRawUserToUI(raw));
 }
 
 /**
- * GET /user/:id → UserUI
+ * GET /users/:id → UserUI
  */
 export async function fetchUserById(id: number): Promise<UserUI> {
     const resp = await axios.get<BackendUser>(`${API_BASE}/users/${id}`);
@@ -26,7 +26,7 @@ export async function fetchUserById(id: number): Promise<UserUI> {
 }
 
 /**
- * POST /user → UserUI
+ * POST /users → UserUI
  */
 export async function createUser(payload: CreateUserDto): Promise<UserUI> {
     const resp = await axios.post<BackendUser>(`${API_BASE}/users`, payload);
@@ -34,7 +34,7 @@ export async function createUser(payload: CreateUserDto): Promise<UserUI> {
 }
 
 /**
- * PUT /user/:id → UserUI
+ * PUT /users/:id → UserUI
  */
 export async function updateUser(
     id: number,
@@ -48,15 +48,14 @@ export async function updateUser(
 }
 
 /**
- * DELETE /user/:id
+ * DELETE /users/:id
  */
 export function deleteUser(id: number) {
     return axios.delete<{ message: string }>(`${API_BASE}/users/${id}`);
 }
 
 /**
- * POST /user/:id/skills
- * Attaches skills; backend returns full BackendUser, so map it
+ * POST /users/:id/skills
  */
 export async function addSkillsToUser(
     userId: number,
@@ -70,8 +69,7 @@ export async function addSkillsToUser(
 }
 
 /**
- * DELETE /user/:id/skills/:skillId
- * Detach skill returns { message }; no mapping needed
+ * DELETE /users/:id/skills/:skillId
  */
 export function removeSkillFromUser(userId: number, skillId: number) {
     return axios.delete<{ message: string }>(
@@ -80,8 +78,7 @@ export function removeSkillFromUser(userId: number, skillId: number) {
 }
 
 /**
- * POST /user/:id/academic-credentials
- * Attaches academic credentials; backend returns full BackendUser, so map it
+ * POST /users/:id/academic-credentials
  */
 export async function addCredentialsToUser(
     userId: number,
@@ -95,21 +92,16 @@ export async function addCredentialsToUser(
 }
 
 /**
- * DELETE /user/:id/academic-credentials/:credentialId
- * Detach returns { message }
+ * DELETE /users/:id/academic-credentials/:credentialId
  */
-export function removeCredentialFromUser(
-    userId: number,
-    credentialId: number
-) {
+export function removeCredentialFromUser(userId: number, credentialId: number) {
     return axios.delete<{ message: string }>(
         `${API_BASE}/users/${userId}/academic-credentials/${credentialId}`
     );
 }
 
 /**
- * POST /user/:id/courses
- * Attaches courses; backend returns full BackendUser, so map it
+ * POST /users/:id/courses
  */
 export async function addCoursesToUser(
     userId: number,
@@ -123,7 +115,7 @@ export async function addCoursesToUser(
 }
 
 /**
- * DELETE /user/:id/courses/:courseId
+ * DELETE /users/:id/courses/:courseId
  */
 export function removeCourseFromUser(userId: number, courseId: number) {
     return axios.delete<{ message: string }>(
