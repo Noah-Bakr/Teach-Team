@@ -32,8 +32,14 @@ const Navbar: React.FC = () => {
         setIsSignUpFormOpen(false);
     };
 
-    const handleSignOutClick = () => {
-        logoutUser();
+    const handleSignOutClick = async () => {
+        try {
+            await logoutUser();
+            setCurrentUser(null);
+            router.push('/');
+        } catch (error) {
+            console.error("Error signing out:", error);
+        }
     };
 
     // Fetch current user from /auth/me
@@ -61,7 +67,7 @@ const Navbar: React.FC = () => {
                 const status = (error as { response?: { status?: number } }).response?.status;
 
                 if (status === 401) {
-                    setCurrentUser(null); // Not logged in — this is okay
+                    setCurrentUser(null);
                 } else {
                     console.error("Unexpected error fetching user:", error);
                 }
