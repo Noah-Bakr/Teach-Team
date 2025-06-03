@@ -1,4 +1,6 @@
 import axios from 'axios';
+import { mapRawRoleToUI } from './mappers/roleMapper';
+import { RoleUI } from '../types/roleTypes';
 
 const API_BASE = 'http://localhost:3001/api';
 
@@ -13,7 +15,7 @@ export interface Role {
 }
 
 //
-// 2) DTO for creating a new Role
+//   DTO for creating a new Role
 //    Must match the backend’s CreateRoleDto
 //
 export interface CreateRoleDto {
@@ -28,45 +30,48 @@ export interface UpdateRoleDto {
     role_name?: 'admin' | 'lecturer' | 'candidate';
 }
 
-//
-//    GET /roles
-//    Fetch all roles
-//
-export function fetchAllRoles() {
-    return axios.get<Role[]>(`${API_BASE}/roles`);
+/**
+ * GET /roles → RoleUI[]
+ *   Fetch all roles (raw: BackendRole[]), then map to just string[]
+ */
+export async function fetchAllRoles(): Promise<RoleUI[]> {
+    const resp = await axios.get<Role[]>(`${API_BASE}/roles`);
+    return resp.data.map(raw => mapRawRoleToUI(raw));
 }
 
-//
-//    GET /roles/:id
-//    Fetch a single role by ID
-//
-export function fetchRoleById(id: number) {
-    return axios.get<Role>(`${API_BASE}/roles/${id}`);
+/**
+ * GET /roles/:id → RoleUI
+ *   Fetch one role by ID, return only its name string.
+ */
+export async function fetchRoleById(id: number): Promise<RoleUI> {
+    const resp = await axios.get<Role>(`${API_BASE}/roles/${id}`);
+    return mapRawRoleToUI(resp.data);
 }
 
-//
-//    POST /roles
-//    Create a new role
-//
-export function createRole(payload: CreateRoleDto) {
-    return axios.post<Role>(`${API_BASE}/roles`, payload);
+/**
+ * POST /roles
+ *   Create a new role (backend returns full BackendRole); map to string.
+ */
+export async function createRole(payload: CreateRoleDto): Promise<RoleUI> {
+    const resp = await axios.post<Role>(`${API_BASE}/roles`, payload);
+    return mapRawRoleToUI(resp.data);
 }
 
-//
-//    PUT /roles/:id
-//    Update an existing role by ID
-//
-export function updateRole(
+/**
+ * PUT /roles/:id
+ *   Update an existing role; return just the string name again.
+ */
+export async function updateRole(
     id: number,
     payload: UpdateRoleDto
-) {
-    return axios.put<Role>(`${API_BASE}/roles/${id}`, payload);
+): Promise<RoleUI> {
+    const resp = await axios.put<Role>(`${API_BASE}/roles/${id}`, payload);
+    return mapRawRoleToUI(resp.data);
 }
 
-//
-//    DELETE /roles/:id
-//    Delete a role by ID
-//
+/**
+ *   DELETE /roles/:id
+ */
 export function deleteRole(id: number) {
     return axios.delete<{ message: string }>(`${API_BASE}/roles/${id}`);
 }
