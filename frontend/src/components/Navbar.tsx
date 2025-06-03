@@ -58,8 +58,13 @@ const Navbar: React.FC = () => {
                 setCurrentUser(user);
                 console.log("Current avatar fetched:", user.avatar);
             } catch (error) {
-                console.error("Error fetching current user:", error);
-                setCurrentUser(null);
+                const status = (error as { response?: { status?: number } }).response?.status;
+
+                if (status === 401) {
+                    setCurrentUser(null); // Not logged in — this is okay
+                } else {
+                    console.error("Unexpected error fetching user:", error);
+                }
             }
         };
 
