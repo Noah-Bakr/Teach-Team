@@ -43,9 +43,6 @@ export class CreateApplicationDto {
     @IsInt({ message: 'course_id must be an integer' })
     course_id: number;
 
-    @IsOptional()
-    @IsNumber({}, { message: 'rank must be a number' })
-    rank?: number | undefined;
 }
 
 export class UpdateApplicationDto {
@@ -65,7 +62,4 @@ export class UpdateApplicationDto {
     @IsEnum(AvailabilityType, { message: 'availability must be Full-Time, Part-Time or Not Available' })
     availability?: AvailabilityType;
 
-    @IsOptional()
-    @IsNumber({}, { message: 'rank must be a number or null' })
-    rank?: number | undefined;
 }
