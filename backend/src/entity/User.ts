@@ -5,8 +5,7 @@ import { Application } from './Application';
 import { AcademicCredential } from './AcademicCredential';
 import { Course } from './Course';
 import { PreviousRole } from './PreviousRole';
-import { Comment } from './Comment';
-import { ApplicationRanking} from "./ApplicationRanking";
+import { Review } from './Review';
 
 @Entity('User')
 export class User {
@@ -70,9 +69,9 @@ export class User {
     previousRoles: PreviousRole[];
 
     // Many comments can be made by one lecturer (Many-to-One relationship)
-    @OneToMany(() => Comment, comment => comment.lecturer)
-    comments: Comment[];
+    @OneToMany(() => Review, (review) => review.lecturer)
+    reviews: Review[];
 
-    @OneToMany(() => ApplicationRanking, (ranking) => ranking.lecturer)
-    rankings: ApplicationRanking[];
+    // @OneToMany(() => ApplicationRanking, (ranking) => ranking.lecturer)
+    // rankings: ApplicationRanking[];
 }
