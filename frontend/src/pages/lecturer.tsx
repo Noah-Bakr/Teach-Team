@@ -52,101 +52,135 @@ export const LecturerPage: React.FC = () => {
     /**
      * When the rank input changes, update local state AND send to backend.
      */
-    const handleRankChange = async (appId: number, newValue: string) => {
-        const rank = Number(newValue);
-        if (rank > 0) {
-            const currentApp = applications.find((app) => app.id === appId);
-            if (currentApp) {
-                // Prevent duplicate rank per course
-                const duplicate = applications.find(
-                    (app) =>
-                        app.id !== appId &&
-                        app.selected &&
-                        app.course.id === currentApp.course.id &&
-                        app.rank?.[0]?.ranking === rank
+    // const handleRankChange = async (appId: number, newValue: string) => {
+    //     const rank = Number(newValue);
+    //     if (rank > 0) {
+    //         const currentApp = applications.find((app) => app.id === appId);
+    //         if (currentApp) {
+    //             // Prevent duplicate rank per course
+    //             const duplicate = applications.find(
+    //                 (app) =>
+    //                     app.id !== appId &&
+    //                     app.selected &&
+    //                     app.course.id === currentApp.course.id &&
+    //                     app.rank?.[0]?.ranking === rank
+    //             );
+    //             if (duplicate) {
+    //                 setErrors((prev) => ({
+    //                     ...prev,
+    //                     [appId]: {
+    //                         ...prev[appId],
+    //                         rank: `Rank ${rank} already assigned for course ${currentApp.course.name}`,
+    //                     },
+    //                 }));
+    //                 return;
+    //             } else {
+    //                 setErrors((prev) => ({
+    //                     ...prev,
+    //                     [appId]: { ...prev[appId], rank: "" },
+    //                 }));
+    //
+    //                 // Update local state immediately (show in UI)
+    //                 setApplications((prev) =>
+    //                     prev.map((app) =>
+    //                         app.id === appId
+    //                             ? {
+    //                                 ...app,
+    //                                 rank: [
+    //                                     {
+    //                                         id: Date.now(), // temporary frontend ID
+    //                                         ranking: rank,
+    //                                         createdAt: "",
+    //                                         updatedAt: "",
+    //                                         lecturerName: "", // will be filled by backend’s response
+    //                                     },
+    //                                 ],
+    //                             }
+    //                             : app
+    //                     )
+    //                 );
+    //
+    //                 // Then send to backend:
+    //                 try {
+    //                     const savedRanking = await createRanking({
+    //                         application_id: appId,
+    //                         lecturer_id: lecturerId,
+    //                         rank: rank,
+    //                     });
+    //                     // Optionally, you can merge `savedRanking` into local state so that
+    //                     // the returned `createdAt` / `updatedAt` / `lecturerName` propagate.
+    //                     setApplications((prev) =>
+    //                         prev.map((app) =>
+    //                             app.id === appId
+    //                                 ? {
+    //                                     ...app,
+    //                                     rank: [
+    //                                         {
+    //                                             id: savedRanking.id,
+    //                                             ranking: savedRanking.ranking,
+    //                                             createdAt: savedRanking.createdAt,
+    //                                             updatedAt: savedRanking.updatedAt,
+    //                                             lecturerName: savedRanking.lecturerName,
+    //                                         },
+    //                                     ],
+    //                                 }
+    //                                 : app
+    //                         )
+    //                     );
+    //                 } catch (err) {
+    //                     console.error("Failed to save ranking:", err);
+    //                     // Optionally set an error message in UI
+    //                     setErrors((prev) => ({
+    //                         ...prev,
+    //                         [appId]: {
+    //                             ...prev[appId],
+    //                             rank: "Error saving ranking to server",
+    //                         },
+    //                     }));
+    //                 }
+    //             }
+    //         }
+    //     } else {
+    //         setErrors((prev) => ({
+    //             ...prev,
+    //             [appId]: { ...prev[appId], rank: "Rank must be greater than 0" },
+    //         }));
+    //     }
+    // };
+    const handleRankChange = (appId: number, newValue: string) => {
+            const rank = Number(newValue);
+            if (rank > 0) {
+                const currentApp = applications.find((app) => app.id === appId);
+
+                setApplications((prev) =>
+                    prev.map((app) =>
+                        app.id === appId
+                            ? {
+                                ...app,
+                                rank: [
+                                    {
+                                        id: Date.now(),
+                                        ranking: rank,
+                                        // You could leave createdAt/updatedAt blank or fill with
+                                        // something like (new Date()).toISOString() if you want
+                                        createdAt: "",
+                                        updatedAt: "",
+                                        lecturerName: "",
+                                    },
+                                ],
+                            }
+                            : app
+                    )
                 );
-                if (duplicate) {
-                    setErrors((prev) => ({
-                        ...prev,
-                        [appId]: {
-                            ...prev[appId],
-                            rank: `Rank ${rank} already assigned for course ${currentApp.course.name}`,
-                        },
-                    }));
-                    return;
-                } else {
-                    setErrors((prev) => ({
-                        ...prev,
-                        [appId]: { ...prev[appId], rank: "" },
-                    }));
 
-                    // Update local state immediately (show in UI)
-                    setApplications((prev) =>
-                        prev.map((app) =>
-                            app.id === appId
-                                ? {
-                                    ...app,
-                                    rank: [
-                                        {
-                                            id: Date.now(), // temporary frontend ID
-                                            ranking: rank,
-                                            createdAt: "",
-                                            updatedAt: "",
-                                            lecturerName: "", // will be filled by backend’s response
-                                        },
-                                    ],
-                                }
-                                : app
-                        )
-                    );
-
-                    // Then send to backend:
-                    try {
-                        const savedRanking = await createRanking({
-                            application_id: appId,
-                            lecturer_id: lecturerId,
-                            rank: rank,
-                        });
-                        // Optionally, you can merge `savedRanking` into local state so that
-                        // the returned `createdAt` / `updatedAt` / `lecturerName` propagate.
-                        setApplications((prev) =>
-                            prev.map((app) =>
-                                app.id === appId
-                                    ? {
-                                        ...app,
-                                        rank: [
-                                            {
-                                                id: savedRanking.id,
-                                                ranking: savedRanking.ranking,
-                                                createdAt: savedRanking.createdAt,
-                                                updatedAt: savedRanking.updatedAt,
-                                                lecturerName: savedRanking.lecturerName,
-                                            },
-                                        ],
-                                    }
-                                    : app
-                            )
-                        );
-                    } catch (err) {
-                        console.error("Failed to save ranking:", err);
-                        // Optionally set an error message in UI
-                        setErrors((prev) => ({
-                            ...prev,
-                            [appId]: {
-                                ...prev[appId],
-                                rank: "Error saving ranking to server",
-                            },
-                        }));
-                    }
-                }
+            } else {
+                setErrors((prev) => ({
+                    ...prev,
+                    [appId]: { ...prev[appId], rank: "Rank must be greater than 0" },
+                }));
             }
-        } else {
-            setErrors((prev) => ({
-                ...prev,
-                [appId]: { ...prev[appId], rank: "Rank must be greater than 0" },
-            }));
-        }
-    };
+        };
+
 
     /**
      * When the comment textarea changes, update local state AND send to backend.
