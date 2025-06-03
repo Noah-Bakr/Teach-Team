@@ -3,49 +3,49 @@ export type Role = typeof Roles[number];
 export const Availability: string[] = ["Full-Time", "Part-Time", "Not Available"];
 export type Availability = typeof Availability[number];
 
-export type User = {
-  id: string;
-  username: string;
-  firstName: string;
-  lastName: string;
-  avatar?: string; // URL to the avatar image
-  email: string; // will be the username
-  password: string;
-  role: Role[]; // List of roles (closed)
-  previousRoles?: PreviousRoles[]; // Optional field only for tutors
+// export type User = {
+//   id: string;
+//   username: string;
+//   firstName: string;
+//   lastName: string;
+//   avatar?: string; // URL to the avatar image
+//   email: string; // will be the username
+//   password: string;
+//   role: Role[]; // List of roles (closed)
+//   previousRoles?: PreviousRoles[]; // Optional field only for tutors
+//
+//   academicCredentials?: string; // Optional field for academic credentials
+//   skills?: string[]; // Optional field for skills
+//   availability?: Availability[]; // Optional field for availability (list) only for tutors
+// };
 
-  academicCredentials?: string; // Optional field for academic credentials
-  skills?: string[]; // Optional field for skills
-  availability?: Availability[]; // Optional field for availability (list) only for tutors
-};
+// export type Applicant = {
+//     id: string;
+//     date: string; // Date of application (new Date().toISOString())
+//     userId: string;
+//     courseId: string;
+//     availability: Availability[];
+//     skills: string[];
+//     academicCredentials: string | null;
+//     previousRoles: PreviousRoles[]
+//     selected: boolean | false;
+//     // Optional based on lecturers preference
+//     rank?: number;
+//     // Optional comments left by lecturer
+//     comment?: string[];
+// };
 
-export type Applicant = {
-    id: string;
-    date: string; // Date of application (new Date().toISOString())
-    userId: string;
-    courseId: string;
-    availability: Availability[];
-    skills: string[];
-    academicCredentials: string | null;
-    previousRoles: PreviousRoles[]
-    selected: boolean | false;
-    // Optional based on lecturers preference
-    rank?: number;
-    // Optional comments left by lecturer
-    comment?: string[];
-};
+// export type PreviousRoles = {
+//     id: string;
+//     role: string;
+//     company: string;
+//     startDate: string;  // (new Date().toISOString())
+//     endDate: string | null;  // endDate can be null if the user is still employed
+//     description: string;
+// };
 
-export type PreviousRoles = {
-    id: string;
-    role: string;
-    company: string;
-    startDate: string;  // (new Date().toISOString())
-    endDate: string | null;  // endDate can be null if the user is still employed
-    description: string;
-};
-
-export type Course = {
-    id: string;
-    name: string;
-    skills?: string[];
-};
+// export type Course = {
+//     id: string;
+//     name: string;
+//     skills?: string[];
+// };
