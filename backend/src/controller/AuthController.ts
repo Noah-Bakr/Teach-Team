@@ -86,10 +86,24 @@ export class AuthController {
             last_name: last_name,
             username,
             email,
+            role: { role_name: 'candidate' }, // Default role for new users
             password: hashedPassword,
         });
 
         await this.userRepository.save(newUser);
+
+        const token = jwt.sign(
+            { userId: newUser.user_id, role: newUser.role.role_name },
+            process.env.JWT_SECRET!,
+            { expiresIn: "1h" }
+        );
+
+        res.cookie("token", token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
+            maxAge: 3600000,
+        });
 
         const { password: _, ...userWithoutPassword } = newUser;
         return res.status(201).json({ message: 'User registered successfully', user: userWithoutPassword });

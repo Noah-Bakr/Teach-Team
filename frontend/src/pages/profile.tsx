@@ -11,9 +11,9 @@
 import { Avatar, Box, Button, Card, Field, Input, NativeSelect, Separator, Stack, Textarea } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { UserUI } from "@/types/userTypes";
-import { authApi } from "@/services/api";
 import { fetchUserById, updateUser } from "@/services/userService";
 import { Roles } from "@/types/roleTypes";
+import { getCurrentUser } from "@/services/authService";
 
 
 const ProfilePage: React.FC = () => {
@@ -50,13 +50,24 @@ const ProfilePage: React.FC = () => {
     useEffect(() => {
         const fetchUserData = async () => {
             try {
-                const authResponse = await authApi.getCurrentUser();
-                const userId = authResponse.data.user_id;
+                const authResponse = await getCurrentUser();
+                
+                const mappedUser: UserUI = {
+                    id: authResponse.id,
+                    username: authResponse.username,
+                    firstName: authResponse.firstName,
+                    lastName: authResponse.lastName,
+                    email: authResponse.email,
+                    avatar: authResponse.avatar || null,
+                    role: authResponse.role || "candidate",
+                    skills: authResponse.skills || [],
+                    courses: authResponse.courses || [],
+                    previousRoles: authResponse.previousRoles || [],
+                    academicCredentials: authResponse.academicCredentials || [],
+                };
 
-                const userData = await fetchUserById(userId);
-
-                setCurrentUser(userData);
-                setUpdatedUser(userData);
+                setCurrentUser(mappedUser);
+                setUpdatedUser(mappedUser);
             } catch (error) {
                 console.error("Error fetching user data:", error);
             }
@@ -201,7 +212,7 @@ const ProfilePage: React.FC = () => {
                                             <PasswordInput disabled={isDisabled} name="password" placeholder="Password" value={updatedUser.password} onChange={handleChange}/>
                                         </Field.Root> */}
 
-                                        <Field.Root orientation="horizontal" disabled={isDisabled}>
+                                        <Field.Root orientation="horizontal" disabled>
                                             <Field.Label>Role</Field.Label>
                                             <NativeSelect.Root onChange={handleEventChange} disabled>
                                                 <NativeSelect.Field name="role" value={updatedUser.role}>
