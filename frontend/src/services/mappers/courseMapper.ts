@@ -1,4 +1,4 @@
-import { Course as BackendCourse, Skill, User } from '../courseApi';
+import { Course as BackendCourse, Skill, User } from '../api/courseApi';
 import { CourseUI } from '../../types/courseTypes';
 
 /**
