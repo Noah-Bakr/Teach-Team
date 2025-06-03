@@ -13,7 +13,7 @@ const API_BASE = 'http://localhost:3001/api';
  * GET /user → UserUI[]
  */
 export async function fetchAllUsers(): Promise<UserUI[]> {
-    const resp = await axios.get<BackendUser[]>(`${API_BASE}/user`);
+    const resp = await axios.get<BackendUser[]>(`${API_BASE}/users`);
     return resp.data.map(raw => mapRawUserToUI(raw));
 }
 
@@ -21,7 +21,7 @@ export async function fetchAllUsers(): Promise<UserUI[]> {
  * GET /user/:id → UserUI
  */
 export async function fetchUserById(id: number): Promise<UserUI> {
-    const resp = await axios.get<BackendUser>(`${API_BASE}/user/${id}`);
+    const resp = await axios.get<BackendUser>(`${API_BASE}/users/${id}`);
     return mapRawUserToUI(resp.data);
 }
 
@@ -29,7 +29,7 @@ export async function fetchUserById(id: number): Promise<UserUI> {
  * POST /user → UserUI
  */
 export async function createUser(payload: CreateUserDto): Promise<UserUI> {
-    const resp = await axios.post<BackendUser>(`${API_BASE}/user`, payload);
+    const resp = await axios.post<BackendUser>(`${API_BASE}/users`, payload);
     return mapRawUserToUI(resp.data);
 }
 
@@ -41,7 +41,7 @@ export async function updateUser(
     payload: UpdateUserDto
 ): Promise<UserUI> {
     const resp = await axios.put<BackendUser>(
-        `${API_BASE}/user/${id}`,
+        `${API_BASE}/users/${id}`,
         payload
     );
     return mapRawUserToUI(resp.data);
@@ -51,7 +51,7 @@ export async function updateUser(
  * DELETE /user/:id
  */
 export function deleteUser(id: number) {
-    return axios.delete<{ message: string }>(`${API_BASE}/user/${id}`);
+    return axios.delete<{ message: string }>(`${API_BASE}/users/${id}`);
 }
 
 /**
@@ -63,7 +63,7 @@ export async function addSkillsToUser(
     skillIds: number[]
 ): Promise<UserUI> {
     const resp = await axios.post<BackendUser>(
-        `${API_BASE}/user/${userId}/skills`,
+        `${API_BASE}/users/${userId}/skills`,
         { skillIds }
     );
     return mapRawUserToUI(resp.data);
@@ -75,7 +75,7 @@ export async function addSkillsToUser(
  */
 export function removeSkillFromUser(userId: number, skillId: number) {
     return axios.delete<{ message: string }>(
-        `${API_BASE}/user/${userId}/skills/${skillId}`
+        `${API_BASE}/users/${userId}/skills/${skillId}`
     );
 }
 
@@ -88,7 +88,7 @@ export async function addCredentialsToUser(
     credentialIds: number[]
 ): Promise<UserUI> {
     const resp = await axios.post<BackendUser>(
-        `${API_BASE}/user/${userId}/academic-credentials`,
+        `${API_BASE}/users/${userId}/academic-credentials`,
         { credentialIds }
     );
     return mapRawUserToUI(resp.data);
@@ -103,7 +103,7 @@ export function removeCredentialFromUser(
     credentialId: number
 ) {
     return axios.delete<{ message: string }>(
-        `${API_BASE}/user/${userId}/academic-credentials/${credentialId}`
+        `${API_BASE}/users/${userId}/academic-credentials/${credentialId}`
     );
 }
 
@@ -116,7 +116,7 @@ export async function addCoursesToUser(
     courseIds: number[]
 ): Promise<UserUI> {
     const resp = await axios.post<BackendUser>(
-        `${API_BASE}/user/${userId}/courses`,
+        `${API_BASE}/users/${userId}/courses`,
         { courseIds }
     );
     return mapRawUserToUI(resp.data);
@@ -127,6 +127,6 @@ export async function addCoursesToUser(
  */
 export function removeCourseFromUser(userId: number, courseId: number) {
     return axios.delete<{ message: string }>(
-        `${API_BASE}/user/${userId}/courses/${courseId}`
+        `${API_BASE}/users/${userId}/courses/${courseId}`
     );
 }
