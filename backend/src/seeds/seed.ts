@@ -7,12 +7,14 @@ import { Course }   from "../entity/Course";
 import { Application } from "../entity/Application";
 import { AcademicCredential }     from "../entity/AcademicCredential";
 import { PreviousRole }           from "../entity/PreviousRole";
+import { Review } from "../entity/Review";
 
 
 import {
     SEED_USERS,
     SEED_COURSES,
     SEED_APPLICATIONS,
+    SEED_REVIEWS,
 } from "./testData";
 
 import * as argon2 from "argon2";
@@ -183,6 +185,36 @@ export async function seed() {
         console.log(` -> Seeded application ${a.user_username} → ${a.course_code}`);
     }
 
+    // 6) REVIEWS
+    //
+    const reviewRepo = ds.getRepository(Review);
+    for (const r of SEED_REVIEWS) {
+        const already = await reviewRepo.findOne({
+            where: {
+                lecturer_id: r.lecturer_id,
+                application_id: r.application_id,
+            },
+        });
+        if (already) {
+            console.log(
+                ` -> Review by lecturer ${r.lecturer_id} for application ${r.application_id} exists, skipping`
+            );
+            continue;
+        }
+
+        await reviewRepo.save({
+            lecturer_id: r.lecturer_id,
+            application_id: r.application_id,
+            rank: r.rank ?? null,
+            comment: r.comment ?? null,
+        });
+        console.log(
+            ` -> Seeded review lecturer=${r.lecturer_id} → application=${r.application_id}`
+        );
+    }
+}
+
+
     //
     // // 6) LECTURER_COURSE
     // //
@@ -210,4 +242,3 @@ export async function seed() {
     //     });
     //     console.log(` -> Seeded LecturerCourse ${link.lecturerUsername}–${link.courseCode}`);
     // }
-}
