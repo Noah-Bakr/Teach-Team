@@ -275,7 +275,6 @@ export interface SeedApplication {
     applied_at:    string;   // ISO date (YYYY-MM-DD)
     selected:      boolean;
     availability:  "Full-Time" | "Part-Time" | "Not Available";
-    rank?:         number;
     user_username: string;   // link by username
     course_code:   string;   // link by course_code
 }
@@ -354,3 +353,18 @@ export const SEED_APPLICATIONS: SeedApplication[] = [
         course_code:   "COSC2757"
     }
 ];
+
+export interface SeedReview {
+    lecturer_id: number;
+    application_id: number;
+    rank?: number;
+    comment?: string;
+}
+export const SEED_REVIEWS: SeedReview[] = [
+    {
+        lecturer_id: 2,      // john_doe
+        application_id: 1,   // julie_robbins @ COSC2625
+        rank: 4,
+        comment: "Strong candidate, good background.",
+    },
+    ];
