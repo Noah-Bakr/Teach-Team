@@ -1,4 +1,6 @@
 import axios from 'axios';
+import { mapRawSkillToUI } from './mappers/skillMapper';
+import { SkillUI } from '../types/skillTypes';
 
 const API_BASE = 'http://localhost:3001/api';
 
@@ -50,43 +52,45 @@ export interface UpdateSkillDto {
 }
 
 //
-//    GET /skills
-//    Fetch all skills
+// GET /skills → SkillUI[]
 //
-export function fetchAllSkills() {
-    return axios.get<Skill[]>(`${API_BASE}/skills`);
+export async function fetchAllSkills(): Promise<SkillUI[]> {
+    const resp = await axios.get<Skill[]>(`${API_BASE}/skills`);
+    return resp.data.map(rawSkill => mapRawSkillToUI(rawSkill));
 }
 
 //
-//    GET /skills/:id
-//    Fetch a single skill by ID
+// GET /skills/:id → SkillUI
 //
-export function fetchSkillById(id: number) {
-    return axios.get<Skill>(`${API_BASE}/skills/${id}`);
+export async function fetchSkillById(id: number): Promise<SkillUI> {
+    const resp = await axios.get<Skill>(`${API_BASE}/skills/${id}`);
+    return mapRawSkillToUI(resp.data);
 }
 
 //
-//    POST /skills
-//    Create a new skill
+// POST /skills → SkillUI
 //
-export function createSkill(payload: CreateSkillDto) {
-    return axios.post<Skill>(`${API_BASE}/skills`, payload);
+export async function createSkill(payload: CreateSkillDto): Promise<SkillUI> {
+    const resp = await axios.post<Skill>(`${API_BASE}/skills`, payload);
+    return mapRawSkillToUI(resp.data);
 }
 
 //
-//    PUT /skills/:id
-//    Update an existing skill by ID
+// PUT /skills/:id → SkillUI
 //
-export function updateSkill(
+export async function updateSkill(
     id: number,
     payload: UpdateSkillDto
-) {
-    return axios.put<Skill>(`${API_BASE}/skills/${id}`, payload);
+): Promise<SkillUI> {
+    const resp = await axios.put<Skill>(
+        `${API_BASE}/skills/${id}`,
+        payload
+    );
+    return mapRawSkillToUI(resp.data);
 }
 
 //
-//    DELETE /skills/:id
-//    Delete a skill by ID
+// DELETE /skills/:id
 //
 export function deleteSkill(id: number) {
     return axios.delete<{ message: string }>(`${API_BASE}/skills/${id}`);
