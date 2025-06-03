@@ -51,12 +51,26 @@ const ProfilePage: React.FC = () => {
         const fetchUserData = async () => {
             try {
                 const authResponse = await authApi.getCurrentUser();
-                const userId = authResponse.data.user_id;
+                const userId = authResponse.user.user_id;
 
-                const userData = await fetchUserById(userId);
+                const userData = await fetchUserById(Number(userId));
 
-                setCurrentUser(userData);
-                setUpdatedUser(userData);
+                const mappedUser: UserUI = {
+                    id: userData.id,
+                    username: userData.username,
+                    firstName: userData.firstName,
+                    lastName: userData.lastName,
+                    email: userData.email,
+                    avatar: userData.avatar || null,
+                    role: userData.role || "candidate",
+                    skills: userData.skills || [],
+                    courses: userData.courses || [],
+                    previousRoles: userData.previousRoles || [],
+                    academicCredentials: userData.academicCredentials || [],
+                };
+
+                setCurrentUser(mappedUser);
+                setUpdatedUser(mappedUser);
             } catch (error) {
                 console.error("Error fetching user data:", error);
             }
@@ -201,7 +215,7 @@ const ProfilePage: React.FC = () => {
                                             <PasswordInput disabled={isDisabled} name="password" placeholder="Password" value={updatedUser.password} onChange={handleChange}/>
                                         </Field.Root> */}
 
-                                        <Field.Root orientation="horizontal" disabled={isDisabled}>
+                                        <Field.Root orientation="horizontal" disabled>
                                             <Field.Label>Role</Field.Label>
                                             <NativeSelect.Root onChange={handleEventChange} disabled>
                                                 <NativeSelect.Field name="role" value={updatedUser.role}>
