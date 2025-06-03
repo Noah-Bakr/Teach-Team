@@ -30,7 +30,7 @@ export const authApi = {
         return response.data;
     },
     getUserById: async (id: string) => {
-        const response = await api.get(`/users/user/${id}`);
+        const response = await api.get(`/users/${id}`);
         return response.data;
     },
     getCurrentUser: async () => {
