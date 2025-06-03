@@ -1,4 +1,4 @@
-import { PreviousRole as BackendPrevRole } from '../previousRoleApi';
+import { PreviousRole as BackendPrevRole } from '../api/previousRoleApi';
 import { PreviousRoleUI } from '../../types/previousRoleTypes';
 
 /**
