@@ -1,7 +1,7 @@
 import "reflect-metadata";
 import express, { Request, Response } from "express";
 import { AppDataSource } from "./data-source";
-import commentRoutes from './routes/comment.routes';
+// import commentRoutes from './routes/comment.routes';
 import authRoutes from './routes/auth.routes';
 import cors from "cors";
 import { seed } from "./seeds/seed";
@@ -11,7 +11,8 @@ import applicationRoutes from "./routes/application.routes";
 import previousRoleRoutes from "./routes/previousRole.routes";
 import roleRoutes from "./routes/role.routes";
 import skillsRoutes from "./routes/skills.routes";
-import applicationRankingRoutes from "./routes/applicationRanking.routes";
+// import applicationRankingRoutes from "./routes/applicationRanking.routes";
+import reviewRoutes from "./routes/review.routes";
 import courseRoutes from "./routes/course.routes";
 import userRoutes from "./routes/user.routes";
 
@@ -38,11 +39,12 @@ app.get("/ping", (_req: Request, res: Response) => {
 
 app.use("/api/academic-credentials", academicCredentialRoutes);
 app.use("/api/applications", applicationRoutes);
-app.use("/api/application-rankings", applicationRankingRoutes);
+// app.use("/api/application-rankings", applicationRankingRoutes);
 app.use("/api/auth", authRoutes);
-app.use("/api/comments", commentRoutes);
+// app.use("/api/comments", commentRoutes);
 app.use("/api/courses", courseRoutes);
 app.use("/api/previous-roles", previousRoleRoutes);
+app.use("/api/reviews", reviewRoutes);
 app.use("/api/roles", roleRoutes);
 app.use("/api/skills", skillsRoutes);
 app.use("/api/users", userRoutes);
