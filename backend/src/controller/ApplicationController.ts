@@ -20,7 +20,7 @@ export class ApplicationController {
     async getAllApplications(req: Request, res: Response) {
         try {
             const applications = await this.applicationRepository.find({
-                relations: ['user', 'course', 'comments'],
+                relations: ['user', 'course', 'reviews'],
                 order: { applied_at: 'DESC' },
             });
             return res.status(200).json(applications);
@@ -48,7 +48,7 @@ export class ApplicationController {
         try {
             const application = await this.applicationRepository.findOne({
                 where: { application_id: applicationId },
-                relations: ['user', 'course', 'comments'],
+                relations: ['user', 'course', 'reviews'],
             });
 
             if (!application) {
@@ -88,7 +88,6 @@ export class ApplicationController {
             availability,
             user_id,
             course_id,
-            rank,
         } = req.body as CreateApplicationDto;
 
         // // Basic validation of required fields
@@ -125,7 +124,6 @@ export class ApplicationController {
                 status,
                 selected,
                 availability,
-                rank: rank !== undefined ? rank : undefined,
                 user,
                 course,
             });
@@ -175,7 +173,6 @@ export class ApplicationController {
                 status,
                 selected,
                 availability,
-                rank,
             } = req.body as UpdateApplicationDto;
 
             // Only update fields if they are provided in the request
@@ -183,7 +180,6 @@ export class ApplicationController {
             if (status !== undefined) existing.status = status;
             if (selected !== undefined) existing.selected = selected;
             if (availability !== undefined) existing.availability = availability;
-            if (rank !== undefined) existing.rank = rank;
 
             const updated = await this.applicationRepository.save(existing);
             return res.status(200).json(updated);
