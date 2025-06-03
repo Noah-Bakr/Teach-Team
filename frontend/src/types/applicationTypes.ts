@@ -4,6 +4,7 @@ export type CommentUI = {
     createdAt: string;      // ISO datetime
     updatedAt: string;      // ISO datetime
     lecturerName: string;   // “First Last”
+    lecturerId: number;
 };
 
 export type RankingUI = {
@@ -12,6 +13,7 @@ export type RankingUI = {
     createdAt: string;      // ISO datetime
     updatedAt: string;      // ISO datetime
     lecturerName: string;   // “First Last”
+    lecturerId: number;
 };
 
 export type CourseUI = {
@@ -22,6 +24,26 @@ export type CourseUI = {
     skills: string[];       // array of skill_name
 };
 
+// New UserUI (used by applicationMapper)
+export type UserUI = {
+    id: number;                   // user_id
+    username: string;
+    firstName: string;
+    lastName: string;
+    skills: string[];             // array of skill_name
+    academicCredentials: string[]; // array of degree_name
+};
+
+// New ReviewUI (combines rank + comment per review)
+export type ReviewUI = {
+    id: number;             // review_id
+    rank: number | null;
+    comment: string | null;
+    reviewedAt: string;     // ISO datetime
+    updatedAt: string;      // ISO datetime
+    lecturerId: number;
+};
+
 export type ApplicationUI = {
     id: number;                   // application_id
     positionType: 'tutor' | 'lab_assistant';
@@ -30,17 +52,9 @@ export type ApplicationUI = {
     selected: boolean;
     availability: 'Full-Time' | 'Part-Time' | 'Not Available';
 
-    user: {
-        id: number;                 // user_id
-        username: string;
-        firstName: string;
-        lastName: string;
-        skills: string[];           // array of skill_name
-        academicCredentials: string[]; // array of degree_name
-    };
+    user: UserUI;
 
     course: CourseUI;
 
-    comments?: CommentUI[];
-    rank?: RankingUI[];
+    reviews?: ReviewUI[];
 };
