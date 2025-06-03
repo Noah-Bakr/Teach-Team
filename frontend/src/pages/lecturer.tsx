@@ -1,271 +1,346 @@
+// src/pages/LecturerPage.tsx
 "use client";
 
-import React, { useState, useEffect } from 'react';
-import { Box, Heading, Text, SimpleGrid } from '@chakra-ui/react';
-import { Applicant } from '@/types/types';
-import { Course, User } from "@/types/types";
-import { fetchAllApplications, Application as RawApp } from "@/services/applicationApi";
-import { DEFAULT_APPLICANTS } from "@/types/testData";
+import React, { useState, useEffect } from "react";
+import { Box, Heading, Text, SimpleGrid } from "@chakra-ui/react";
+import { ApplicationUI } from "@/types/applicationTypes";
+import { fetchAllApplications } from "@/services/applicationService";
+import { createRanking } from "@/services/rankingService";
+import { createComment } from "@/services/commentService";
 import SearchAndSortBar from "@/components/SearchAndSortBar";
 import SelectedApplicantCard from "@/components/SelectedApplicantCard";
 import ApplicantsTable from "@/components/ApplicantsTable";
-import VisualRepresentation from '../components/VisualRepresentation';
-import { useUserLookup } from "@/utils/userLookup";
+import VisualRepresentation from "@/components/VisualRepresentation";
 import { useCourseLookup } from "@/utils/courseLookup";
 import "@/styles/Lecturer.css";
-import {CreamCard} from "@/components/CreamCard";
+import { CreamCard } from "@/components/CreamCard";
 
-//import { fetchAllUsers } from "@/services/userApi";
-//import { fetchAllCourses } from "@/services/courseApi";
+export const LecturerPage: React.FC = () => {
+    const [applications, setApplications] = useState<ApplicationUI[]>([]);
+    const [errors, setErrors] = useState<{
+        [appId: number]: { rank?: string; comment?: string };
+    }>({});
 
+    const [search, setSearch] = useState<string>("");
+    const [sortBy, setSortBy] = useState<string>("");
 
-const LecturerPage: React.FC = () => {
-    // // Use a lazy initialiser: try to load from localStorage; if missing, fall back to DEFAULT_APPLICANTS.
-    // const [applicants, setApplicants] = useState<Applicant[]>(() => {
-    //     const stored = localStorage.getItem('applicants');
-    //     return stored ? JSON.parse(stored) : DEFAULT_APPLICANTS;
-    // });
-    //
-    // // State to track validation errors for applicants by id
-    // const [errors, setErrors] = useState<{
-    //     [id: string]: { rank?: string; comment?: string };
-    // }>({});
-
-    const [applicants, setApplicants] = useState<Applicant[]>([]);
-    const [errors, setErrors] = useState<{ [id: string]: { rank?: string; comment?: string } }>({});
-
-    // State for search & sort
-    const [search, setSearch] = useState<string>('');
-    const [sortBy, setSortBy] = useState<string>('');
-
-    const userLookup = useUserLookup();
     const courseLookup = useCourseLookup();
 
-    // Fetch raw applications and then map into front-end Applicant objects:
+    // Replace this with your real “logged‐in” lecturer’s ID.
+    const lecturerId = 2;
+
     useEffect(() => {
         (async () => {
             try {
-                const resp = await fetchAllApplications();
-                const apps: RawApp[] = resp.data;
-
-                const mapped: Applicant[] = apps.map((app) => ({
-                    id: String(app.application_id),
-                    userId: String(app.user.user_id),
-                    courseId: String(app.course.course_id),
-                    date: app.applied_at,                       // string
-                    availability: app.availability,             // single enum string
-                    skills: (app.user as any).skills || [],     // assume you have user.skills in lookup
-                    academicCredentials: [],                    // if you need them, fetch separately
-                    previousRoles: [],                          // same as above
-                    selected: false,                            // front-end only
-                    rank: app.rank ?? undefined,
-                    comment: "",
-                }));
-
-                setApplicants(mapped);
+                const appsUI: ApplicationUI[] = await fetchAllApplications();
+                setApplications(appsUI);
             } catch (err) {
                 console.error(err);
             }
         })();
     }, []);
 
-    // // Save applicants state to localStorage when it changes.
-    // useEffect(() => {
-    //     localStorage.setItem('applicants', JSON.stringify(applicants));
-    // }, [applicants]);
-
-    // Toggle Selection for Applicant
-    const toggleSelect = (id: string) => {
-        setApplicants((prev) =>
+    // Toggle selection state
+    const toggleSelect = (appId: number) => {
+        setApplications((prev) =>
             prev.map((app) =>
-                app.id === id ? {...app, selected: !app.selected} : app)
+                app.id === appId ? { ...app, selected: !app.selected } : app
+            )
         );
     };
 
-    /* Update rank and comments for selected applicants
-       Overloaded functions to enforce types for rank and comments
-
-       Validation:
-            Rank: Must be a positive number.
-            Rank: Each rank value can only be selected once per course
-            Comments: Must not exceed 200 characters.
+    /**
+     * When the rank input changes, update local state AND send to backend.
      */
-    function updateApplicantDetails(id: string, key: "rank", value: number): void;
-    function updateApplicantDetails(id: string, key: "comment", value: string): void;
-    function updateApplicantDetails(
-        id: string,
-        key: "rank" | "comment",
-        value: number | string
-    ): void {
-        setApplicants((prev) =>
-            prev.map((app) =>
-                (app.id === id ? { ...app, [key]: value } : app))
-        );
-    }
-
-    // Handle rank changes with validation
-    const handleRankChange = (id: string, newValue: string) => {
+    const handleRankChange = async (appId: number, newValue: string) => {
         const rank = Number(newValue);
         if (rank > 0) {
-            // Find applicant  being updated
-            const currentApplicant = applicants.find((app) => app.id === id);
-            if (currentApplicant) {
-                // Check if another applicant in the same course already has the same rank.
-                const duplicate = applicants.find((app) =>
-                    app.id !== id &&
-                    app.selected &&
-                    app.courseId === currentApplicant.courseId &&
-                    app.rank === rank
+            const currentApp = applications.find((app) => app.id === appId);
+            if (currentApp) {
+                // Prevent duplicate rank per course
+                const duplicate = applications.find(
+                    (app) =>
+                        app.id !== appId &&
+                        app.selected &&
+                        app.course.id === currentApp.course.id &&
+                        app.rank?.[0]?.ranking === rank
                 );
                 if (duplicate) {
                     setErrors((prev) => ({
                         ...prev,
-                        [id]: {
-                            ...prev[id],
-                            rank: `Rank ${rank} is already assigned for ${currentApplicant.courseId}`
-                        }
+                        [appId]: {
+                            ...prev[appId],
+                            rank: `Rank ${rank} already assigned for course ${currentApp.course.name}`,
+                        },
                     }));
                     return;
                 } else {
                     setErrors((prev) => ({
                         ...prev,
-                        [id]: {...prev[id], rank: ''},
+                        [appId]: { ...prev[appId], rank: "" },
                     }));
-                    updateApplicantDetails(id, "rank", rank);
+
+                    // Update local state immediately (show in UI)
+                    setApplications((prev) =>
+                        prev.map((app) =>
+                            app.id === appId
+                                ? {
+                                    ...app,
+                                    rank: [
+                                        {
+                                            id: Date.now(), // temporary frontend ID
+                                            ranking: rank,
+                                            createdAt: "",
+                                            updatedAt: "",
+                                            lecturerName: "", // will be filled by backend’s response
+                                        },
+                                    ],
+                                }
+                                : app
+                        )
+                    );
+
+                    // Then send to backend:
+                    try {
+                        const savedRanking = await createRanking({
+                            application_id: appId,
+                            lecturer_id: lecturerId,
+                            rank: rank,
+                        });
+                        // Optionally, you can merge `savedRanking` into local state so that
+                        // the returned `createdAt` / `updatedAt` / `lecturerName` propagate.
+                        setApplications((prev) =>
+                            prev.map((app) =>
+                                app.id === appId
+                                    ? {
+                                        ...app,
+                                        rank: [
+                                            {
+                                                id: savedRanking.id,
+                                                ranking: savedRanking.ranking,
+                                                createdAt: savedRanking.createdAt,
+                                                updatedAt: savedRanking.updatedAt,
+                                                lecturerName: savedRanking.lecturerName,
+                                            },
+                                        ],
+                                    }
+                                    : app
+                            )
+                        );
+                    } catch (err) {
+                        console.error("Failed to save ranking:", err);
+                        // Optionally set an error message in UI
+                        setErrors((prev) => ({
+                            ...prev,
+                            [appId]: {
+                                ...prev[appId],
+                                rank: "Error saving ranking to server",
+                            },
+                        }));
+                    }
                 }
             }
         } else {
-            // Set an error if rank is not greater than 0.
             setErrors((prev) => ({
                 ...prev,
-                [id]: { ...prev[id], rank: 'Rank must be greater than 0' },
+                [appId]: { ...prev[appId], rank: "Rank must be greater than 0" },
             }));
         }
     };
 
-    // Handle comment changes with validation.
-    const handleCommentChange = (id: string, newValue: string) => {
+    /**
+     * When the comment textarea changes, update local state AND send to backend.
+     */
+    const handleCommentChange = async (appId: number, newValue: string) => {
         if (newValue.length <= 200) {
-            // Clear any comment error if valid.
             setErrors((prev) => ({
                 ...prev,
-                [id]: { ...prev[id], comment: '' },
+                [appId]: { ...prev[appId], comment: "" },
             }));
-            updateApplicantDetails(id, "comment", newValue);
+
+            // Update local state for immediate display
+            setApplications((prev) =>
+                prev.map((app) =>
+                    app.id === appId
+                        ? {
+                            ...app,
+                            comments: [
+                                {
+                                    id: Date.now(), // temporary frontend ID
+                                    text: newValue,
+                                    createdAt: "",
+                                    updatedAt: "",
+                                    lecturerName: "",
+                                },
+                            ],
+                        }
+                        : app
+                )
+            );
+
+            // Then send to backend
+            try {
+                const savedComment = await createComment({
+                    application_id: appId,
+                    lecturer_id: lecturerId,
+                    comment: newValue.trim(),
+                });
+                // Merge returned comment into local state so timestamps / lecturerName propagate
+                setApplications((prev) =>
+                    prev.map((app) =>
+                        app.id === appId
+                            ? {
+                                ...app,
+                                comments: [
+                                    {
+                                        id: savedComment.id,
+                                        text: savedComment.text,
+                                        createdAt: savedComment.createdAt,
+                                        updatedAt: savedComment.updatedAt,
+                                        lecturerName: savedComment.lecturerName,
+                                    },
+                                ],
+                            }
+                            : app
+                    )
+                );
+            } catch (err) {
+                console.error("Failed to save comment:", err);
+                setErrors((prev) => ({
+                    ...prev,
+                    [appId]: {
+                        ...prev[appId],
+                        comment: "Error saving comment to server",
+                    },
+                }));
+            }
         } else {
-            // Set error message for too long comment.
             setErrors((prev) => ({
                 ...prev,
-                [id]: { ...prev[id], comment: 'Comment cannot exceed 200 characters' },
+                [appId]: { ...prev[appId], comment: "Comment exceeds 200 chars" },
             }));
         }
     };
 
-    // Helper function to get users full name
-    const getUserName = (userId: string): string => {
-        const user = userLookup[userId];
-        return user ? `${user.firstName} ${user.lastName}` : userId;
-    };
+    // ——— Filtering logic ———
+    const filteredApps = applications.filter((app) => {
+        const lower = search.toLowerCase();
 
-    // Helper function to get course name
-    const getCourseName = (courseId: string): string => {
-        const course = courseLookup[courseId];
-        // If found, return the course name; otherwise fallback to the courseId
-        return course ? course.name : courseId;
-    };
+        const fullName = `${app.user.firstName} ${app.user.lastName}`.toLowerCase();
+        const matchesName = fullName.includes(lower);
 
-    // // Filter -Combine Applicants field into a searchable string
-    // const filteredApplicants = applicants.filter((applicant) => {
-    //     const lowercaseSearch = search.toLowerCase();
-    //     return (
-    //         getUserName(applicant.userId).toLowerCase().includes(lowercaseSearch) ||
-    //         applicant.courseId.toLowerCase().includes(lowercaseSearch) ||
-    //         getCourseName(applicant.courseId).toLowerCase().includes(lowercaseSearch) ||
-    //         applicant.availability.join(" ").toLowerCase().includes(lowercaseSearch) ||
-    //         applicant.skills.join(' ').toLowerCase().includes(lowercaseSearch));
-    // });
+        const matchesCourse =
+            app.course.name.toLowerCase().includes(lower) ||
+            app.course.code.toLowerCase().includes(lower);
 
-    // Filtering / sorting logic (adjust for the new single‐string availability)
-    const filteredApplicants = applicants.filter((applicant) => {
-        const lowercaseSearch = search.toLowerCase();
-        return (
-            getUserName(applicant.userId).toLowerCase().includes(lowercaseSearch) ||
-            applicant.courseId.toLowerCase().includes(lowercaseSearch) ||
-            getCourseName(applicant.courseId).toLowerCase().includes(lowercaseSearch) ||
-            applicant.availability.join(" ").toLowerCase().includes(lowercaseSearch) ||
-            applicant.skills.join(' ').toLowerCase().includes(lowercaseSearch)
-        );
+        const matchesAvailability = app.availability
+            .toLowerCase()
+            .includes(lower);
+
+        const matchesSkills = app.user.skills
+            .map((s) => s.toLowerCase())
+            .join(" ")
+            .includes(lower);
+
+        return matchesName || matchesCourse || matchesAvailability || matchesSkills;
     });
 
-    // Sort - If sortBy options selected, sort by filteredApplicants
-    const sortedApplicants = sortBy ? [...filteredApplicants].sort((a, b) => {
-        if(sortBy === 'course') {
-            return a.courseId.localeCompare(b.courseId);
-        } else if (sortBy === 'availability') {
-            return a.availability.join(" ").localeCompare(b.availability.join(" "));
-        }
-        return 0;
-    }) : filteredApplicants;
+    const sortedApps = sortBy
+        ? [...filteredApps].sort((a, b) => {
+            if (sortBy === "course") {
+                return a.course.name.localeCompare(b.course.name);
+            } else if (sortBy === "availability") {
+                return a.availability.localeCompare(b.availability);
+            }
+            return 0;
+        })
+        : filteredApps;
 
-    // Group Selected Applicants by course
-    const selectedByCourse = applicants
+    // Group selected by course ID
+    const selectedByCourse = applications
         .filter((app) => app.selected)
         .reduce((acc, app) => {
-            const courseKey = app.courseId;
-            if (!acc[courseKey]) acc[courseKey] = [];
-            acc[courseKey].push(app);
+            const key = app.course.id;
+            if (!acc[key]) acc[key] = [];
+            acc[key].push(app);
             return acc;
-        }, {} as Record<string, Applicant[]>);
+        }, {} as Record<number, ApplicationUI[]>);
 
     return (
-
         <Box p={4}>
             <CreamCard>
                 <Heading mb={4}>Lecturer Dashboard</Heading>
 
-                {/* Search & Sort */}
-                <SearchAndSortBar search={search}
-                                  setSearch={setSearch}
-                                  sortBy={sortBy}
-                                  setSortBy={setSortBy} />
+                <SearchAndSortBar
+                    search={search}
+                    setSearch={setSearch}
+                    sortBy={sortBy}
+                    setSortBy={setSortBy}
+                />
 
-                {/* Applicants List */}
+                {/* Applicants Table */}
                 <Box mb={8}>
-                    <Heading size="md" mb={2}>Applicants</Heading>
-                    <ApplicantsTable applicants={sortedApplicants} toggleSelect={toggleSelect} />
+                    <Heading size="md" mb={2}>
+                        Applicants
+                    </Heading>
+                    <ApplicantsTable
+                        applications={sortedApps}
+                        toggleSelect={toggleSelect}
+                    />
                 </Box>
 
-                {/* Selected Applicants Grouped by Course */}
+                {/* Selected Applicants, grouped by course */}
                 <Box mb={8}>
-                    <Heading size="sm" mb={2}>Selected Applicants</Heading>
+                    <Heading size="sm" mb={2}>
+                        Selected Applicants
+                    </Heading>
 
-                    {Object.entries(selectedByCourse).length === 0 ? (
-                        <Text>No Applicants Selected, Please choose to proceed.</Text>
+                    {Object.keys(selectedByCourse).length === 0 ? (
+                        <Text>No applicants selected.</Text>
                     ) : (
-                        Object.entries(selectedByCourse).map(([courseId, apps]) => (
-                            <Box key={courseId} mb={1}>
-                                <Heading as="h3" mb={2}>Course: {getCourseName(courseId)}</Heading>
-                                <SimpleGrid minChildWidth="sm" columns={[1, null, 2]} columnGap="4" rowGap="0">
-                                {apps.map((applicant) => (
-                                    <SelectedApplicantCard
-                                        key={applicant.id}
-                                        applicant={applicant}
-                                        error={errors[applicant.id]}
-                                        handleRankChange={handleRankChange}
-                                        handleCommentChange={handleCommentChange}
-                                    />
-                                ))}
-                                </SimpleGrid>
-                            </Box>
-                        ))
+                        Object.entries(selectedByCourse).map(
+                            ([courseIdStr, apps]) => {
+                                const courseIdNum = Number(courseIdStr);
+                                const courseName =
+                                    courseLookup[courseIdNum]?.name ||
+                                    String(courseIdNum);
+
+                                return (
+                                    <Box key={courseIdNum} mb={4}>
+                                        <Heading as="h3" size="sm" mb={2}>
+                                            Course: {courseName}
+                                        </Heading>
+                                        <SimpleGrid
+                                            minChildWidth="sm"
+                                            columns={[1, null, 2]}
+                                            columnGap="4"
+                                            rowGap="4"
+                                        >
+                                            {apps.map((app) => (
+                                                <SelectedApplicantCard
+                                                    key={app.id}
+                                                    applicant={app}
+                                                    error={errors[app.id]}
+                                                    handleRankChange={(newRank: number) =>
+                                                        handleRankChange(app.id, newRank.toString())
+                                                    }
+                                                    handleCommentChange={(newComment: string) =>
+                                                        handleCommentChange(app.id, newComment)
+                                                    }
+
+                                                />
+                                            ))}
+                                        </SimpleGrid>
+                                    </Box>
+                                );
+                            }
+                        )
                     )}
                 </Box>
 
-                {/* Visual Representation */}
-                <VisualRepresentation applicants={applicants} />
+                <VisualRepresentation applications={applications} />
             </CreamCard>
         </Box>
-
     );
 };
 
