@@ -1,10 +1,9 @@
 import axios from 'axios';
+import { mapRawPreviousRoleToUI } from './mappers/previousRoleMapper';
+import { PreviousRoleUI } from '../types/previousRoleTypes';
 
 const API_BASE = 'http://localhost:3001/api';
 
-//
-//   Front-end shape of User (lecturer) as returned by the backend
-//
 export interface User {
     user_id: number;
     username: string;
@@ -13,9 +12,6 @@ export interface User {
     email: string;
 }
 
-//
-//  Front-end shape of PreviousRole as returned by the backend
-//
 export interface PreviousRole {
     previous_role_id: number;
     previous_role: string;
@@ -52,45 +48,61 @@ export interface UpdatePreviousRoleDto {
     description?: string | null;
 }
 
-//
-//    GET /previous-roles
-//    Fetch all previous roles
-//
-export function fetchAllPreviousRoles() {
-    return axios.get<PreviousRole[]>(`${API_BASE}/previous-roles`);
+/**
+ * GET /previous-roles → PreviousRoleUI[]
+ */
+export async function fetchAllPreviousRoles(): Promise<PreviousRoleUI[]> {
+    const resp = await axios.get<PreviousRole[]>(
+        `${API_BASE}/previous-roles`
+    );
+    return resp.data.map(raw => mapRawPreviousRoleToUI(raw));
 }
 
-//
-//    GET /previous-roles/:id
-//    Fetch a single previous role by ID
-//
-export function fetchPreviousRoleById(id: number) {
-    return axios.get<PreviousRole>(`${API_BASE}/previous-roles/${id}`);
+/**
+ * GET /previous-roles/:id → PreviousRoleUI
+ */
+export async function fetchPreviousRoleById(
+    id: number
+): Promise<PreviousRoleUI> {
+    const resp = await axios.get<PreviousRole>(
+        `${API_BASE}/previous-roles/${id}`
+    );
+    return mapRawPreviousRoleToUI(resp.data);
 }
 
-//
-//    POST /previous-roles
-//    Create a new previous role
-//
-export function createPreviousRole(payload: CreatePreviousRoleDto) {
-    return axios.post<PreviousRole>(`${API_BASE}/previous-roles`, payload);
+/**
+ * POST /previous-roles
+ * Create a new previous role.
+ * The server returns the full BackendPrevRole; map it → PreviousRoleUI.
+ */
+export async function createPreviousRole(
+    payload: CreatePreviousRoleDto
+): Promise<PreviousRoleUI> {
+    const resp = await axios.post<PreviousRole>(
+        `${API_BASE}/previous-roles`,
+        payload
+    );
+    return mapRawPreviousRoleToUI(resp.data);
 }
 
-//
-//    PUT /previous-roles/:id
-//    Update an existing previous role by ID
-//
-export function updatePreviousRole(
+/**
+ * PUT /previous-roles/:id
+ * Update an existing previous role.
+ */
+export async function updatePreviousRole(
     id: number,
     payload: UpdatePreviousRoleDto
-) {
-    return axios.put<PreviousRole>(`${API_BASE}/previous-roles/${id}`, payload);
+): Promise<PreviousRoleUI> {
+    const resp = await axios.put<PreviousRole>(
+        `${API_BASE}/previous-roles/${id}`,
+        payload
+    );
+    return mapRawPreviousRoleToUI(resp.data);
 }
 
-//
-//    DELETE /previous-roles/:id
-//    Delete a previous role by ID
-//
+/**
+ * DELETE /previous-roles/:id
+ */
 export function deletePreviousRole(id: number) {
     return axios.delete<{ message: string }>(
         `${API_BASE}/previous-roles/${id}`
