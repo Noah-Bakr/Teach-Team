@@ -38,10 +38,10 @@ app.get("/ping", (_req: Request, res: Response) => {
 
 app.use("/api/academic-credentials", academicCredentialRoutes);
 app.use("/api/applications", applicationRoutes);
-// app.use("/api/application-rankings", applicationRankingRoutes);
-// app.use("/api/auth", authRoutes);
-// app.use("/api/comments", commentRoutes);
-// app.use("/api/courses", courseRoutes);
+app.use("/api/application-rankings", applicationRankingRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/comments", commentRoutes);
+app.use("/api/courses", courseRoutes);
 // app.use("/api/previous-roles", previousRoleRoutes);
 // app.use("/api/roles", roleRoutes);
 // app.use("/api/skills", skillsRoutes);
