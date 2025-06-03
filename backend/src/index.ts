@@ -42,10 +42,10 @@ app.use("/api/application-rankings", applicationRankingRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/comments", commentRoutes);
 app.use("/api/courses", courseRoutes);
-// app.use("/api/previous-roles", previousRoleRoutes);
-// app.use("/api/roles", roleRoutes);
-// app.use("/api/skills", skillsRoutes);
-// app.use("/api/users", userRoutes);
+app.use("/api/previous-roles", previousRoleRoutes);
+app.use("/api/roles", roleRoutes);
+app.use("/api/skills", skillsRoutes);
+app.use("/api/users", userRoutes);
 
 AppDataSource.initialize()
     .then(async () => {
