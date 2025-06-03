@@ -1,18 +1,14 @@
 import axios from 'axios';
+import { mapRawCourseToCourseUI } from './mappers/courseMapper';
+import { CourseUI } from '../types/courseTypes';
 
 const API_BASE = 'http://localhost:3001/api';
 
-//
-// Front-end shape of Skill (matching Skills entity)
-//
 export interface Skill {
     skill_id: number;
     skill_name: string;
 }
 
-//
-// Front-end shape of User (matching User entity, for lecturers array)
-//
 export interface User {
     user_id: number;
     username: string;
@@ -21,15 +17,11 @@ export interface User {
     email: string;
 }
 
-//
-// Front-end shape of Course as returned by the backend
-//
 export interface Course {
     course_id: number;
     course_name: string;
     course_code: string;
     semester: '1' | '2';
-
     skills: Skill[];
     lecturers: User[];
 }
@@ -54,45 +46,42 @@ export interface UpdateCourseDto {
     skillIds?: number[];  // replaces all existing skills
 }
 
-//
-// GET /courses
-// Fetch all courses
-//
-export function fetchAllCourses() {
-    return axios.get<Course[]>(`${API_BASE}/courses`);
+/** GET /courses → CourseUI[] */
+export async function fetchAllCourses(): Promise<CourseUI[]> {
+    const resp = await axios.get<Course[]>(`${API_BASE}/courses`);
+    return resp.data.map(raw => mapRawCourseToCourseUI(raw));
 }
 
-//
-// GET /courses/:id
-// Fetch a single course by ID
-//
-export function fetchCourseById(id: number) {
-    return axios.get<Course>(`${API_BASE}/courses/${id}`);
+/** GET /courses/:id → CourseUI */
+export async function fetchCourseById(id: number): Promise<CourseUI> {
+    const resp = await axios.get<Course>(`${API_BASE}/courses/${id}`);
+    return mapRawCourseToCourseUI(resp.data);
 }
 
-//
-// POST /courses
-// Create a new course
-//
-export function createCourse(payload: CreateCourseDto) {
-    return axios.post<Course>(`${API_BASE}/courses`, payload);
+/** POST /courses */
+export async function createCourse(
+    payload: CreateCourseDto
+): Promise<CourseUI> {
+    const resp = await axios.post<Course>(
+        `${API_BASE}/courses`,
+        payload
+    );
+    return mapRawCourseToCourseUI(resp.data);
 }
 
-//
-// PUT /courses/:id
-// Update an existing course by ID
-//
-export function updateCourse(
+/** PUT /courses/:id */
+export async function updateCourse(
     id: number,
     payload: UpdateCourseDto
-) {
-    return axios.put<Course>(`${API_BASE}/courses/${id}`, payload);
+): Promise<CourseUI> {
+    const resp = await axios.put<Course>(
+        `${API_BASE}/courses/${id}`,
+        payload
+    );
+    return mapRawCourseToCourseUI(resp.data);
 }
 
-//
-// DELETE /courses/:id
-// Delete a course by ID
-//
+/** DELETE /courses/:id */
 export function deleteCourse(id: number) {
     return axios.delete<{ message: string }>(`${API_BASE}/courses/${id}`);
 }
