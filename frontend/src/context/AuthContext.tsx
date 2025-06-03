@@ -1,24 +1,24 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { User  } from "@/types/types";
+import { UserUI } from "@/types/userTypes";
 import { toaster } from "@/components/ui/toaster";
 import { useRouter } from "next/router";
 import { authApi } from "@/services/api";
 
 interface AuthContextType {
-  currentUser: User | null;
+  currentUser: UserUI | null;
   loading: boolean;
   error: string | null;
   login: (email: string, password: string) => Promise<boolean>;
   logout: () => void;
-  updateUserInDatabase: (userToUpdate: User) => Promise<void>;
+  updateUserInDatabase: (userToUpdate: UserUI) => Promise<void>;
   signUp: (firstName: string, lastName: string, username: string, email: string, password: string) => Promise<boolean>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [currentUser, setCurrentUser] = useState<User | (null)>(null);
-  const [users, setUsers] = useState<User[]>([]);
+  const [currentUser, setCurrentUser] = useState<UserUI | (null)>(null);
+  const [users, setUsers] = useState<UserUI[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>("");
   const router = useRouter();
@@ -29,15 +29,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       try {
         const response = await authApi.getCurrentUser();
 
-        const user = {
+        // const user = {
+        //   id: response.user.user_id,
+        //   username: response.user.username,
+        //   firstName: response.user.first_name,
+        //   lastName: response.user.last_name,
+        //   email: response.user.email,
+        //   avatar: response.user.avatar,
+        //   password: '',
+        //   role: response.user.role ? [response.user.role.role_name] : [],
+        // };
+
+        const user: UserUI = {
           id: response.user.user_id,
           username: response.user.username,
           firstName: response.user.first_name,
           lastName: response.user.last_name,
           email: response.user.email,
-          avatar: response.user.avatar,
-          password: '',
-          role: response.user.role ? [response.user.role.role_name] : [],
+          avatar: response.user.avatar || null,
+          role: response.user.role?.role_name || "candidate",
+          skills: response.user.skills || [],
+          courses: response.user.courses || [],
+          previousRoles: response.user.previousRoles?.map((role: { previous_role: string }) => role.previous_role) || [],
+          academicCredentials: response.user.academicCredentials?.map((credential: { degree_name: string }) => credential.degree_name) || [],
         };
 
         setCurrentUser(user);
@@ -60,16 +74,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       const response = await authApi.loginUser(email, password);
 
-      const user = {
+      // const user = {
+      //   id: response.user.user_id,
+      //   username: response.user.username,
+      //   firstName: response.user.first_name,
+      //   lastName: response.user.last_name,
+      //   email: response.user.email,
+      //   avatar: response.user.avatar,
+      //   password: '',
+      //   role: [],
+      // };
+
+      const user: UserUI = {
         id: response.user.user_id,
         username: response.user.username,
         firstName: response.user.first_name,
         lastName: response.user.last_name,
         email: response.user.email,
-        avatar: response.user.avatar,
-        password: '',
-        role: [],
+        avatar: response.user.avatar || null,
+        role: response.user.role?.role_name || "candidate",
+        skills: response.user.skills || [],
+        courses: response.user.courses || [],
+        previousRoles: response.user.previousRoles?.map((role: { previous_role: string }) => role.previous_role) || [],
+        academicCredentials: response.user.academicCredentials?.map((credential: { degree_name: string }) => credential.degree_name) || [],
       };
+
       setCurrentUser(user);
 
       toaster.create({
@@ -112,12 +141,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const logout = async () => {
     await authApi.logout();
     setCurrentUser(null);
-    toaster.create({ title: "Sign out Successful", description: `We hope to see you back soon, ${currentUser?.firstName}!`, type: "success", duration: 5000 });
+    toaster.create({
+      title: "Sign out Successful",
+      description: `We hope to see you back soon, ${currentUser?.firstName}!`,
+      type: "success",
+      duration: 5000
+    });
     router.push("/");
   };
 
 
-  const updateUserInDatabase = async (userToUpdate: User) => {
+  const updateUserInDatabase = async (userToUpdate: UserUI) => {
     try {
       const response = await fetch(`/auth/users/${userToUpdate.id}`, {
         method: "PUT",
@@ -170,15 +204,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       const data = await authApi.createUser(firstName, lastName, username, email, password);
   
-      const user = {
+      // const user = {
+      //   id: data.user.user_id,
+      //   username: data.user.username,
+      //   firstName: data.user.first_name,
+      //   lastName: data.user.last_name,
+      //   email: data.user.email,
+      //   avatar: data.user.avatar,
+      //   password: '',
+      //   role: ["candidate"], // set role to candidate by default
+      // };
+
+      const user: UserUI = {
         id: data.user.user_id,
         username: data.user.username,
         firstName: data.user.first_name,
         lastName: data.user.last_name,
         email: data.user.email,
-        avatar: data.user.avatar,
-        password: '',
-        role: ["candidate"], // set role to candidate by default
+        avatar: data.user.avatar || null,
+        // password: "",
+        role: "candidate",
+        skills: [],
+        courses: [],
+        previousRoles: [],
+        academicCredentials: [],
       };
   
       setCurrentUser(user);
