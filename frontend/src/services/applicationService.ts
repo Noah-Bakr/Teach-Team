@@ -12,7 +12,17 @@ const API_BASE = 'http://localhost:3001/api';
  */
 export async function fetchAllApplications(): Promise<ApplicationUI[]> {
     const resp = await axios.get<BackendApp[]>(`${API_BASE}/applications`);
-    return resp.data.map(rawApp => mapRawAppToUI(rawApp));
+
+    // Log the entire array coming back from the server
+    console.log("⚡️ fetchAllApplications – raw response.data:", resp.data);
+
+    // If you also want to inspect each individual “rawApp” before mapping:
+    const mappedApps = resp.data.map((rawApp, idx) => {
+        console.log(`  → rawApp[${idx}]:`, rawApp);
+        return mapRawAppToUI(rawApp);
+    });
+
+    return mappedApps;
 }
 
 /**
