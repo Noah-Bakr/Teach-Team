@@ -1,37 +1,41 @@
 import { useState, useEffect } from "react";
-import { DEFAULT_COURSES } from "@/types/testData";
-import { Course } from "@/types/types";
-
-export const useCourseLookup = (): Record<string, Course> => {
-    // Initialise with fallback data from DEFAULT_COURSES
-    const [lookup, setLookup] = useState<Record<string, Course>>(() =>
-        DEFAULT_COURSES.reduce<Record<string, Course>>((acc, course) => {
-            acc[course.id] = course;
-            return acc;
-        }, {})
-    );
+import { CourseUI } from "@/types/courseTypes";
+import { fetchAllCourses } from "@/services/courseService";
+/**
+ * A hook that fetches ALL courses from the backend once, then
+ * returns a lookup map keyed by courseId → CourseUI.
+ *
+ * Usage:
+ *   const lookup = useCourseLookup();
+ *   // lookup[42] is the CourseUI for ID=42 (or undefined if not loaded/found)
+ */
+export function useCourseLookup(): Record<number, CourseUI> {
+    const [lookup, setLookup] = useState<Record<number, CourseUI>>({});
 
     useEffect(() => {
-        // This effect runs only on the client side after hydration.
-        const coursesStr = localStorage.getItem("courses");
-        if (coursesStr) {
-            try {
-                const courses: Course[] = JSON.parse(coursesStr);
-                const newLookup = courses.reduce<Record<string, Course>>((acc, course) => {
-                    acc[course.id] = course;
-                    return acc;
-                }, {});
-                setLookup(newLookup);
-            } catch (error) {
-                console.error("Error parsing course data from localStorage", error);
-            }
-        }
+        fetchAllCourses()
+            .then((courses: CourseUI[]) => {
+                // Build a numeric‐keyed map: course.id → CourseUI
+                const newMap: Record<number, CourseUI> = {};
+                courses.forEach((course) => {
+                    newMap[course.id] = course;
+                });
+                setLookup(newMap);
+            })
+            .catch((err) => {
+                console.error("Error fetching courses for lookup:", err);
+            });
     }, []);
 
     return lookup;
-};
+}
 
-export const useCourseName = (courseId: string): string => {
+/**
+ * Usage:
+ *   const courseName = useCourseName(42);
+ */
+export function useCourseName(courseId: number): string {
     const lookup = useCourseLookup();
-    return lookup[courseId]?.name || courseId;
-};
+    const course = lookup[courseId];
+    return course ? course.name : String(courseId);
+}
