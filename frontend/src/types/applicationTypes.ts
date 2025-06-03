@@ -1,72 +1,46 @@
-/**
- * Minimal “skill” shape we care about at the frontend:
- *   just the skill name.
- */
-export interface UserSkill {
-    skill_name: string;
-}
+export type CommentUI = {
+    id: number;             // comment_id
+    text: string;           // comment
+    createdAt: string;      // ISO datetime
+    updatedAt: string;      // ISO datetime
+    lecturerName: string;   // “First Last”
+};
 
-/**
- * The “user” object shape we want to see.
- *   Only keep these four fields plus an array of strings (skill names).
- */
-export interface ApplicationUser {
-    user_id: number;
-    username: string;
-    email: string;
-    skills: string[];    // we’ll extract only skill_name from backend
-}
+export type RankingUI = {
+    id: number;             // ranking_id
+    ranking: number;
+    createdAt: string;      // ISO datetime
+    updatedAt: string;      // ISO datetime
+    lecturerName: string;   // “First Last”
+};
 
-/**
- * The “course” object shape we want:
- *   we only need course_id, course_name, course_code, semester.
- */
-export interface ApplicationCourse {
-    course_id: number;
-    course_name: string;
-    course_code: string;
+export type CourseUI = {
+    id: number;             // course_id
+    code: string;           // course_code
+    name: string;           // course_name
     semester: '1' | '2';
-}
+    skills: string[];       // array of skill_name
+};
 
-/**
- * If you plan to show comments on the frontend, you might define:
- */
-export interface ApplicationComment {
-    comment_id: number;
-    comment: string;
-    created_at: string;       // ISO string
-    updated_at: string;       // ISO string
-    lecturer: {
-        user_id: number;
-        first_name: string;
-        last_name: string;
-    };
-}
-
-/**
- * The top‐level Application interface will combine:
- *   - the main fields on the “application” itself
- *   - a nested “user” of type ApplicationUser
- *   - a nested “course” of type ApplicationCourse
- *   - optionally an array of comments
- *
- * Note: We omit “password”, “academicCredentials”, etc.
- */
-export interface Application {
-    application_id: number;
-    position_type: 'tutor' | 'lab_assistant';
+export type ApplicationUI = {
+    id: number;                   // application_id
+    positionType: 'tutor' | 'lab_assistant';
     status: 'pending' | 'accepted' | 'rejected';
-    applied_at: string;       // ISO datetime
+    appliedAt: string;            // ISO datetime
     selected: boolean;
     availability: 'Full-Time' | 'Part-Time' | 'Not Available';
-    rank?: number | null;
 
-    // reduce the “user” to id, username, email, and a list of skill names:
-    user: ApplicationUser;
+    user: {
+        id: number;                 // user_id
+        username: string;
+        firstName: string;
+        lastName: string;
+        skills: string[];           // array of skill_name
+        academicCredentials: string[]; // array of degree_name
+    };
 
-    // reduce the “course” to just the 4 fields:
-    course: ApplicationCourse;
+    course: CourseUI;
 
-    // If your frontend needs comments, use this (otherwise can be omitted):
-    comments?: ApplicationComment[];
-}
+    comments?: CommentUI[];
+    rank?: RankingUI[];
+};
