@@ -2,7 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import { UserUI } from "@/types/userTypes";
 import { toaster } from "@/components/ui/toaster";
 import { useRouter } from "next/router";
-import { authApi } from "@/services/api";
+import { loginUser, logoutUser, signUpUser, getCurrentUser } from "@/services/authService";
 
 interface AuthContextType {
   currentUser: UserUI | null;
@@ -27,7 +27,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const fetchSessionUser = async () => {
       setLoading(true);
       try {
-        const response = await authApi.getCurrentUser();
+        const response = await getCurrentUser();
 
         // const user = {
         //   id: response.user.user_id,
@@ -41,18 +41,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         // };
 
         const user: UserUI = {
-          id: response.user.user_id,
-          username: response.user.username,
-          firstName: response.user.first_name,
-          lastName: response.user.last_name,
-          email: response.user.email,
-          avatar: response.user.avatar || null,
-          role: response.user.role?.role_name || "candidate",
-          skills: response.user.skills || [],
-          courses: response.user.courses || [],
-          previousRoles: response.user.previousRoles?.map((role: { previous_role: string }) => role.previous_role) || [],
-          academicCredentials: response.user.academicCredentials?.map((credential: { degree_name: string }) => credential.degree_name) || [],
-        };
+          id: response.id,
+          username: response.username,
+          firstName: response.firstName,
+          lastName: response.lastName,
+          email: response.email,
+          avatar: response.avatar || null,
+          role: response.role || "candidate",
+          skills: response.skills || [],
+          courses: response.courses || [],
+          previousRoles: response.previousRoles || [],
+          academicCredentials: response.academicCredentials || [],
+      };
 
         setCurrentUser(user);
       } catch (err: any) {
@@ -72,7 +72,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setError(null);
 
     try {
-      const response = await authApi.loginUser(email, password);
+      const response = await loginUser(email, password);
 
       // const user = {
       //   id: response.user.user_id,
@@ -86,18 +86,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // };
 
       const user: UserUI = {
-        id: response.user.user_id,
-        username: response.user.username,
-        firstName: response.user.first_name,
-        lastName: response.user.last_name,
-        email: response.user.email,
-        avatar: response.user.avatar || null,
-        role: response.user.role?.role_name || "candidate",
-        skills: response.user.skills || [],
-        courses: response.user.courses || [],
-        previousRoles: response.user.previousRoles?.map((role: { previous_role: string }) => role.previous_role) || [],
-        academicCredentials: response.user.academicCredentials?.map((credential: { degree_name: string }) => credential.degree_name) || [],
-      };
+        id: response.id,
+        username: response.username,
+        firstName: response.firstName,
+        lastName: response.lastName,
+        email: response.email,
+        avatar: response.avatar || null,
+        role: response.role || "candidate",
+        skills: response.skills || [],
+        courses: response.courses || [],
+        previousRoles: response.previousRoles || [],
+        academicCredentials: response.academicCredentials || [],
+    };
 
       setCurrentUser(user);
 
@@ -110,28 +110,33 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       return true;
     } catch (err) {
-      let errorMessage = "Login failed. Please check your credentials.";
-
-      if (err instanceof Error) {
-        errorMessage = err.message;
+      let errorMessage = "Something went wrong. Please try again.";
+    
+      // Handle specific HTTP errors
+      const status = (err as { response?: { status?: number } }).response?.status;
+    
+      if (status === 401) {
+        errorMessage = "Invalid email or password. Please try again.";
+      } else if (status === 403) {
+        errorMessage = "You don't have permission to access this.";
+      } else if (status === 404) {
+        errorMessage = "Server not found. Please check your internet connection.";
+      } else if (status === 500) {
+        errorMessage = "Server error. Please try again later.";
+      } else if (err instanceof Error && err.message) {
+        // If it's a regular JS error, show a friendly fallback
+        errorMessage = "Login failed: " + err.message;
       }
-
-      if (typeof err === "object" && err !== null && "response" in err) {
-        const response = (err as { response?: { status?: number } }).response;
-        if (response?.status === 401) {
-          errorMessage = "Invalid email or password. Please try again.";
-        }
-      }
-
+    
       setError(errorMessage);
-
+    
       toaster.create({
         title: "Login Failed",
         description: errorMessage,
         type: "error",
         duration: 5000,
       });
-
+    
       return false;
     } finally {
         setLoading(false);
@@ -139,7 +144,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const logout = async () => {
-    await authApi.logout();
+    await logoutUser();
     setCurrentUser(null);
     toaster.create({
       title: "Sign out Successful",
@@ -202,7 +207,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setError(null);
   
     try {
-      const data = await authApi.createUser(firstName, lastName, username, email, password);
+      const response = await signUpUser(firstName, lastName, username, email, password);
   
       // const user = {
       //   id: data.user.user_id,
@@ -216,19 +221,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // };
 
       const user: UserUI = {
-        id: data.user.user_id,
-        username: data.user.username,
-        firstName: data.user.first_name,
-        lastName: data.user.last_name,
-        email: data.user.email,
-        avatar: data.user.avatar || null,
-        // password: "",
-        role: "candidate",
-        skills: [],
-        courses: [],
-        previousRoles: [],
-        academicCredentials: [],
-      };
+        id: response.id,
+        username: response.username,
+        firstName: response.firstName,
+        lastName: response.lastName,
+        email: response.email,
+        avatar: response.avatar || null,
+        role: response.role || "candidate",
+        skills: response.skills || [],
+        courses: response.courses || [],
+        previousRoles: response.previousRoles || [],
+        academicCredentials: response.academicCredentials || [],
+    };
   
       setCurrentUser(user);
   
