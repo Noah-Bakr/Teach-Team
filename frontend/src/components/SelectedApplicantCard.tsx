@@ -12,6 +12,7 @@ import {
 } from "@chakra-ui/react";
 import { ApplicationUI } from "@/types/applicationTypes";
 import CustomFormControl from "./CustomFormControl";
+import { toaster } from "@/components/ui/toaster"
 
 // Service functions for saving
 import { createComment } from "@/services/commentService";
@@ -81,41 +82,69 @@ const SelectedApplicantCard: React.FC<SelectedApplicantCardProps> = ({
     //    - Then send the comment (if changed)
     //    After each POST succeeds, call the parent’s single‐arg callback.
     // --------------------------------------------------------------------------
-    const handleSave = async () => {
-        // 3a) If they typed a number in “Rank”, attempt to save it:
-        if (localRank.trim() !== "") {
-            const rankValue = Number(localRank);
-            if (!isNaN(rankValue)) {
-                try {
+    const handleSave = () => {
+        // Build a promise that does both createRanking() and createComment()
+        const savePromise = (async () => {
+            // If they typed a number for “Rank”, attempt to save it:
+            if (localRank.trim() !== "") {
+                const rankValue = Number(localRank);
+                if (!isNaN(rankValue)) {
                     const savedRanking = await createRanking({
                         application_id: applicant.id,
                         lecturer_id: lecturerId,
                         rank: rankValue,
                     });
-                    // Call parent with just the new numeric rank:
+                    // Notify parent of new numeric rank:
                     handleRankChange(savedRanking.ranking);
-                } catch (err) {
-                    console.error("Failed to save ranking:", err);
+                } else {
+                    // If it wasn’t a valid number, throw an error to be caught below
+                    throw new Error("Rank must be a valid number");
                 }
-            } else {
-                console.warn("Rank must be a valid number");
             }
-        }
 
-        // 3b) If they typed something into “Comment”, attempt to save it:
-        if (localComment.trim() !== "") {
-            try {
+            // If they typed something for “Comment”, attempt to save it:
+            if (localComment.trim() !== "") {
+                if (localComment.trim().length > 200) {
+                    // We enforce max‐200 chars; throw so toaster shows error
+                    throw new Error("Comment exceeds 200 characters");
+                }
+
                 const savedComment = await createComment({
                     application_id: applicant.id,
                     lecturer_id: lecturerId,
                     comment: localComment.trim(),
                 });
-                // Call parent with just the new comment string:
+                // Notify parent of new comment:
                 handleCommentChange(savedComment.text);
-            } catch (err) {
-                console.error("Failed to save comment:", err);
             }
-        }
+
+            // If we reach here, both (ranking and comment) succeeded (or neither was needed).
+            return true;
+        })();
+
+        // Wrap that combined promise in a single toast
+        toaster.promise(savePromise, {
+            loading: {
+                title: "Saving…",
+                description: "Hold on while we save your rank & comment.",
+            },
+            success: {
+                title: "Saved!",
+                description: `Your ${
+                    localRank.trim() !== "" ? "rank" : ""
+                }${localRank.trim() !== "" && localComment.trim() !== "" ? " & " : ""}${
+                    localComment.trim() !== "" ? "comment" : ""
+                } have been recorded successfully.`,
+            },
+            error: {
+                title: "Error",
+                description: (err: any) => {
+                    // If the thrown error has a message (e.g. “Rank must be valid number”),
+                    // show that; otherwise show a generic message.
+                    return typeof err === "string" ? err : err.message || "Something went wrong";
+                },
+            },
+        });
     };
 
     return (
