@@ -29,8 +29,7 @@ export class UserController {
                     'academicCredentials',
                     'courses',
                     'previousRoles',
-                    'comments',
-                    'rankings',
+                    'reviews',
                 ],
                 order: { created_at: 'DESC' },
             });
@@ -61,8 +60,7 @@ export class UserController {
                     'academicCredentials',
                     'courses',
                     'previousRoles',
-                    'comments',
-                    'rankings',
+                    'reviews',
                 ],
             });
 
@@ -410,9 +408,8 @@ export class UserController {
                     'academicCredentials',
                     'courses',
                     'previousRoles',
-                    'comments',
                     'skills',
-                    'rankings',
+                    'reviews',
                 ],
             });
             if (!existing) {
