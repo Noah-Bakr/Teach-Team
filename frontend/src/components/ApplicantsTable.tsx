@@ -1,34 +1,17 @@
-import React from 'react';
-import { Button, Table } from '@chakra-ui/react';
-import { Applicant } from '@/types/types';
-import { useUserLookup } from "@/utils/userLookup";
-import { useCourseLookup } from "@/utils/courseLookup";
+"use client";
+import React from "react";
+import { Button, Table } from "@chakra-ui/react";
+import { ApplicationUI } from "@/types/applicationTypes";
 
 interface ApplicantsTableProps {
-    applicants: Applicant[];
-    toggleSelect: (id: string) => void;
+    applications: ApplicationUI[];
+    toggleSelect: (id: number) => void;
 }
 
-const ApplicantsTable: React.FC<ApplicantsTableProps> = ({ applicants, toggleSelect}) => {
-    // Call the useUserLookup hook at the top level.
-    const userLookup = useUserLookup();
-
-    // Helper function that uses the lookup to get a user's full name.
-    const getUserName = (userId: string): string => {
-        const user = userLookup[userId];
-        return user ? `${user.firstName} ${user.lastName}` : userId;
-    };
-
-    // Call the useCourseLookup hook at the top level.
-    const courseLookup = useCourseLookup();
-
-    // Helper function that uses the lookup to get a course name.
-    const getCourseName = (courseId: string): string => {
-        const course = courseLookup[courseId];
-        // If found, return the course name; otherwise fallback to the courseId
-        return course ? course.name : courseId;
-    };
-
+const ApplicantsTable: React.FC<ApplicantsTableProps> = ({
+                                                             applications,
+                                                             toggleSelect,
+                                                         }) => {
     return (
         <Table.Root colorScheme="gray" borderRadius="md" boxShadow="md">
             <Table.Header>
@@ -42,23 +25,45 @@ const ApplicantsTable: React.FC<ApplicantsTableProps> = ({ applicants, toggleSel
                     <Table.ColumnHeader>Action</Table.ColumnHeader>
                 </Table.Row>
             </Table.Header>
+
             <Table.Body>
-                {applicants.map((applicant) => (
-                    <Table.Row key={applicant.id}>
-                        {/* Use the getUserName to display the full name */}
-                        <Table.Cell>{getUserName(applicant.userId)}</Table.Cell>
-                        <Table.Cell>{applicant.courseId}</Table.Cell>
-                        {/* Use the getCourseName to display courseName */}
-                        <Table.Cell>{getCourseName(applicant.courseId)}</Table.Cell>
-                        <Table.Cell>{applicant.availability}</Table.Cell>
-                        <Table.Cell>{applicant.skills.join(", ")}</Table.Cell>
-                        <Table.Cell>{applicant.academicCredentials}</Table.Cell>
+                {applications.map((application) => (
+                    <Table.Row key={application.id}>
+                        {/* Display full user name via lookup */}
                         <Table.Cell>
-                            <Button variant="solid"
-                                    size="sm"
-                                    style={{ backgroundColor: '#fddf49' }}
-                                    onClick={() => toggleSelect(applicant.id)}>
-                                {applicant.selected ? 'Deselect' : 'Select'}
+                            {application.user.firstName} {application.user.lastName}
+                        </Table.Cell>
+
+                        {/* Course code and name directly from ApplicationUI */}
+                        <Table.Cell>{application.course.code}</Table.Cell>
+                        <Table.Cell>{application.course.name}</Table.Cell>
+
+                        {/* Availability is a single string in ApplicationUI */}
+                        <Table.Cell>{application.availability}</Table.Cell>
+
+                        {/* Join the skills array into a comma-separated string */}
+                        <Table.Cell>
+                            {application.user.skills.length > 0
+                                ? application.user.skills.join(", ")
+                                : "—"}
+                        </Table.Cell>
+
+                        {/* Join the academic credentials array */}
+                        <Table.Cell>
+                            {application.user.academicCredentials.length > 0
+                                ? application.user.academicCredentials.join(", ")
+                                : "—"}
+                        </Table.Cell>
+
+                        {/* “Select” / “Deselect” button */}
+                        <Table.Cell>
+                            <Button
+                                variant="solid"
+                                size="sm"
+                                bg="#fddf49"
+                                onClick={() => toggleSelect(application.id)}
+                            >
+                                {application.selected ? "Deselect" : "Select"}
                             </Button>
                         </Table.Cell>
                     </Table.Row>
