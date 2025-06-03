@@ -11,9 +11,9 @@
 import { Avatar, Box, Button, Card, Field, Input, NativeSelect, Separator, Stack, Textarea } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { UserUI } from "@/types/userTypes";
-import { authApi } from "@/services/api";
 import { fetchUserById, updateUser } from "@/services/userService";
 import { Roles } from "@/types/roleTypes";
+import { getCurrentUser } from "@/services/authService";
 
 
 const ProfilePage: React.FC = () => {
@@ -50,23 +50,20 @@ const ProfilePage: React.FC = () => {
     useEffect(() => {
         const fetchUserData = async () => {
             try {
-                const authResponse = await authApi.getCurrentUser();
-                const userId = authResponse.user.user_id;
-
-                const userData = await fetchUserById(Number(userId));
-
+                const authResponse = await getCurrentUser();
+                
                 const mappedUser: UserUI = {
-                    id: userData.id,
-                    username: userData.username,
-                    firstName: userData.firstName,
-                    lastName: userData.lastName,
-                    email: userData.email,
-                    avatar: userData.avatar || null,
-                    role: userData.role || "candidate",
-                    skills: userData.skills || [],
-                    courses: userData.courses || [],
-                    previousRoles: userData.previousRoles || [],
-                    academicCredentials: userData.academicCredentials || [],
+                    id: authResponse.id,
+                    username: authResponse.username,
+                    firstName: authResponse.firstName,
+                    lastName: authResponse.lastName,
+                    email: authResponse.email,
+                    avatar: authResponse.avatar || null,
+                    role: authResponse.role || "candidate",
+                    skills: authResponse.skills || [],
+                    courses: authResponse.courses || [],
+                    previousRoles: authResponse.previousRoles || [],
+                    academicCredentials: authResponse.academicCredentials || [],
                 };
 
                 setCurrentUser(mappedUser);
