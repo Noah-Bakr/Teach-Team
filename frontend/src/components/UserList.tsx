@@ -30,17 +30,25 @@ export function UserList() {
                         {u.avatar && <img src={u.avatar} alt="avatar" width={24} />}
                         <br />
                         {u.skills && u.skills.length > 0 && (
-                            <em>Skills:</em> {u.skills.join(', ')}
-                            )}
+                            <>
+                                <em>Skills:</em> {u.skills.join(', ')}
+                            </>
+                        )}
                         {u.courses && u.courses.length > 0 && (
-                            <em> &nbsp;Courses:</em> {u.courses.join(', ')}
-                            )}
+                            <>
+                                <em> &nbsp;Courses:</em> {u.courses.join(', ')}
+                            </>
+                        )}
                         {u.previousRoles && u.previousRoles.length > 0 && (
-                            <em> &nbsp;Prev Roles:</em> {u.previousRoles.join(', ')}
-                            )}
+                           <>
+                                <em> &nbsp;Prev Roles:</em> {u.previousRoles.join(', ')}
+                           </>
+                        )}
                         {u.academicCredentials && u.academicCredentials.length > 0 && (
-                            <em> &nbsp;Degrees:</em> {u.academicCredentials.join(', ')}
-                            )}
+                            <>
+                                <em> &nbsp;Degrees:</em> {u.academicCredentials.join(', ')}
+                            </>
+                        )}
                     </li>
                 ))}
             </ul>
