@@ -1,21 +1,37 @@
 import { api } from "./api";
-import { UserUI } from "../types/userTypes";
+import { User as BackendUser } from "./api/userApi";
 
-export async function signUpUser(firstName: string, lastName: string, username: string, email: string, password: string) : Promise<UserUI> {
-    const response = await api.post("/auth/signUp", { firstName, lastName, username, email, password }, { withCredentials: true });
-    return response.data;
+export async function loginUser(
+    email: string,
+    password: string
+): Promise<BackendUser> {
+    const { data } = await api.post<{ message: string; user: BackendUser }>(
+        "/auth/login",
+        { email, password }
+    );
+    return data.user;
 }
 
-export async function loginUser(email: string, password: string): Promise<UserUI> {
-    const response = await api.post("/auth/login", { email, password }, { withCredentials: true });
-    return response.data;
+export async function signUpUser(
+    firstName: string,
+    lastName: string,
+    username: string,
+    email: string,
+    password: string
+): Promise<BackendUser> {
+    const { data } = await api.post<{ message: string; user: BackendUser }>(
+        "/auth/signUp",
+        { firstName, lastName, username, email, password }
+    );
+    return data.user;
+}
+
+export async function getCurrentUser(): Promise<BackendUser> {
+    const { data } = await api.get<{ user: BackendUser }>("/auth/me");
+    return data.user;
 }
 
 export async function logoutUser(): Promise<void> {
-    await api.post("/auth/logout", {}, { withCredentials: true });
+    await api.post("/auth/logout");
 }
 
-export async function getCurrentUser(): Promise<UserUI> {
-    const response = await api.get("/auth/me", { withCredentials: true });
-    return response.data;
-}
