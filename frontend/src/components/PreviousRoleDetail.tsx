@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { fetchPreviousRoleById } from '../services/previousRoleApi';
+import { fetchPreviousRoleById } from '../services/previousRoleService';
 import { PreviousRoleUI } from '../types/previousRoleTypes';
 
 interface Props {
