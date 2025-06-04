@@ -7,7 +7,7 @@ export async function loginUser(
 ): Promise<BackendUser> {
     const { data } = await api.post<{ message: string; user: BackendUser }>(
         "/auth/login",
-        { email, password }
+        { email, password }, { withCredentials: true }
     );
     return data.user;
 }
@@ -21,13 +21,13 @@ export async function signUpUser(
 ): Promise<BackendUser> {
     const { data } = await api.post<{ message: string; user: BackendUser }>(
         "/auth/signUp",
-        { firstName, lastName, username, email, password }
+        { firstName, lastName, username, email, password }, { withCredentials: true }
     );
     return data.user;
 }
 
 export async function getCurrentUser(): Promise<BackendUser> {
-    const { data } = await api.get<{ user: BackendUser }>("/auth/me");
+    const { data } = await api.get<{ user: BackendUser }>("/auth/me", { withCredentials: true });
     return data.user;
 }
 
