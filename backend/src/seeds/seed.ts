@@ -26,7 +26,7 @@ export async function seed() {
     }
 
     //
-    // 1) SKILLS
+    // SKILLS
     //
     const skillsRepo = ds.getRepository(Skills);
     if ((await skillsRepo.count()) === 0) {
@@ -40,7 +40,7 @@ export async function seed() {
     }
 
     //
-    // 2) ROLES
+    // ROLES
     //
     const roleRepo = ds.getRepository(Role);
     if ((await roleRepo.count()) === 0) {
@@ -53,7 +53,7 @@ export async function seed() {
     }
 
     //
-    // 3) COURSES
+    // COURSES
     //
     const courseRepo = ds.getRepository(Course);
     if ((await courseRepo.count()) === 0) {
@@ -67,19 +67,19 @@ export async function seed() {
         );
         // link skills
         for (let i = 0; i < SEED_COURSES.length; i++) {
-            const ids = SEED_COURSES[i].skill_ids || [];
-            if (ids.length) {
+            const skillIds = SEED_COURSES[i].skill_ids || [];
+            if (skillIds.length) {
                 await courseRepo
                     .createQueryBuilder()
                     .relation(Course, "skills")
                     .of(courses[i])
-                    .add(ids);
+                    .add(skillIds);
             }
         }
     }
 
     //
-    // 4) USERS + extras
+    // USERS + extras
     //
     const userRepo = ds.getRepository(User);
     for (const u of SEED_USERS) {
@@ -107,7 +107,7 @@ export async function seed() {
             for (const sid of u.skill_ids) {
                 const s = await skillsRepo.findOneBy({ skill_id: sid });
                 if (!s) {
-                    console.warn(`   ! Skill ID ${sid} not found, skipping link.`);
+                    console.warn(`Skill ID ${sid} not found, skipping link.`);
                 }
             }
             await userRepo
@@ -153,8 +153,44 @@ export async function seed() {
         }
     }
 
+    for (const u of SEED_USERS) {
+        // (role_id === 2) AND has course_codes
+        if (u.role_id !== 2 || !Array.isArray(u.course_codes) || u.course_codes.length === 0) {
+            continue;
+        }
+
+        const lecturer = await userRepo.findOneByOrFail({ username: u.username });
+
+        // For each course_code, look up its Course record
+        const courseIdsToAdd: number[] = [];
+        for (const code of u.course_codes!) {
+            const course = await courseRepo.findOneBy({ course_code: code });
+            if (!course) {
+                console.warn(`Course code "${code}" not found, skipping`);
+                continue;
+            }
+            courseIdsToAdd.push(course.course_id);
+        }
+
+        if (courseIdsToAdd.length === 0) {
+            console.log(`No valid course_codes for lecturer ${u.username}`);
+            continue;
+        }
+
+        // Many-to-Many relation on User.courses
+        await userRepo
+            .createQueryBuilder()
+            .relation(User, "courses")        // must match the property name in User.ts
+            .of(lecturer)                     // or .of(lecturer.user_id)
+            .add(courseIdsToAdd);
+
+        console.log(
+            ` Attached courses [${courseIdsToAdd.join(", ")}] → lecturer ${u.username}`
+        );
+    }
+
     //
-    // 5) APPLICATIONS
+    // APPLICATIONS
     //
     const appRepo = ds.getRepository(Application);
     for (const a of SEED_APPLICATIONS) {
@@ -185,7 +221,7 @@ export async function seed() {
         console.log(` -> Seeded application ${a.user_username} → ${a.course_code}`);
     }
 
-    // 6) REVIEWS
+    // REVIEWS
     //
     const reviewRepo = ds.getRepository(Review);
     for (const r of SEED_REVIEWS) {
@@ -197,7 +233,7 @@ export async function seed() {
         });
         if (already) {
             console.log(
-                ` -> Review by lecturer ${r.lecturer_id} for application ${r.application_id} exists, skipping`
+                `Review by lecturer ${r.lecturer_id} for application ${r.application_id} exists, skipping`
             );
             continue;
         }
@@ -209,36 +245,7 @@ export async function seed() {
             comment: r.comment ?? null,
         });
         console.log(
-            ` -> Seeded review lecturer=${r.lecturer_id} → application=${r.application_id}`
+            `Seeded review lecturer=${r.lecturer_id} → application=${r.application_id}`
         );
     }
 }
-
-
-    //
-    // // 6) LECTURER_COURSE
-    // //
-    // const lcRepo = ds.getRepository(LecturerCourse);
-    // for (const link of SEED_LECTURER_COURSES) {
-    //     const lect = await userRepo.findOneByOrFail({username: link.lecturerUsername});
-    //     const crs = await courseRepo.findOneByOrFail({course_code: link.courseCode});
-    //
-    //     const exists = await lcRepo.findOne({
-    //         where: {
-    //             // match on the FK columns
-    //             user_id: lect.user_id,
-    //             course_id: crs.course_id,
-    //         }
-    //     });
-    //     if (exists) {
-    //         console.log(` -> LecturerCourse link ${link.lecturerUsername}–${link.courseCode} exists, skipping`);
-    //         continue;
-    //     }
-    //
-    //     // explicitly set the two PK columns:
-    //     await lcRepo.save({
-    //         user_id: lect.user_id,
-    //         course_id: crs.course_id,
-    //     });
-    //     console.log(` -> Seeded LecturerCourse ${link.lecturerUsername}–${link.courseCode}`);
-    // }
