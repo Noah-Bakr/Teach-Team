@@ -22,6 +22,7 @@ interface SelectedApplicantCardProps {
     error?: { rank?: string; comment?: string };
     handleRankChange: (newRank: number) => void;
     handleCommentChange: (newComment: string) => void;
+    allApplications: ApplicationUI[];
 }
 
 const SelectedApplicantCard: React.FC<SelectedApplicantCardProps> = ({
@@ -29,6 +30,7 @@ const SelectedApplicantCard: React.FC<SelectedApplicantCardProps> = ({
                                                                          error,
                                                                          handleRankChange,
                                                                          handleCommentChange,
+                                                                         allApplications
                                                                      }) => {
     // Pull current lecturer ID from Auth:
     const { currentUser } = useAuth();
@@ -90,6 +92,27 @@ const SelectedApplicantCard: React.FC<SelectedApplicantCardProps> = ({
             }
             parsedRank = num;
         }
+        // Check for same rank in same course for this lecturer
+        const duplicateInSameCourse = allApplications.some((otherApp) => {
+            return (
+                otherApp.id !== applicant.id && // skip self
+                otherApp.course.id === applicant.course.id && // same course
+                otherApp.reviews?.some(
+                    (r) => r.lecturerId === lecturerId && r.rank === parsedRank
+                )
+            );
+        });
+        if (duplicateInSameCourse) {
+            toaster.create({
+                title: "Duplicate rank",
+                description: `You’ve already assigned rank ${parsedRank} for another applicant in this course. Please choose a different rank.`,
+                type: "warning",
+                duration: 4000,
+                meta: { closable: true },
+            });
+            return;
+        }
+
         // Validate comment length
         if (localComment.trim().length > 200) {
             toaster.create({
@@ -101,6 +124,7 @@ const SelectedApplicantCard: React.FC<SelectedApplicantCardProps> = ({
             });
             return;
         }
+
 
         try {
             if (myExistingReviewObj) {

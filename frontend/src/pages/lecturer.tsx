@@ -208,13 +208,13 @@ export const LecturerPage: React.FC = () => {
                                                     key={app.id}
                                                     applicant={app}
                                                     error={errors[app.id]}
+                                                    allApplications={applications}
                                                     handleRankChange={newRank =>
                                                         onRankSaved(app.id, newRank)
                                                     }
                                                     handleCommentChange={newComment =>
                                                         onCommentSaved(app.id, newComment)
                                                     }
-
                                                 />
                                             ))}
                                         </SimpleGrid>
