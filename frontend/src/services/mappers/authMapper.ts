@@ -11,7 +11,11 @@ export function mapBackendUserToUI(raw: BackendUser): UserUI {
         avatar: raw.avatar || null,
         role: raw.role.role_name,
         skills: raw.skills.map((s) => s.skill_name),
-        courses: raw.courses.map((c) => c.course_name),
+        courses:
+            raw.courses?.map((c) => ({
+                    id: c.course_id,
+                    name: c.course_name,
+                })),
         previousRoles: raw.previousRoles.map((r) => r.previous_role),
         academicCredentials: raw.academicCredentials.map((a) => a.degree_name),
         reviews:
