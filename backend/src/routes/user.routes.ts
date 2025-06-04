@@ -27,7 +27,7 @@ router.delete("/:id", async (req, res) => {
 });
 
 // Attach / detach SKILLS:
-router.post('/user/:id/skills', async (req, res) => {
+router.post('/:id/skills', async (req, res) => {
     userController.addSkillsToUser(req, res);
 });
 
