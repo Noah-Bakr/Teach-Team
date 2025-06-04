@@ -29,8 +29,7 @@ export class AuthController {
                     'academicCredentials',
                     'courses',
                     'previousRoles',
-                    'comments',
-                    'rankings',
+                    'reviews',
                 ],
         });
 
@@ -162,8 +161,7 @@ export class AuthController {
                     'academicCredentials',
                     'courses',
                     'previousRoles',
-                    'comments',
-                    'rankings',
+                    'reviews',
                 ],
             });
 
