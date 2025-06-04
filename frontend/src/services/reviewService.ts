@@ -1,4 +1,4 @@
-import axios from 'axios';
+import { api } from "./api";
 import {
     Review as RawReview,
     CreateReviewDto,
@@ -7,14 +7,14 @@ import {
 import { ReviewUI } from '@/types/reviewTypes';
 import { mapRawReviewToUI } from './mappers/reviewMapper';
 
-const API_BASE = 'http://localhost:3001/api';
+//const API_BASE = 'http://localhost:3001/api';
 
 /**
  * GET /reviews
  * Fetch all reviews from the backend, return as ReviewUI[].
  */
 export async function fetchAllReviews(): Promise<ReviewUI[]> {
-    const resp = await axios.get<RawReview[]>(`${API_BASE}/reviews`);
+    const resp = await api.get<RawReview[]>(`/reviews`);
     return resp.data.map(mapRawReviewToUI);
 }
 
@@ -23,7 +23,7 @@ export async function fetchAllReviews(): Promise<ReviewUI[]> {
  * Fetch one review by ID, return as ReviewUI.
  */
 export async function fetchReviewById(id: number): Promise<ReviewUI> {
-    const resp = await axios.get<RawReview>(`${API_BASE}/reviews/${id}`);
+    const resp = await api.get<RawReview>(`/reviews/${id}`);
     return mapRawReviewToUI(resp.data);
 }
 
@@ -36,10 +36,10 @@ export async function fetchReviewById(id: number): Promise<ReviewUI> {
 export async function createReview(
     payload: CreateReviewDto
 ): Promise<ReviewUI> {
-    console.log('About to POST to:', `${API_BASE}/reviews`);
+    console.log('About to POST to:', `/reviews`);
     console.log('Payload:', payload);
 
-    const resp = await axios.post<RawReview>(`${API_BASE}/reviews`, payload);
+    const resp = await api.post<RawReview>(`/reviews`, payload);
     return mapRawReviewToUI(resp.data);
 }
 
@@ -53,7 +53,7 @@ export async function updateReview(
     id: number,
     payload: UpdateReviewDto
 ): Promise<ReviewUI> {
-    const resp = await axios.put<RawReview>(`${API_BASE}/reviews/${id}`, payload);
+    const resp = await api.put<RawReview>(`/reviews/${id}`, payload);
     return mapRawReviewToUI(resp.data);
 }
 
@@ -62,8 +62,8 @@ export async function updateReview(
  * Delete a review by ID. Returns { message: string }.
  */
 export async function deleteReview(id: number): Promise<{ message: string }> {
-    const resp = await axios.delete<{ message: string }>(
-        `${API_BASE}/reviews/${id}`
+    const resp = await api.delete<{ message: string }>(
+        `/reviews/${id}`
     );
     return resp.data;
 }
