@@ -12,6 +12,8 @@ import { useCourseLookup } from "@/utils/courseLookup";
 import "@/styles/Lecturer.css";
 import { CreamCard } from "@/components/CreamCard";
 import { useAuth } from "@/context/AuthContext";
+import { PreviousRoleDetail } from "../components/PreviousRoleDetail";
+import { CourseList } from "@/components/CourseList";
 
 
 export const LecturerPage: React.FC = () => {
@@ -33,12 +35,15 @@ export const LecturerPage: React.FC = () => {
         (async () => {
             try {
                 const appsUI: ApplicationUI[] = await fetchAllApplications();
-                setApplications(appsUI);
+                const myCourseIds = (currentUser?.courses ?? []).map((c) => c.id);
+                const myApps = appsUI.filter((app) => myCourseIds.includes(app.course.id));
+
+                setApplications(myApps);
             } catch (err) {
                 console.error(err);
             }
         })();
-    }, []);
+    }, [currentUser]);
 
     // Toggle selection state
     const toggleSelect = (appId: number) => {
@@ -79,8 +84,7 @@ export const LecturerPage: React.FC = () => {
         };
 
     //
-    // ── NEW: Page‐level callback for when a child successfully saves a new comment
-    //    We expect `newComment` to be whatever the backend returned.
+    // Page‐level callback for when a child successfully saves a new comment
     //
     const onCommentSaved = (appId: number, newComment: string) => {
         setApplications(prev =>
@@ -225,6 +229,7 @@ export const LecturerPage: React.FC = () => {
                     )}
                 </Box>
 
+             <CourseList />
                 <VisualRepresentation applications={applications} />
             </CreamCard>
         </Box>
