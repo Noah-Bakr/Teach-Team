@@ -7,13 +7,17 @@ import SignUpForm from './SignUpForm';
 import { UserUI } from '@/types/userTypes';
 import { getCurrentUser, logoutUser } from '@/services/authService';
 import { fetchUserById } from '@/services/userService';
+import { useAuth } from "@/context/AuthContext";
 
 const Navbar: React.FC = () => {
-    const [currentUser, setCurrentUser] = useState<UserUI | null>(null);
+    const { currentUser, logout } = useAuth();
+    //const [currentUser, setCurrentUser] = useState<UserUI | null>(null);
     const router = useRouter();
     
     // State variables for login
     const [isLoginFormOpen, setIsLoginFormOpen] = useState(false);
+    const [isSignUpFormOpen, setIsSignUpFormOpen] = useState(false);
+
     const handleLoginClick = () => {
         setIsLoginFormOpen(true);
         setIsSignUpFormOpen(false);
@@ -23,7 +27,6 @@ const Navbar: React.FC = () => {
     };
 
     // State variables for sign up
-    const [isSignUpFormOpen, setIsSignUpFormOpen] = useState(false);
     const handleSignUpClick = () => {
         setIsSignUpFormOpen(true);
         setIsLoginFormOpen(false);
@@ -35,47 +38,47 @@ const Navbar: React.FC = () => {
     const handleSignOutClick = async () => {
         try {
             await logoutUser();
-            setCurrentUser(null);
+            //setCurrentUser(null);
             router.push('/');
         } catch (error) {
             console.error("Error signing out:", error);
         }
     };
 
-    // Fetch current user from /auth/me
-    useEffect(() => {
-        const fetchCurrentUser = async () => {
-            try {
-                const response = await getCurrentUser();
-
-                const user: UserUI = {
-                    id: response.id,
-                    username: response.username,
-                    firstName: response.firstName,
-                    lastName: response.lastName,
-                    email: response.email,
-                    avatar: response.avatar || null,
-                    role: response.role || "candidate",
-                    skills: response.skills || [],
-                    courses: response.courses || [],
-                    previousRoles: response.previousRoles || [],
-                    academicCredentials: response.academicCredentials || [],
-                };
-                setCurrentUser(user);
-                console.log("Current avatar fetched:", user.avatar);
-            } catch (error) {
-                const status = (error as { response?: { status?: number } }).response?.status;
-
-                if (status === 401) {
-                    setCurrentUser(null);
-                } else {
-                    console.error("Unexpected error fetching user:", error);
-                }
-            }
-        };
-
-        fetchCurrentUser();
-    }, []);
+    // // Fetch current user from /auth/me
+    // useEffect(() => {
+    //     const fetchCurrentUser = async () => {
+    //         try {
+    //             const response = await getCurrentUser();
+    //
+    //             const user: UserUI = {
+    //                 id: response.id,
+    //                 username: response.username,
+    //                 firstName: response.firstName,
+    //                 lastName: response.lastName,
+    //                 email: response.email,
+    //                 avatar: response.avatar || null,
+    //                 role: response.role || "candidate",
+    //                 skills: response.skills || [],
+    //                 courses: response.courses || [],
+    //                 previousRoles: response.previousRoles || [],
+    //                 academicCredentials: response.academicCredentials || [],
+    //             };
+    //             setCurrentUser(user);
+    //             console.log("Current avatar fetched:", user.avatar);
+    //         } catch (error) {
+    //             const status = (error as { response?: { status?: number } }).response?.status;
+    //
+    //             if (status === 401) {
+    //                 setCurrentUser(null);
+    //             } else {
+    //                 console.error("Unexpected error fetching user:", error);
+    //             }
+    //         }
+    //     };
+    //
+    //     fetchCurrentUser();
+    // }, []);
 
     return (
         <div>
