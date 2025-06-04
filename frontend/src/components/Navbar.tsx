@@ -1,17 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Avatar, Menu, Portal } from "@chakra-ui/react";
 import "../styles/Navbar.css";
 import LoginForm from './LoginForm';
 import { useRouter } from 'next/router';
 import SignUpForm from './SignUpForm';
-import { UserUI } from '@/types/userTypes';
-import { getCurrentUser, logoutUser } from '@/services/authService';
-import { fetchUserById } from '@/services/userService';
+import { logoutUser } from '@/services/authService';
 import { useAuth } from "@/context/AuthContext";
 
 const Navbar: React.FC = () => {
     const { currentUser, logout } = useAuth();
-    //const [currentUser, setCurrentUser] = useState<UserUI | null>(null);
     const router = useRouter();
     
     // State variables for login
@@ -44,41 +41,6 @@ const Navbar: React.FC = () => {
             console.error("Error signing out:", error);
         }
     };
-
-    // // Fetch current user from /auth/me
-    // useEffect(() => {
-    //     const fetchCurrentUser = async () => {
-    //         try {
-    //             const response = await getCurrentUser();
-    //
-    //             const user: UserUI = {
-    //                 id: response.id,
-    //                 username: response.username,
-    //                 firstName: response.firstName,
-    //                 lastName: response.lastName,
-    //                 email: response.email,
-    //                 avatar: response.avatar || null,
-    //                 role: response.role || "candidate",
-    //                 skills: response.skills || [],
-    //                 courses: response.courses || [],
-    //                 previousRoles: response.previousRoles || [],
-    //                 academicCredentials: response.academicCredentials || [],
-    //             };
-    //             setCurrentUser(user);
-    //             console.log("Current avatar fetched:", user.avatar);
-    //         } catch (error) {
-    //             const status = (error as { response?: { status?: number } }).response?.status;
-    //
-    //             if (status === 401) {
-    //                 setCurrentUser(null);
-    //             } else {
-    //                 console.error("Unexpected error fetching user:", error);
-    //             }
-    //         }
-    //     };
-    //
-    //     fetchCurrentUser();
-    // }, []);
 
     return (
         <div>
