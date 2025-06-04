@@ -71,7 +71,4 @@ export class User {
     // Many comments can be made by one lecturer (Many-to-One relationship)
     @OneToMany(() => Review, (review) => review.lecturer)
     reviews: Review[];
-
-    // @OneToMany(() => ApplicationRanking, (ranking) => ranking.lecturer)
-    // rankings: ApplicationRanking[];
 }
