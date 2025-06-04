@@ -288,32 +288,40 @@ export class AuthController {
             return res.status(401).json({ message: "Invalid email or password" });
         }
 
-        // 2) Verify password
+        // Verify password
         const isPasswordValid = await argon2.verify(user.password, password);
         if (!isPasswordValid) {
             return res.status(401).json({ message: "Invalid email or password" });
         }
 
-        // 3) Sign JWT token
+        // Sign JWT token
         const token = jwt.sign(
             { userId: user.user_id, role: user.role.role_name },
             process.env.JWT_SECRET!,
             { expiresIn: "1h" }
         );
 
-        // 4) Set cookie on response
+        // Set cookie on response
+        // res.cookie("token", token, {
+        //     httpOnly: true,
+        //     secure: process.env.NODE_ENV === "production",
+        //     sameSite: process.env.NODE_ENV === "production" ? "strict" : "none",
+        //     maxAge: 3600000,
+        //     path: "/",
+        // });
+
         res.cookie("token", token, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === "production",               // true in prod, false in dev
-            sameSite: process.env.NODE_ENV === "production" ? "strict" : "none",
-            maxAge: 3600000,                                               // 1 hour
+            secure: false,
+            sameSite: "lax",
+            maxAge: 3600000,
             path: "/",
         });
 
-        // 5) Remove password from user object
+        // Remove password from user object
         const { password: _, ...userWithoutPassword } = user;
 
-        // 6) Return JSON with wrapper
+        // Return JSON with wrapper
         return res.status(200).json({
             message: "Login successful",
             user: userWithoutPassword,
