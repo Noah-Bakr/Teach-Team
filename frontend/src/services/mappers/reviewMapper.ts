@@ -11,6 +11,7 @@ export function mapRawReviewToUI(raw: BackendReview): ReviewUI {
         comment: raw.comment,
         reviewedAt: raw.reviewed_at,
         updatedAt: raw.updated_at,
+        lecturerId: raw.lecturer_id,
 
         // Compose a full lecturer name
         lecturerName: `${raw.lecturer.first_name} ${raw.lecturer.last_name}`,
