@@ -1,14 +1,15 @@
 // src/components/ApplicationDetail.tsx
 import React, { useEffect, useState } from 'react';
-import { fetchApplicationById } from '../services/applicationApi';
-import { Application } from '../types/applicationTypes';
+import { fetchApplicationById } from '../services/applicationService';
+import { ApplicationUI, ReviewUI } from '../types/applicationTypes';
+
 
 interface Props {
     id: number;
 }
 
 export function ApplicationDetail({ id }: Props) {
-    const [application, setApplication] = useState<Application | null>(null);
+    const [application, setApplication] = useState<ApplicationUI | null>(null);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
@@ -25,39 +26,38 @@ export function ApplicationDetail({ id }: Props) {
 
     return (
         <div>
-            <h2>Application #{application.application_id}</h2>
+            <h2>Application #{application.id}</h2>
             <p>
-                <strong>Position Type:</strong> {application.position_type}
+                <strong>Position Type:</strong> {application.positionType}
             </p>
             <p>
                 <strong>Status:</strong> {application.status}
             </p>
             <p>
-                <strong>Applied At:</strong> {new Date(application.applied_at).toLocaleDateString()}
+                <strong>Applied At:</strong> {new Date(application.appliedAt).toLocaleDateString()}
             </p>
             <p>
                 <strong>Candidate:</strong> {application.user.username} (
                 {application.user.skills.join(', ')})
             </p>
             <p>
-                <strong>Course:</strong> {application.course.course_name} &mdash;{' '}
-                {application.course.course_code}
+                <strong>Course:</strong> {application.course.name} &mdash;{' '}
+                {application.course.code}
             </p>
-            {application.comments && application.comments.length > 0 && (
                 <>
-                    <h3>Comments</h3>
+                    <h3>Reviews</h3>
                     <ul>
-                        {application.comments.map((c) => (
-                            <li key={c.comment_id}>
+                        {application.reviews?.map((c: ReviewUI) => (
+                            <li key={c.id}>
                                 <strong>
-                                    {c.lecturer.first_name} {c.lecturer.last_name}:
+                                    {c.rank}:
                                 </strong>{' '}
-                                {c.comment} <em>({new Date(c.created_at).toLocaleString()})</em>
+                                {c.comment} <em>({new Date(c.reviewedAt).toLocaleString()})</em>
                             </li>
                         ))}
                     </ul>
                 </>
-            )}
+            )
         </div>
     );
 }
