@@ -1,4 +1,4 @@
-import axios from 'axios';
+import { api } from "./api";
 import {
     PreviousRole as BackendPrevRole,
     CreatePreviousRoleDto,
@@ -7,14 +7,12 @@ import {
 import { mapRawPreviousRoleToUI } from './mappers/previousRoleMapper';
 import { PreviousRoleUI } from '../types/previousRoleTypes';
 
-const API_BASE = 'http://localhost:3001/api';
-
 /**
  * GET /previous-roles → PreviousRoleUI[]
  */
 export async function fetchAllPreviousRoles(): Promise<PreviousRoleUI[]> {
-    const resp = await axios.get<BackendPrevRole[]>(
-        `${API_BASE}/previous-roles`
+    const resp = await api.get<BackendPrevRole[]>(
+        `/previous-roles`
     );
     return resp.data.map(raw => mapRawPreviousRoleToUI(raw));
 }
@@ -25,8 +23,8 @@ export async function fetchAllPreviousRoles(): Promise<PreviousRoleUI[]> {
 export async function fetchPreviousRoleById(
     id: number
 ): Promise<PreviousRoleUI> {
-    const resp = await axios.get<BackendPrevRole>(
-        `${API_BASE}/previous-roles/${id}`
+    const resp = await api.get<BackendPrevRole>(
+        `/previous-roles/${id}`
     );
     return mapRawPreviousRoleToUI(resp.data);
 }
@@ -39,8 +37,8 @@ export async function fetchPreviousRoleById(
 export async function createPreviousRole(
     payload: CreatePreviousRoleDto
 ): Promise<PreviousRoleUI> {
-    const resp = await axios.post<BackendPrevRole>(
-        `${API_BASE}/previous-roles`,
+    const resp = await api.post<BackendPrevRole>(
+        `/previous-roles`,
         payload
     );
     return mapRawPreviousRoleToUI(resp.data);
@@ -55,8 +53,8 @@ export async function updatePreviousRole(
     id: number,
     payload: UpdatePreviousRoleDto
 ): Promise<PreviousRoleUI> {
-    const resp = await axios.put<BackendPrevRole>(
-        `${API_BASE}/previous-roles/${id}`,
+    const resp = await api.put<BackendPrevRole>(
+        `/previous-roles/${id}`,
         payload
     );
     return mapRawPreviousRoleToUI(resp.data);
@@ -66,7 +64,7 @@ export async function updatePreviousRole(
  * DELETE /previous-roles/:id
  */
 export function deletePreviousRole(id: number) {
-    return axios.delete<{ message: string }>(
-        `${API_BASE}/previous-roles/${id}`
+    return api.delete<{ message: string }>(
+        `/previous-roles/${id}`
     );
 }
