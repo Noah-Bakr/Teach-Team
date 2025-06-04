@@ -5,6 +5,7 @@ import { UserUI } from "@/types/userTypes";
 import { api } from "@/services/api";
 import { loginUser, signUpUser, getCurrentUser, logoutUser,} from "@/services/authService";
 import { User as BackendUser } from "@/services/api/userApi";
+import { mapBackendUserToUI } from "@/services/mappers/authMapper";
 
 interface AuthContextType {
   currentUser: UserUI | null;
@@ -24,31 +25,31 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-function mapBackendUserToUI(raw: BackendUser): UserUI {
-  return {
-    id: raw.user_id,
-    username: raw.username,
-    firstName: raw.first_name,
-    lastName: raw.last_name,
-    email: raw.email,
-    avatar: raw.avatar || null,
-    role: raw.role.role_name,
-    skills: raw.skills.map((s) => s.skill_name),
-    courses: raw.courses.map((c) => c.course_name),
-    previousRoles: raw.previousRoles.map((r) => r.previous_role),
-    academicCredentials: raw.academicCredentials.map((a) => a.degree_name),
-    reviews:
-        raw.reviews?.map((r) => ({
-          id: r.review_id,
-          rank: r.rank,
-          comment: r.comment,
-          reviewedAt: r.reviewed_at,
-          updatedAt: r.updated_at,
-          lecturerId: r.lecturer_id,
-          applicationId: r.application_id,
-        })) || undefined,
-  };
-}
+// function mapBackendUserToUI(raw: BackendUser): UserUI {
+//   return {
+//     id: raw.user_id,
+//     username: raw.username,
+//     firstName: raw.first_name,
+//     lastName: raw.last_name,
+//     email: raw.email,
+//     avatar: raw.avatar || null,
+//     role: raw.role.role_name,
+//     skills: raw.skills.map((s) => s.skill_name),
+//     courses: raw.courses.map((c) => c.course_name),
+//     previousRoles: raw.previousRoles.map((r) => r.previous_role),
+//     academicCredentials: raw.academicCredentials.map((a) => a.degree_name),
+//     reviews:
+//         raw.reviews?.map((r) => ({
+//           id: r.review_id,
+//           rank: r.rank,
+//           comment: r.comment,
+//           reviewedAt: r.reviewed_at,
+//           updatedAt: r.updated_at,
+//           lecturerId: r.lecturer_id,
+//           applicationId: r.application_id,
+//         })) || undefined,
+//   };
+// }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [currentUser, setCurrentUser] = useState<UserUI | null>(null);
@@ -61,7 +62,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setLoading(true);
       try {
         const rawUser = await getCurrentUser(); // GET /auth/me
-        const uiUser = mapBackendUserToUI(rawUser);
+        const uiUser: UserUI = mapBackendUserToUI(rawUser);
         setCurrentUser(uiUser);
       } catch (err: any) {
         // If the error is a 401, simply swallow it (no console.log).
@@ -79,10 +80,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     fetchSessionUser();
   }, []);
 
-  const login = async (
-      email: string,
-      password: string
-  ): Promise<boolean> => {
+  const login = async ( email: string, password: string ): Promise<boolean> => {
     setLoading(true);
     setError(null);
 
