@@ -1,6 +1,4 @@
-// src/service/applicationService.ts
-
-import axios from "axios";
+import { api } from "./api";
 import {
     Application as BackendApp,
     CreateApplicationDto,
@@ -9,11 +7,9 @@ import {
 import { mapRawAppToUI } from "./mappers/applicationMapper";
 import { ApplicationUI } from "../types/applicationTypes";
 
-const API_BASE = "http://localhost:3001/api";
-
 /** GET /applications → ApplicationUI[] */
 export async function fetchAllApplications(): Promise<ApplicationUI[]> {
-    const resp = await axios.get<BackendApp[]>(`${API_BASE}/applications`);
+    const resp = await api.get<BackendApp[]>(`/applications`);
     return resp.data.map(mapRawAppToUI);
 }
 
@@ -21,7 +17,7 @@ export async function fetchAllApplications(): Promise<ApplicationUI[]> {
 export async function fetchApplicationById(
     id: number
 ): Promise<ApplicationUI> {
-    const resp = await axios.get<BackendApp>(`${API_BASE}/applications/${id}`);
+    const resp = await api.get<BackendApp>(`/applications/${id}`);
     return mapRawAppToUI(resp.data);
 }
 
@@ -29,8 +25,8 @@ export async function fetchApplicationById(
 export async function createApplication(
     payload: CreateApplicationDto
 ): Promise<ApplicationUI> {
-    const resp = await axios.post<BackendApp>(
-        `${API_BASE}/applications`,
+    const resp = await api.post<BackendApp>(
+        `/applications`,
         payload
     );
     return mapRawAppToUI(resp.data);
@@ -41,8 +37,8 @@ export async function updateApplication(
     id: number,
     payload: UpdateApplicationDto
 ): Promise<ApplicationUI> {
-    const resp = await axios.put<BackendApp>(
-        `${API_BASE}/applications/${id}`,
+    const resp = await api.put<BackendApp>(
+        `/applications/${id}`,
         payload
     );
     return mapRawAppToUI(resp.data);
@@ -50,7 +46,7 @@ export async function updateApplication(
 
 /** DELETE /applications/:id */
 export function deleteApplication(id: number) {
-    return axios.delete<{ message: string }>(
-        `${API_BASE}/applications/${id}`
+    return api.delete<{ message: string }>(
+        `/applications/${id}`
     );
 }
