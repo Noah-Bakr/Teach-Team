@@ -1,3 +1,4 @@
+// src/components/SelectedApplicantCard.tsx
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -10,26 +11,15 @@ import {
     Textarea,
     Button,
 } from "@chakra-ui/react";
-import { ApplicationUI } from "@/types/applicationTypes";
+import { ApplicationUI, ReviewUI } from "@/types/applicationTypes";
 import CustomFormControl from "./CustomFormControl";
-import { toaster } from "@/components/ui/toaster"
-
-// Service functions for saving
-import { createComment } from "@/services/commentService";
-import { createRanking } from "@/services/rankingService";
+import { createReview, updateReview } from "@/services/reviewService";
+import { toaster } from "@/components/ui/toaster";
+import { useAuth } from "@/context/AuthContext";
 
 interface SelectedApplicantCardProps {
     applicant: ApplicationUI;
     error?: { rank?: string; comment?: string };
-
-    /**
-     * Now each callback only takes a single argument:
-     *  - handleRankChange(newRank: number)
-     *  - handleCommentChange(newComment: string)
-     *
-     * The parent (LecturerPage) will already know which applicant it is,
-     * because it passed `applicant` down to this card.
-     */
     handleRankChange: (newRank: number) => void;
     handleCommentChange: (newComment: string) => void;
 }
@@ -40,113 +30,128 @@ const SelectedApplicantCard: React.FC<SelectedApplicantCardProps> = ({
                                                                          handleRankChange,
                                                                          handleCommentChange,
                                                                      }) => {
-    // --------------------------------------------------------------------------
-    // 1) Extract any “existing” rank/comment from the applicant prop
-    //    and store them in local state so the user can edit freely.
-    // --------------------------------------------------------------------------
+    // Pull current lecturer ID from Auth:
+    const { currentUser } = useAuth();
+    const lecturerId = currentUser?.id ?? null;
 
-    // If backend returned a ranking array, take the first ranking value:
-    const existingRank =
-        applicant.rank && applicant.rank.length > 0
-            ? String(applicant.rank[0].ranking)
-            : "";
+    // Find “my” existing review (if any):
+    const myExistingReviewObj: ReviewUI  | undefined = applicant.reviews?.find(
+        (r) => r.lecturerId === lecturerId
+    );
+    const existingRankValue = myExistingReviewObj
+        ? String(myExistingReviewObj.rank ?? "")
+        : "";
+    const existingCommentValue = myExistingReviewObj
+        ? myExistingReviewObj.comment ?? ""
+        : "";
 
-    // If backend returned a comments array, take the first comment text:
-    const existingComment =
-        applicant.comments && applicant.comments.length > 0
-            ? applicant.comments[0].text
-            : "";
+    // Local state for the two inputs, seeded from existing values:
+    const [localRank, setLocalRank] = useState<string>(existingRankValue);
+    const [localComment, setLocalComment] = useState<string>(
+        existingCommentValue
+    );
 
-    // Local state for the inputs:
-    const [localRank, setLocalRank] = useState<string>(existingRank);
-    const [localComment, setLocalComment] = useState<string>(existingComment);
-
-    // If the parent ever changes applicant.rank or applicant.comments,
-    // we re‐hydrate our local inputs accordingly:
+    // Re-hydrate if “prop” changes:
     useEffect(() => {
-        setLocalRank(existingRank);
-    }, [existingRank]);
+        setLocalRank(existingRankValue);
+    }, [existingRankValue]);
 
     useEffect(() => {
-        setLocalComment(existingComment);
-    }, [existingComment]);
+        setLocalComment(existingCommentValue);
+    }, [existingCommentValue]);
 
-    // --------------------------------------------------------------------------
-    // 2) Fake “logged‐in lecturer ID” (in a real app, grab this from your auth context)
-    // --------------------------------------------------------------------------
-    const lecturerId = 2;
+    // Save logic using Review
+    const handleSave = async () => {
+        // If not signed in, show error toast:
+        if (!lecturerId) {
+            toaster.create({
+                title: "Not signed in",
+                description: "You must be signed in to save a review.",
+                type: "error",
+                duration: 4000,
+                meta: { closable: true },
+            });
+            return;
+        }
 
-    // --------------------------------------------------------------------------
-    // 3) “Save to Database” logic:
-    //    - First send the ranking (if changed)
-    //    - Then send the comment (if changed)
-    //    After each POST succeeds, call the parent’s single‐arg callback.
-    // --------------------------------------------------------------------------
-    const handleSave = () => {
-        // Build a promise that does both createRanking() and createComment()
-        const savePromise = (async () => {
-            // If they typed a number for “Rank”, attempt to save it:
-            if (localRank.trim() !== "") {
-                const rankValue = Number(localRank);
-                if (!isNaN(rankValue)) {
-                    const savedRanking = await createRanking({
-                        application_id: applicant.id,
-                        lecturer_id: lecturerId,
-                        rank: rankValue,
-                    });
-                    // Notify parent of new numeric rank:
-                    handleRankChange(savedRanking.ranking);
-                } else {
-                    // If it wasn’t a valid number, throw an error to be caught below
-                    throw new Error("Rank must be a valid number");
-                }
-            }
-
-            // If they typed something for “Comment”, attempt to save it:
-            if (localComment.trim() !== "") {
-                if (localComment.trim().length > 200) {
-                    // We enforce max‐200 chars; throw so toaster shows error
-                    throw new Error("Comment exceeds 200 characters");
-                }
-
-                const savedComment = await createComment({
-                    application_id: applicant.id,
-                    lecturer_id: lecturerId,
-                    comment: localComment.trim(),
+        // Validate rank if not empty
+        let parsedRank: number | null = null;
+        if (localRank.trim() !== "") {
+            const num = Number(localRank);
+            if (isNaN(num)) {
+                toaster.create({
+                    title: "Invalid rank",
+                    description: "Rank must be a valid number.",
+                    type: "warning",
+                    duration: 3000,
+                    meta: { closable: true },
                 });
-                // Notify parent of new comment:
-                handleCommentChange(savedComment.text);
+                return;
             }
+            parsedRank = num;
+        }
+        // Validate comment length
+        if (localComment.trim().length > 200) {
+            toaster.create({
+                title: "Comment too long",
+                description: "Maximum 200 characters allowed.",
+                type: "warning",
+                duration: 3000,
+                meta: { closable: true },
+            });
+            return;
+        }
 
-            // If we reach here, both (ranking and comment) succeeded (or neither was needed).
-            return true;
-        })();
-
-        // Wrap that combined promise in a single toast
-        toaster.promise(savePromise, {
-            loading: {
-                title: "Saving…",
-                description: "Hold on while we save your rank & comment.",
-            },
-            success: {
-                title: "Saved!",
-                description: `Your ${
-                    localRank.trim() !== "" ? "rank" : ""
-                }${localRank.trim() !== "" && localComment.trim() !== "" ? " & " : ""}${
-                    localComment.trim() !== "" ? "comment" : ""
-                } have been recorded successfully.`,
-            },
-            error: {
-                title: "Error",
-                description: (err: any) => {
-                    // If the thrown error has a message (e.g. “Rank must be valid number”),
-                    // show that; otherwise show a generic message.
-                    return typeof err === "string" ? err : err.message || "Something went wrong";
-                },
-            },
-        });
+        try {
+            if (myExistingReviewObj) {
+                // Update existing review
+                const updated = await updateReview(myExistingReviewObj.id, {
+                    rank: parsedRank,
+                    comment: localComment.trim() || null,
+                });
+                handleRankChange(updated.rank ?? 0);
+                handleCommentChange(updated.comment ?? "");
+                toaster.create({
+                    title: "Review updated",
+                    description: "Your review has been updated.",
+                    type: "success",
+                    duration: 3000,
+                    meta: { closable: true },
+                });
+            } else {
+                // Create new review
+                const created = await createReview({
+                    lecturer_id: lecturerId,
+                    application_id: applicant.id,
+                    rank: parsedRank ?? undefined,
+                    comment: localComment.trim() || undefined,
+                });
+                handleRankChange(created.rank ?? 0);
+                handleCommentChange(created.comment ?? "");
+                toaster.create({
+                    title: "Review saved",
+                    description: "Your review has been recorded.",
+                    type: "success",
+                    duration: 3000,
+                    meta: { closable: true },
+                });
+            }
+        } catch (err: any) {
+            console.error("Failed to save review:", err);
+            toaster.create({
+                title: "Failed to save review",
+                description:
+                    err?.response?.data?.message ||
+                    "There was an error saving your review. Please try again.",
+                type: "error",
+                duration: 4000,
+                meta: { closable: true },
+            });
+        }
     };
 
+    // Render the card; the “Rank” input is seeded with localRank (which came from existingRankValue).
+    //    If no ranking existed, localRank === "" and the input stays blank.
     return (
         <Box
             mt={2}
@@ -156,18 +161,15 @@ const SelectedApplicantCard: React.FC<SelectedApplicantCardProps> = ({
             borderRadius="md"
             boxShadow="md"
             mb={2}
+            opacity={lecturerId ? 1 : 0.6} // greyed out if not signed in
         >
-            {/* --------------------------------------------------------------
-          1) Header: “Name — CourseCode CourseName”
-      -------------------------------------------------------------- */}
+            {/* Header */}
             <Heading as="h3" size="md" mb={4}>
                 {applicant.user.firstName} {applicant.user.lastName} —{" "}
                 {applicant.course.code} {applicant.course.name}
             </Heading>
 
-            {/* --------------------------------------------------------------
-          2) “Rank” input (type=number)
-      -------------------------------------------------------------- */}
+            {/* Rank input */}
             <Flex align="center" mb={2}>
                 <Text mr={2}>Rank:</Text>
                 <CustomFormControl error={error?.rank}>
@@ -176,28 +178,38 @@ const SelectedApplicantCard: React.FC<SelectedApplicantCardProps> = ({
                         value={localRank}
                         onChange={(e) => setLocalRank(e.target.value)}
                         maxW="80px"
+                        //isDisabled={!lecturerId}
                     />
                 </CustomFormControl>
             </Flex>
 
-            {/* --------------------------------------------------------------
-          3) “Comment” textarea
-      -------------------------------------------------------------- */}
+            {/* Comment textarea */}
             <CustomFormControl error={error?.comment}>
                 <Textarea
-                    placeholder="Enter applicant comments..."
+                    placeholder="Enter applicant comments…"
                     value={localComment}
                     onChange={(e) => setLocalComment(e.target.value)}
                     size="sm"
+                    //isDisabled={!lecturerId}
                 />
             </CustomFormControl>
 
-            {/* --------------------------------------------------------------
-          4) “Save to Database” button
-      -------------------------------------------------------------- */}
-            <Button mt={3} colorScheme="blue" size="sm" onClick={handleSave}>
+            {/* Save button */}
+            <Button
+                mt={3}
+                colorScheme="blue"
+                size="sm"
+                onClick={handleSave}
+                //isDisabled={!lecturerId}
+            >
                 Save to Database
             </Button>
+
+            {!lecturerId && (
+                <Text color="red.500" fontSize="sm" mt={2}>
+                    Please sign in to save rankings/comments.
+                </Text>
+            )}
         </Box>
     );
 };
