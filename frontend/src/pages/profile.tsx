@@ -14,6 +14,7 @@ import { UserUI } from "@/types/userTypes";
 import { fetchUserById, updateUser } from "@/services/userService";
 import { Roles } from "@/types/roleTypes";
 import { getCurrentUser } from "@/services/authService";
+import { mapBackendUserToUI } from "@/services/mappers/authMapper"
 
 
 const ProfilePage: React.FC = () => {
@@ -50,24 +51,12 @@ const ProfilePage: React.FC = () => {
     useEffect(() => {
         const fetchUserData = async () => {
             try {
-                const authResponse = await getCurrentUser();
+                const response = await getCurrentUser();
                 
-                const mappedUser: UserUI = {
-                    id: authResponse.id,
-                    username: authResponse.username,
-                    firstName: authResponse.firstName,
-                    lastName: authResponse.lastName,
-                    email: authResponse.email,
-                    avatar: authResponse.avatar || null,
-                    role: authResponse.role || "candidate",
-                    skills: authResponse.skills || [],
-                    courses: authResponse.courses || [],
-                    previousRoles: authResponse.previousRoles || [],
-                    academicCredentials: authResponse.academicCredentials || [],
-                };
-
-                setCurrentUser(mappedUser);
-                setUpdatedUser(mappedUser);
+                const user: UserUI = mapBackendUserToUI(response);
+                
+                setCurrentUser(user);
+                setUpdatedUser(user);
             } catch (error) {
                 console.error("Error fetching user data:", error);
             }
