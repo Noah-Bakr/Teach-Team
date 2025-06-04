@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { CourseUI } from '../types/courseTypes';
-import { fetchAllCourses } from '../services/courseApi';
+import { fetchAllCourses } from '../services/courseService';
 
 export function CourseList() {
     const [courses, setCourses] = useState<CourseUI[]>([]);
