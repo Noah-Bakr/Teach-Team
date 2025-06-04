@@ -1,4 +1,4 @@
-import axios from 'axios';
+import { api } from "./api";
 import {
     Course as BackendCourse,
     CreateCourseDto,
@@ -7,17 +7,15 @@ import {
 import { mapRawCourseToCourseUI } from './mappers/courseMapper';
 import { CourseUI } from '../types/courseTypes';
 
-const API_BASE = 'http://localhost:3001/api';
-
 /** GET /courses → CourseUI[] */
 export async function fetchAllCourses(): Promise<CourseUI[]> {
-    const resp = await axios.get<BackendCourse[]>(`${API_BASE}/courses`);
+    const resp = await api.get<BackendCourse[]>(`/courses`);
     return resp.data.map(raw => mapRawCourseToCourseUI(raw));
 }
 
 /** GET /courses/:id → CourseUI */
 export async function fetchCourseById(id: number): Promise<CourseUI> {
-    const resp = await axios.get<BackendCourse>(`${API_BASE}/courses/${id}`);
+    const resp = await api.get<BackendCourse>(`/courses/${id}`);
     return mapRawCourseToCourseUI(resp.data);
 }
 
@@ -25,8 +23,8 @@ export async function fetchCourseById(id: number): Promise<CourseUI> {
 export async function createCourse(
     payload: CreateCourseDto
 ): Promise<CourseUI> {
-    const resp = await axios.post<BackendCourse>(
-        `${API_BASE}/courses`,
+    const resp = await api.post<BackendCourse>(
+        `/courses`,
         payload
     );
     return mapRawCourseToCourseUI(resp.data);
@@ -37,8 +35,8 @@ export async function updateCourse(
     id: number,
     payload: UpdateCourseDto
 ): Promise<CourseUI> {
-    const resp = await axios.put<BackendCourse>(
-        `${API_BASE}/courses/${id}`,
+    const resp = await api.put<BackendCourse>(
+        `/courses/${id}`,
         payload
     );
     return mapRawCourseToCourseUI(resp.data);
@@ -46,5 +44,5 @@ export async function updateCourse(
 
 /** DELETE /courses/:id */
 export function deleteCourse(id: number) {
-    return axios.delete<{ message: string }>(`${API_BASE}/courses/${id}`);
+    return api.delete<{ message: string }>(`/courses/${id}`);
 }
