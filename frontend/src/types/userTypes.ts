@@ -8,6 +8,11 @@ export type ReviewUI = {
     applicationId: number;
 };
 
+export type CourseUI = {
+    id: number;
+    name: string;
+}
+
 export type UserUI = {
     id: number;
     username: string;
@@ -19,7 +24,7 @@ export type UserUI = {
     role: 'admin' | 'lecturer' | 'candidate';
 
     skills?: string[];
-    courses?: string[];
+    courses?: CourseUI[];
     previousRoles?: string[];
     academicCredentials?: string[];
 
