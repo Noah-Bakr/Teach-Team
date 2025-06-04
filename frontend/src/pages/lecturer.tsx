@@ -3,10 +3,9 @@
 
 import React, { useState, useEffect } from "react";
 import { Box, Heading, Text, SimpleGrid } from "@chakra-ui/react";
-import { ApplicationUI } from "@/types/applicationTypes";
+import { ApplicationUI, ReviewUI } from "@/types/applicationTypes";
 import { fetchAllApplications } from "@/services/applicationService";
-import { createRanking } from "@/services/rankingService";
-import { createComment } from "@/services/commentService";
+import { createReview, updateReview } from "@/services/reviewService";
 import SearchAndSortBar from "@/components/SearchAndSortBar";
 import SelectedApplicantCard from "@/components/SelectedApplicantCard";
 import ApplicantsTable from "@/components/ApplicantsTable";
@@ -26,7 +25,7 @@ export const LecturerPage: React.FC = () => {
 
     const courseLookup = useCourseLookup();
 
-    // Replace this with your real “logged‐in” lecturer’s ID.
+    // TODO Replace this with your real “logged‐in” lecturer’s ID.
     const lecturerId = 2;
 
     useEffect(() => {
@@ -147,25 +146,84 @@ export const LecturerPage: React.FC = () => {
     //         }));
     //     }
     // };
-    const handleRankChange = (appId: number, newValue: string) => {
-            const rank = Number(newValue);
-            if (rank > 0) {
-                const currentApp = applications.find((app) => app.id === appId);
+    const handleRankChange = async (appId: number, newValue: string) => {
+            const parsedRank = Number(newValue);
+            if (isNaN(parsedRank) || parsedRank <= 0) {
+                setErrors((prev) => ({
+                    ...prev,
+                    [appId]: { ...prev[appId], rank: "Rank must be a positive number" },
+                }));
+                return;
+            }
 
+            // Clear any previous rank error
+            setErrors((prev) => ({
+                ...prev,
+                [appId]: { ...prev[appId], rank: "" },
+            }));
+
+            // 1) Update local state immediately so UI appears responsive:
+            setApplications((prev) =>
+                prev.map((app) =>
+                    app.id === appId
+                        ? {
+                            ...app,
+                            // Overwrite "reviews" array to contain exactly our new (temporary) review entry:
+                            reviews: [
+                                {
+                                    id: Date.now(), // temporary frontend ID
+                                    rank: parsedRank,
+                                    comment: app.reviews?.find((r) => r.lecturerId === lecturerId)
+                                        ?.comment ?? "", // preserve existing comment if any
+                                    reviewedAt: "", // blank until real backend response
+                                    updatedAt: "",
+                                    lecturerId: lecturerId,
+                                    applicationId: app.id,
+                                },
+                            ],
+                        }
+                        : app
+                )
+            );
+
+            try {
+                // 2) Check if we already have a Review by this lecturer
+                const currentApp = applications.find((app) => app.id === appId);
+                const myReview: ReviewUI | undefined = currentApp?.reviews?.find(
+                    (r) => r.lecturerId === lecturerId
+                );
+
+                let savedReview: ReviewUI;
+                if (myReview) {
+                    // UPDATE existing Review
+                    savedReview = await updateReview(myReview.id, {
+                        rank: parsedRank,
+                        comment: myReview.comment, // re‐send existing comment
+                    });
+                } else {
+                    // CREATE new Review
+                    savedReview = await createReview({
+                        application_id: appId,
+                        lecturer_id: lecturerId,
+                        rank: parsedRank,
+                    });
+                }
+
+                // 3) Merge the returned Review into local state so timestamps/IDs propagate:
                 setApplications((prev) =>
                     prev.map((app) =>
                         app.id === appId
                             ? {
                                 ...app,
-                                rank: [
+                                reviews: [
                                     {
-                                        id: Date.now(),
-                                        ranking: rank,
-                                        // You could leave createdAt/updatedAt blank or fill with
-                                        // something like (new Date()).toISOString() if you want
-                                        createdAt: "",
-                                        updatedAt: "",
-                                        lecturerName: "",
+                                        id: savedReview.id,
+                                        rank: savedReview.rank,
+                                        comment: savedReview.comment ?? "",
+                                        reviewedAt: savedReview.reviewedAt,
+                                        updatedAt: savedReview.updatedAt,
+                                        lecturerId: savedReview.lecturerId,
+                                        applicationId: app.id,
                                     },
                                 ],
                             }
@@ -173,10 +231,16 @@ export const LecturerPage: React.FC = () => {
                     )
                 );
 
-            } else {
+                // Notify parent/component of the new rank value:
+                handleRankChangeCallback(appId, savedReview.rank ?? 0);
+            } catch (err: any) {
+                console.error("Failed to save review (rank):", err);
                 setErrors((prev) => ({
                     ...prev,
-                    [appId]: { ...prev[appId], rank: "Rank must be greater than 0" },
+                    [appId]: {
+                        ...prev[appId],
+                        rank: "Error saving rank. Please try again.",
+                    },
                 }));
             }
         };
@@ -186,25 +250,81 @@ export const LecturerPage: React.FC = () => {
      * When the comment textarea changes, update local state AND send to backend.
      */
     const handleCommentChange = async (appId: number, newValue: string) => {
-        if (newValue.length <= 200) {
+        if (newValue.length > 200) {
             setErrors((prev) => ({
                 ...prev,
-                [appId]: { ...prev[appId], comment: "" },
+                [appId]: { ...prev[appId], comment: "Comment exceeds 200 chars" },
             }));
+            return;
+        }
 
-            // Update local state for immediate display
+        // Clear comment‐length error
+        setErrors((prev) => ({
+            ...prev,
+            [appId]: { ...prev[appId], comment: "" },
+        }));
+
+        // 1) Update local state immediately:
+        setApplications((prev) =>
+            prev.map((app) =>
+                app.id === appId
+                    ? {
+                        ...app,
+                        reviews: [
+                            {
+                                id: Date.now(),
+                                rank: app.reviews?.find((r) => r.lecturerId === lecturerId)
+                                    ?.rank ?? 0,
+                                comment: newValue,
+                                reviewedAt: "",
+                                updatedAt: "",
+                                lecturerId: lecturerId,
+                                applicationId: app.id,
+                            },
+                        ],
+                    }
+                    : app
+            )
+        );
+
+        try {
+            // 2) Check if a Review by this lecturer already exists:
+            const currentApp = applications.find((app) => app.id === appId);
+            const myReview: ReviewUI | undefined = currentApp?.reviews?.find(
+                (r) => r.lecturerId === lecturerId
+            );
+
+            let savedReview: ReviewUI;
+            if (myReview) {
+                // UPDATE existing Review
+                savedReview = await updateReview(myReview.id, {
+                    rank: myReview.rank, // re‐send existing rank
+                    comment: newValue || null,
+                });
+            } else {
+                // CREATE new Review
+                savedReview = await createReview({
+                    application_id: appId,
+                    lecturer_id: lecturerId,
+                    comment: newValue,
+                });
+            }
+
+            // 3) Merge savedReview back into UI state:
             setApplications((prev) =>
                 prev.map((app) =>
                     app.id === appId
                         ? {
                             ...app,
-                            comments: [
+                            reviews: [
                                 {
-                                    id: Date.now(), // temporary frontend ID
-                                    text: newValue,
-                                    createdAt: "",
-                                    updatedAt: "",
-                                    lecturerName: "",
+                                    id: savedReview.id,
+                                    rank: savedReview.rank ?? 0,
+                                    comment: savedReview.comment ?? "",
+                                    reviewedAt: savedReview.reviewedAt,
+                                    updatedAt: savedReview.updatedAt,
+                                    lecturerId: savedReview.lecturerId,
+                                    applicationId: app.id,
                                 },
                             ],
                         }
@@ -212,48 +332,31 @@ export const LecturerPage: React.FC = () => {
                 )
             );
 
-            // Then send to backend
-            try {
-                const savedComment = await createComment({
-                    application_id: appId,
-                    lecturer_id: lecturerId,
-                    comment: newValue.trim(),
-                });
-                // Merge returned comment into local state so timestamps / lecturerName propagate
-                setApplications((prev) =>
-                    prev.map((app) =>
-                        app.id === appId
-                            ? {
-                                ...app,
-                                comments: [
-                                    {
-                                        id: savedComment.id,
-                                        text: savedComment.text,
-                                        createdAt: savedComment.createdAt,
-                                        updatedAt: savedComment.updatedAt,
-                                        lecturerName: savedComment.lecturerName,
-                                    },
-                                ],
-                            }
-                            : app
-                    )
-                );
-            } catch (err) {
-                console.error("Failed to save comment:", err);
-                setErrors((prev) => ({
-                    ...prev,
-                    [appId]: {
-                        ...prev[appId],
-                        comment: "Error saving comment to server",
-                    },
-                }));
-            }
-        } else {
+            // Notify parent/component of the new comment text:
+            handleCommentChangeCallback(appId, savedReview.comment ?? "");
+        } catch (err) {
+            console.error("Failed to save review (comment):", err);
             setErrors((prev) => ({
                 ...prev,
-                [appId]: { ...prev[appId], comment: "Comment exceeds 200 chars" },
+                [appId]: {
+                    ...prev[appId],
+                    comment: "Error saving comment. Please try again.",
+                },
             }));
         }
+    };
+
+    /**
+     * These two callbacks ensure that if parent/other components need the new
+     * rank/comment values, you can pass them upward. They replace the old
+     * handleRankChange and handleCommentChange signatures in props.
+     */
+    const handleRankChangeCallback = (appId: number, newRank: number) => {
+        // e.g. parent might care—update its state if needed
+    };
+
+    const handleCommentChangeCallback = (appId: number, newComment: string) => {
+        // e.g. parent might care—update its state if needed
     };
 
     // ——— Filtering logic ———
