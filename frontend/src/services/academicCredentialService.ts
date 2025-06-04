@@ -1,4 +1,4 @@
-import axios from 'axios';
+import { api } from "./api";
 import {
     AcademicCredential as BackendCred,
     CreateAcademicCredentialDto,
@@ -8,13 +8,11 @@ import {
 import { mapRawAcademicCredToUI } from './mappers/academicCredentialMapper';
 import { AcademicCredentialUI } from '../types/academicCredentialTypes';
 
-const API_BASE = 'http://localhost:3001/api';
-
 /**
  * GET /academic-credentials → AcademicCredentialUI[]
  */
 export async function fetchAllAcademicCredentials(): Promise<AcademicCredentialUI[]> {
-    const resp = await axios.get<BackendCred[]>(`${API_BASE}/academic-credentials`);
+    const resp = await api.get<BackendCred[]>(`/academic-credentials`);
     return resp.data.map(raw => mapRawAcademicCredToUI(raw));
 }
 
@@ -24,7 +22,7 @@ export async function fetchAllAcademicCredentials(): Promise<AcademicCredentialU
 export async function fetchAcademicCredentialById(
     id: number
 ): Promise<AcademicCredentialUI> {
-    const resp = await axios.get<BackendCred>(`${API_BASE}/academic-credentials/${id}`);
+    const resp = await api.get<BackendCred>(`/academic-credentials/${id}`);
     return mapRawAcademicCredToUI(resp.data);
 }
 
@@ -34,7 +32,7 @@ export async function fetchAcademicCredentialById(
 export async function createAcademicCredential(
     payload: CreateAcademicCredentialDto
 ): Promise<AcademicCredentialUI> {
-    const resp = await axios.post<BackendCred>(`${API_BASE}/academic-credentials`, payload);
+    const resp = await api.post<BackendCred>(`/academic-credentials`, payload);
     return mapRawAcademicCredToUI(resp.data);
 }
 
@@ -45,7 +43,7 @@ export async function updateAcademicCredential(
     id: number,
     payload: UpdateAcademicCredentialDto
 ): Promise<AcademicCredentialUI> {
-    const resp = await axios.put<BackendCred>(`${API_BASE}/academic-credentials/${id}`, payload);
+    const resp = await api.put<BackendCred>(`/academic-credentials/${id}`, payload);
     return mapRawAcademicCredToUI(resp.data);
 }
 
@@ -53,5 +51,5 @@ export async function updateAcademicCredential(
  * DELETE /academic-credentials/:id
  */
 export function deleteAcademicCredential(id: number) {
-    return axios.delete<{ message: string }>(`${API_BASE}/academic-credentials/${id}`);
+    return api.delete<{ message: string }>(`/academic-credentials/${id}`);
 }
