@@ -22,6 +22,8 @@ const ApplicantsTable: React.FC<ApplicantsTableProps> = ({
                     <Table.ColumnHeader>Availability</Table.ColumnHeader>
                     <Table.ColumnHeader>Skills</Table.ColumnHeader>
                     <Table.ColumnHeader>Credentials</Table.ColumnHeader>
+                    <Table.ColumnHeader>Position</Table.ColumnHeader>
+                    <Table.ColumnHeader>Status</Table.ColumnHeader>
                     <Table.ColumnHeader>Action</Table.ColumnHeader>
                 </Table.Row>
             </Table.Header>
@@ -53,6 +55,14 @@ const ApplicantsTable: React.FC<ApplicantsTableProps> = ({
                             {application.user.academicCredentials.length > 0
                                 ? application.user.academicCredentials.join(", ")
                                 : "—"}
+                        </Table.Cell>
+
+                        <Table.Cell>
+                            {application.positionType}
+                        </Table.Cell>
+
+                        <Table.Cell>
+                            {application.status}
                         </Table.Cell>
 
                         {/* “Select” / “Deselect” button */}
