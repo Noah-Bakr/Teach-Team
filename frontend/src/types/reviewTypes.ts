@@ -5,6 +5,7 @@ export interface ReviewUI {
     reviewedAt: string;
     updatedAt: string;
     lecturerName: string;
+    lecturerId: number;
     applicationId: number;
     applicationCandidate: string;
     applicationCourse: string;
