@@ -61,15 +61,7 @@ export const SEED_USERS: SeedUser[] = [
         first_name:  "John",
         last_name:   "Doe",
         avatar:      "https://mighty.tools/mockmind-api/content/human/80.jpg",
-        academic_credentials: [
-            {
-                degree_name: "Bachelor of Computer Science",
-                institution: "RMIT University",
-                start_date:  "2018-02-01",
-                end_date:    "2021-11-30",
-            },
-        ],
-        // Since John is a lecturer, we can assign him to courses by code:
+        // assigned courses
         course_codes: ["COSC2625", "COSC2758"]
     },
     {
@@ -190,7 +182,13 @@ export const SEED_USERS: SeedUser[] = [
                 institution: "RMIT University",
                 start_date:  "2019-07-01",
                 end_date:    "2022-12-15"
-            }
+            },
+            {
+                degree_name: "Bachelor of Computer Science",
+                institution: "RMIT University",
+                start_date:  "2018-02-01",
+                end_date:    "2021-11-30",
+            },
         ],
         previous_roles: [
             {
@@ -208,7 +206,29 @@ export const SEED_USERS: SeedUser[] = [
                 description:   "Designed secure network architectures"
             }
         ]
-    }
+    },
+    {
+        username:    "roo_pearl",
+        email:       "roo@example.com",
+        password:    "Cart@21-c0ding",
+        role_id:     2,   // lecturer
+        first_name:  "Roo",
+        last_name:   "Pearl",
+        avatar:      "https://mighty.tools/mockmind-api/content/human/86.jpg",
+        // assigned courses
+        course_codes: ["COSC2757", "COSC3413"]
+    },
+    {
+        username:    "barry_hobson",
+        email:       "barry@example.com",
+        password:    "Cart@21-c0ding",
+        role_id:     2,   // lecturer
+        first_name:  "Barry",
+        last_name:   "Hobson",
+        avatar:      "https://mighty.tools/mockmind-api/content/human/90.jpg",
+        // assigned courses
+        course_codes: ["COSC2627", "COSC2960", "COSC2758"]
+    },
 ];
 
 
