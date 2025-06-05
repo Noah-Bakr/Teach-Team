@@ -1,18 +1,22 @@
-// src/components/ApplicationDetails.tsx
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import {
     Box,
     Heading,
     Text,
     Badge,
+    Flex,
     HStack,
     VStack,
+    Button,
     Stack,
 } from "@chakra-ui/react";
 import { ApplicationUI } from "@/types/applicationTypes";
 import "../styles/drawerStyles.css";
+import { updateApplication } from "@/services/applicationService";
+import { UpdateApplicationDto } from "@/services/api/applicationApi";
+import { toaster } from "@/components/ui/toaster";
 
 interface ApplicationDetailsProps {
     application: ApplicationUI;
@@ -24,12 +28,70 @@ export const ApplicationDetails: React.FC<ApplicationDetailsProps> = ({
     const { user, course, positionType, status, appliedAt, availability } =
         application;
 
+    const [isUpdating, setIsUpdating] = useState(false);
+
     // Format "Applied on" date as “Apr 2, 2025”
     const formattedDate = new Date(appliedAt).toLocaleDateString(undefined, {
         year: "numeric",
         month: "short",
         day: "numeric",
     });
+
+    // Handler to set status = 'accepted'
+    const onApprove = async () => {
+        try {
+            setIsUpdating(true);
+            const payload: UpdateApplicationDto = { status: "accepted" };
+            await updateApplication(application.id, payload);
+            // Refresh to show new status (replace with your own data‐refresh logic if desired)
+            toaster.create({
+                title: "Application Approved",
+                description: `You have approved application #${application.id}.`,
+                type: "success",
+                duration: 4000,
+                meta: { closable: true },
+            });
+
+            setTimeout(() => window.location.reload(), 500);
+        } catch (err) {
+            console.error("Error approving application:", err);
+            toaster.create({
+                title: "Approval Failed",
+                description: `Could not approve application #${application.id}.`,
+                type: "error",
+                duration: 4000,
+                meta: { closable: true },
+            });
+            setIsUpdating(false);
+        }
+    };
+
+    // Handler to set status = 'rejected'
+    const onReject = async () => {
+        try {
+            setIsUpdating(true);
+            const payload: UpdateApplicationDto = { status: "rejected" };
+            await updateApplication(application.id, payload);
+            toaster.create({
+                title: "Application Rejected",
+                description: `You have rejected application #${application.id}.`,
+                type: "success",
+                duration: 4000,
+                meta: { closable: true },
+            });
+            window.location.reload();
+        } catch (err) {
+            console.error("Error rejecting application:", err);
+            toaster.create({
+                title: "Rejection Failed",
+                description: `Could not reject application #${application.id}.`,
+                type: "error",
+                duration: 4000,
+                meta: { closable: true },
+            });
+            setIsUpdating(false);
+        }
+    };
 
     // Build CSS class for status badge (you already have these classes defined in drawerStyles.css)
     const statusClass = `app-details__badge app-details__badge--${status}`;
@@ -46,43 +108,65 @@ export const ApplicationDetails: React.FC<ApplicationDetailsProps> = ({
         >
             {/** ── 1) HEADER: Application #, Badges, Applied On ── **/}
             <Box className="app-details__header" mb={6}>
-                <Heading className="app-details__title" as="h2" mb={2}>
-                    Application #{application.id}
-                </Heading>
+                <Flex justify="space-between" align="center">
+                    <Box>
+                        <Heading className="app-details__title" as="h2" mb={2}>
+                            Application #{application.id}
+                        </Heading>
 
-                <HStack
-                    className="app-details__badges-container"
-                    margin={2}
-                    wrap="wrap"
-                    ml={1}
-                >
-                    {/** Position Type Badge **/}
-                    <Badge
-                        className="app-details__badge app-details__badge--position-type"
-                        bg="#ffd73b"
-                        color="#121212"
-                        textTransform="uppercase"
-                        fontSize="0.75rem"
-                        px={2}
-                        py={1}
-                        borderRadius="sm"
-                    >
-                        {positionType.replace("_", " ")}
-                    </Badge>
+                        <HStack
+                            className="app-details__badges-container"
+                            margin={2}
+                            wrap="wrap"
+                            ml={1}
+                        >
+                            {/** Position Type Badge **/}
+                            <Badge
+                                className="app-details__badge app-details__badge--position-type"
+                                bg="#ffd73b"
+                                color="#121212"
+                                textTransform="uppercase"
+                                fontSize="0.75rem"
+                                px={2}
+                                py={1}
+                                borderRadius="sm"
+                            >
+                                {positionType.replace("_", " ")}
+                            </Badge>
 
-                    {/** Status Badge **/}
-                    <span className={statusClass}>{status}</span>
-                </HStack>
+                            {/** Status Badge **/}
+                            <span className={statusClass}>{status}</span>
+                        </HStack>
 
-                <Text
-                    className="app-details__applied-date"
-                    fontSize="sm"
-                    color="gray.400"
-                    mt={2}
-                    ml={1}
-                >
-                    Applied on: {formattedDate}
-                </Text>
+                        <Text
+                            className="app-details__applied-date"
+                            fontSize="sm"
+                            color="gray.400"
+                            mt={2}
+                            ml={1}
+                        >
+                            Applied on: {formattedDate}
+                        </Text>
+                    </Box>
+
+                    {/** Approve / Reject Buttons **/}
+                    <HStack margin={2}>
+                        <Button className="accept-button"
+                                loadingText="Saving..."
+                                size="sm"
+                                onClick={onApprove}
+                        >
+                            Approve
+                        </Button>
+                        <Button className="reject-button"
+                                loadingText="Saving..."
+                                size="sm"
+                                onClick={onReject}
+                        >
+                            Reject
+                        </Button>
+                    </HStack>
+                </Flex>
             </Box>
 
             {/** TWO-COLUMN LAYOUT: Candidate (left) & Course Applied For (right) ── **/}
