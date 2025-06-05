@@ -65,7 +65,7 @@ export class User {
     courses: Course[];
 
     // One user can have many previous roles (One-to-Many relationship)
-    @OneToMany(() => PreviousRole, previousRole => previousRole.user)
+    @OneToMany(() => PreviousRole, previousRole => previousRole.user, {eager: true})
     previousRoles: PreviousRole[];
 
     // Many comments can be made by one lecturer (Many-to-One relationship)
