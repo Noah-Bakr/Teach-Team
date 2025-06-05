@@ -1,4 +1,3 @@
-// src/components/SelectedApplicantCard.tsx
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -95,8 +94,8 @@ const SelectedApplicantCard: React.FC<SelectedApplicantCardProps> = ({
         // Check for same rank in same course for this lecturer
         const duplicateInSameCourse = allApplications.some((otherApp) => {
             return (
-                otherApp.id !== applicant.id && // skip self
-                otherApp.course.id === applicant.course.id && // same course
+                otherApp.id !== applicant.id &&
+                otherApp.course.id === applicant.course.id &&
                 otherApp.reviews?.some(
                     (r) => r.lecturerId === lecturerId && r.rank === parsedRank
                 )
