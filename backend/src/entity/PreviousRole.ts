@@ -22,7 +22,7 @@ export class PreviousRole {
     description: string;
 
     // Many PreviousRoles can belong to one User (Many-to-One relationship)
-    @ManyToOne(() => User, user => user.previousRoles, { eager: true })
+    @ManyToOne(() => User, user => user.previousRoles)
     @JoinColumn({ name: 'user_id' })
     user: User;
 }
