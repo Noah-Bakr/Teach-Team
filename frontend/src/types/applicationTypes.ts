@@ -1,3 +1,5 @@
+export type ApplicationStatus = "pending" | "accepted" | "rejected";
+
 export type CommentUI = {
     id: number;             // comment_id
     text: string;           // comment
@@ -69,7 +71,7 @@ export type ReviewUI = {
 export type ApplicationUI = {
     id: number;                   // application_id
     positionType: 'tutor' | 'lab_assistant';
-    status: 'pending' | 'accepted' | 'rejected';
+    status: ApplicationStatus;
     appliedAt: string;            // ISO datetime
     selected: boolean;
     availability: 'Full-Time' | 'Part-Time' | 'Not Available';
