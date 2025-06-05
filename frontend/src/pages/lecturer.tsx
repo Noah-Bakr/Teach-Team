@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { Box, Heading } from "@chakra-ui/react";
-import { ApplicationUI, ReviewUI } from "@/types/applicationTypes";
+import { ApplicationUI, ReviewUI, ApplicationStatus } from "@/types/applicationTypes";
 import { fetchAllApplications } from "@/services/applicationService";
 import SearchAndSortBar from "@/components/SearchAndSortBar";
 import ApplicantsTable from "@/components/ApplicantsTable";
@@ -38,6 +38,23 @@ export const LecturerPage: React.FC = () => {
             }
         })();
     }, [currentUser]);
+
+    // Handler to update a single application’s status in state
+    const handleStatusChange = (appId: number, newStatus: ApplicationStatus) => {
+        setApplications(prev => {
+            const newArray = prev.map(app => {
+                if (app.id === appId) {
+                    return {
+                        ...app,
+                        status: newStatus
+                };
+                } else {
+                    return app;
+                }
+            });
+            return newArray;
+        });
+    };
 
     const onRankSaved = (appId: number, newRank: number) => {
             setApplications(prev =>
@@ -160,6 +177,7 @@ export const LecturerPage: React.FC = () => {
                         handleRankChange={onRankSaved}
                         handleCommentChange={onCommentSaved}
                         allApplications={applications}
+                        onStatusChange={handleStatusChange}
                     />
                 </Box>
             </CreamCard>
