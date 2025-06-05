@@ -1,78 +1,61 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Box, Heading, Text, SimpleGrid } from "@chakra-ui/react";
+import { Box, Heading } from "@chakra-ui/react";
 import { ApplicationUI, ReviewUI } from "@/types/applicationTypes";
 import { fetchAllApplications } from "@/services/applicationService";
 import SearchAndSortBar from "@/components/SearchAndSortBar";
-import SelectedApplicantCard from "@/components/SelectedApplicantCard";
 import ApplicantsTable from "@/components/ApplicantsTable";
 import VisualRepresentation from "@/components/VisualRepresentation";
 import { useCourseLookup } from "@/utils/courseLookup";
 import "@/styles/Lecturer.css";
 import { CreamCard } from "@/components/CreamCard";
 import { useAuth } from "@/context/AuthContext";
-import { PreviousRoleDetail } from "../components/PreviousRoleDetail";
-import { CourseList } from "@/components/CourseList";
-
 
 export const LecturerPage: React.FC = () => {
     const [applications, setApplications] = useState<ApplicationUI[]>([]);
     const [errors, setErrors] = useState<{
         [appId: number]: { rank?: string; comment?: string };
     }>({});
-
     const [search, setSearch] = useState<string>("");
     const [sortBy, setSortBy] = useState<string>("");
-
     const courseLookup = useCourseLookup();
-
-    // TODO Replace this with your real “logged‐in” lecturer’s ID.
     const { currentUser } = useAuth();
     const lecturerId = currentUser?.id ?? null;
 
     useEffect(() => {
         (async () => {
             try {
+                // Fetch all Applications
                 const appsUI: ApplicationUI[] = await fetchAllApplications();
+                // Filter courses by lecturer
                 const myCourseIds = (currentUser?.courses ?? []).map((c) => c.id);
                 const myApps = appsUI.filter((app) => myCourseIds.includes(app.course.id));
 
                 setApplications(myApps);
             } catch (err) {
-                console.error(err);
+                console.error("Error loading applications:", err);
             }
         })();
     }, [currentUser]);
-
-    // Toggle selection state
-    const toggleSelect = (appId: number) => {
-        setApplications((prev) =>
-            prev.map((app) =>
-                app.id === appId ? { ...app, selected: !app.selected } : app
-            )
-        );
-    };
 
     const onRankSaved = (appId: number, newRank: number) => {
             setApplications(prev =>
                 prev.map(app => {
                     if (app.id !== appId) return app;
 
-                    // Overwrite or insert exactly one ReviewUI in the reviews array
+                    // Overwrite or insert ReviewUI
                     // If this app already has a reviews array, keep any existing comment from “my” review
                     const oldComment = app.reviews?.find(r => r.lecturerId === lecturerId)
                         ?.comment;
 
                     const newReview: ReviewUI = {
-                        id: Date.now(),       // or you could skip using a temp ID, if you only ever render after the real one arrives
+                        id: Date.now(),
                         rank: newRank,
                         comment: oldComment ?? null,
-                        reviewedAt: "",       // backend will set actual timestamp if we re-fetch later
+                        reviewedAt: "",
                         updatedAt: "",
                         lecturerId: lecturerId!,
-                        // Note: `ReviewUI` does not have an `applicationId` field in this file. If your type
-                        //    does have an applicationId, add it here. Otherwise omit it altogether.
                     };
 
                     return {
@@ -83,15 +66,12 @@ export const LecturerPage: React.FC = () => {
             );
         };
 
-    //
     // Page‐level callback for when a child successfully saves a new comment
-    //
     const onCommentSaved = (appId: number, newComment: string) => {
         setApplications(prev =>
             prev.map(app => {
                 if (app.id !== appId) return app;
 
-                // Overwrite or insert exactly one ReviewUI
                 // If this app already has a reviews array, keep any existing rank from “my” review
                 const oldRank = app.reviews?.find(r => r.lecturerId === lecturerId)
                     ?.rank;
@@ -113,7 +93,7 @@ export const LecturerPage: React.FC = () => {
         );
     };
 
-    // ——— Filtering logic ———
+    // Filtering logic
     const filteredApps = applications.filter((app) => {
         const lower = search.toLowerCase();
 
@@ -176,61 +156,12 @@ export const LecturerPage: React.FC = () => {
                     </Heading>
                     <ApplicantsTable
                         applications={sortedApps}
-                        toggleSelect={toggleSelect}
+                        errors={errors}
+                        handleRankChange={onRankSaved}
+                        handleCommentChange={onCommentSaved}
+                        allApplications={applications}
                     />
                 </Box>
-
-                {/* Selected Applicants, grouped by course */}
-                <Box mb={8}>
-                    <Heading size="sm" mb={2}>
-                        Selected Applicants
-                    </Heading>
-
-                    {Object.keys(selectedByCourse).length === 0 ? (
-                        <Text>No applicants selected.</Text>
-                    ) : (
-                        Object.entries(selectedByCourse).map(
-                            ([courseIdStr, apps]) => {
-                                const courseIdNum = Number(courseIdStr);
-                                const courseName =
-                                    courseLookup[courseIdNum]?.name ||
-                                    String(courseIdNum);
-
-                                return (
-                                    <Box key={courseIdNum} mb={4}>
-                                        <Heading as="h3" size="sm" mb={2}>
-                                            Course: {courseName}
-                                        </Heading>
-                                        <SimpleGrid
-                                            minChildWidth="sm"
-                                            columns={[1, null, 2]}
-                                            columnGap="4"
-                                            rowGap="4"
-                                        >
-                                            {apps.map((app) => (
-                                                <SelectedApplicantCard
-                                                    key={app.id}
-                                                    applicant={app}
-                                                    error={errors[app.id]}
-                                                    allApplications={applications}
-                                                    handleRankChange={newRank =>
-                                                        onRankSaved(app.id, newRank)
-                                                    }
-                                                    handleCommentChange={newComment =>
-                                                        onCommentSaved(app.id, newComment)
-                                                    }
-                                                />
-                                            ))}
-                                        </SimpleGrid>
-                                    </Box>
-                                );
-                            }
-                        )
-                    )}
-                </Box>
-
-             <CourseList />
-                <VisualRepresentation applications={applications} />
             </CreamCard>
         </Box>
     );
