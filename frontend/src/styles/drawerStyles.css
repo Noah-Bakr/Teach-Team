@@ -11,6 +11,27 @@
     border-bottom: 1px solid #333;
 }
 
+.accept-button {
+    background-color: #c1ffc5;
+    color: #000000;
+}
+
+ .accept-button:hover {
+     background-color: #01b50d;
+     color: #000000;
+ }
+
+ .reject-button {
+     background-color: #ffdbdb;
+     color: #000000;
+ }
+ .reject-button:hover {
+     background-color: #de2a31;
+     color: #ffffff;
+ }
+
+
+
 .app-details__title {
     /* “Application #8” */
     color: white;
