@@ -188,7 +188,7 @@ const SelectedApplicantCard: React.FC<SelectedApplicantCardProps> = ({
         >
             {/* Header */}
             <Heading as="h3" size="md" mb={4}>
-                {applicant.user.firstName} {applicant.user.lastName} —{" "}
+                Lecturers Application Review —{" "}
                 {applicant.course.code} {applicant.course.name}
             </Heading>
 
