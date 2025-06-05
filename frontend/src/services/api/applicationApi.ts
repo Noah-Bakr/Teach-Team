@@ -12,6 +12,15 @@ export interface AcademicCredential {
     description: string | null;
 }
 
+export interface PreviousRole {
+    previous_role_id: number;
+    previous_role: string;
+    company: string;
+    start_date: string;
+    end_date: string | null;
+    description: string | null;
+}
+
 export interface UserNested {
     user_id: number;
     username: string;
@@ -24,7 +33,8 @@ export interface UserNested {
     avatar: string | null;
     skills: Skill[];
     academicCredentials: AcademicCredential[];
-    courses: unknown[]; // not used by mapper
+    courses: CourseNested[];
+    previousRoles: PreviousRole[];
 }
 
 export interface CourseNested {
