@@ -1,3 +1,5 @@
+export type ApplicationStatus = "pending" | "accepted" | "rejected";
+
 export interface Skill {
     skill_id: number;
     skill_name: string;
@@ -58,7 +60,7 @@ export interface Review {
 export interface Application {
     application_id: number;
     position_type: 'tutor' | 'lab_assistant';
-    status: 'pending' | 'accepted' | 'rejected';
+    status?: ApplicationStatus;
     applied_at: string;
     selected: boolean;
     availability: 'Full-Time' | 'Part-Time' | 'Not Available';
@@ -69,7 +71,7 @@ export interface Application {
 
 export interface CreateApplicationDto {
     position_type: 'tutor' | 'lab_assistant';
-    status: 'pending' | 'accepted' | 'rejected';
+    status?: ApplicationStatus;
     applied_at: string;
     selected: boolean;
     availability: 'Full-Time' | 'Part-Time' | 'Not Available';
@@ -79,7 +81,7 @@ export interface CreateApplicationDto {
 
 export interface UpdateApplicationDto {
     position_type?: 'tutor' | 'lab_assistant';
-    status?: 'pending' | 'accepted' | 'rejected';
+    status?: ApplicationStatus;
     applied_at?: string;
     selected?: boolean;
     availability?: 'Full-Time' | 'Part-Time' | 'Not Available';
