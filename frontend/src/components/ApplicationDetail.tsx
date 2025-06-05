@@ -12,7 +12,7 @@ import {
     Button,
     Stack,
 } from "@chakra-ui/react";
-import { ApplicationUI } from "@/types/applicationTypes";
+import { ApplicationUI, ApplicationStatus } from "@/types/applicationTypes";
 import "../styles/drawerStyles.css";
 import { updateApplication } from "@/services/applicationService";
 import { UpdateApplicationDto } from "@/services/api/applicationApi";
@@ -20,10 +20,12 @@ import { toaster } from "@/components/ui/toaster";
 
 interface ApplicationDetailsProps {
     application: ApplicationUI;
+    onStatusChange: (appId: number, newStatus: ApplicationStatus) => void;
 }
 
 export const ApplicationDetails: React.FC<ApplicationDetailsProps> = ({
                                                                           application,
+                                                                          onStatusChange,
                                                                       }) => {
     const { user, course, positionType, status, appliedAt, availability } =
         application;
@@ -52,7 +54,9 @@ export const ApplicationDetails: React.FC<ApplicationDetailsProps> = ({
                 meta: { closable: true },
             });
 
-            setTimeout(() => window.location.reload(), 500);
+            onStatusChange(application.id, "accepted");
+            setIsUpdating(false);
+
         } catch (err) {
             console.error("Error approving application:", err);
             toaster.create({
@@ -75,11 +79,13 @@ export const ApplicationDetails: React.FC<ApplicationDetailsProps> = ({
             toaster.create({
                 title: "Application Rejected",
                 description: `You have rejected application #${application.id}.`,
-                type: "success",
+                type: "warning",
                 duration: 4000,
                 meta: { closable: true },
             });
-            window.location.reload();
+            onStatusChange(application.id, "rejected");
+            setIsUpdating(false);
+
         } catch (err) {
             console.error("Error rejecting application:", err);
             toaster.create({
