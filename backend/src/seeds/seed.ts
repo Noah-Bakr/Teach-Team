@@ -153,41 +153,60 @@ export async function seed() {
         }
     }
 
+    // Attach Courses to Lecturers
     for (const u of SEED_USERS) {
-        // (role_id === 2) AND has course_codes
         if (u.role_id !== 2 || !Array.isArray(u.course_codes) || u.course_codes.length === 0) {
             continue;
         }
 
+        // Find the lecturer in the database
         const lecturer = await userRepo.findOneByOrFail({ username: u.username });
 
-        // For each course_code, look up its Course record
-        const courseIdsToAdd: number[] = [];
+        // Look up all the Course IDs
+        const desiredCourseIds: number[] = [];
         for (const code of u.course_codes!) {
             const course = await courseRepo.findOneBy({ course_code: code });
             if (!course) {
                 console.warn(`Course code "${code}" not found, skipping`);
                 continue;
             }
-            courseIdsToAdd.push(course.course_id);
+            desiredCourseIds.push(course.course_id);
         }
-
-        if (courseIdsToAdd.length === 0) {
+        if (desiredCourseIds.length === 0) {
             console.log(`No valid course_codes for lecturer ${u.username}`);
             continue;
         }
 
-        // Many-to-Many relation on User.courses
+        // Fetch all course IDs that are ALREADY linked to this lecturer
+        const existingCourseRelations: { course_id: number }[] =
+            await userRepo
+                .createQueryBuilder("user")
+                .relation(User, "courses")
+                .of(lecturer)
+                .loadMany<{ course_id: number }>();
+
+        // Extract just the IDs
+        const alreadyLinkedIds = new Set(existingCourseRelations.map(r => r.course_id));
+
+        // Filter out any course_id talready linked
+        const courseIdsToAdd = desiredCourseIds.filter(id => !alreadyLinkedIds.has(id));
+        if (courseIdsToAdd.length === 0) {
+            console.log(`  → Lecturer ${u.username} already has all desired courses; skipping.`);
+            continue;
+        }
+
+        // Only add  new IDs
         await userRepo
             .createQueryBuilder()
-            .relation(User, "courses")        // must match the property name in User.ts
-            .of(lecturer)                     // or .of(lecturer.user_id)
+            .relation(User, "courses")
+            .of(lecturer)
             .add(courseIdsToAdd);
 
         console.log(
-            ` Attached courses [${courseIdsToAdd.join(", ")}] → lecturer ${u.username}`
+            `  Attached new courses [${courseIdsToAdd.join(", ")}] → lecturer ${u.username}`
         );
     }
+
 
     //
     // APPLICATIONS
