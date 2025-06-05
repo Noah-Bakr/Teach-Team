@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { Button, Box, Table, Drawer, Portal, CloseButton, } from "@chakra-ui/react";
-import { ApplicationUI, ReviewUI } from "@/types/applicationTypes";
+import { ApplicationUI, ReviewUI, ApplicationStatus } from "@/types/applicationTypes";
 import SelectedApplicantCard from "./SelectedApplicantCard";
 import ApplicationDetail from "./ApplicationDetail";
 import { useAuth } from "@/context/AuthContext";
@@ -12,6 +12,7 @@ interface ApplicantsTableProps {
     handleRankChange: (appId: number, newValue: number) => void;
     handleCommentChange: (appId: number, newValue: string) => void;
     allApplications: ApplicationUI[];
+    onStatusChange: (appId: number, newStatus: ApplicationStatus) => void;
 }
 
 const ApplicantsTable: React.FC<ApplicantsTableProps> = ({
@@ -20,6 +21,7 @@ const ApplicantsTable: React.FC<ApplicantsTableProps> = ({
                                                              handleRankChange,
                                                              handleCommentChange,
                                                              allApplications,
+                                                             onStatusChange,
                                                          }) => {
     const { currentUser } = useAuth();
     const lecturerId = currentUser?.id ?? null;
@@ -103,7 +105,9 @@ const ApplicantsTable: React.FC<ApplicantsTableProps> = ({
                                             <Drawer.Body p={0}>
                                                 <Box px={4} py={3}>
                                                 {/* Render all the read‐only application data */}
-                                                <ApplicationDetail application={application} />
+                                                <ApplicationDetail
+                                                    application={application}
+                                                    onStatusChange={onStatusChange}/>
                                                 {/**
                                                  * Render all the review/rank/comment UI inside the drawer.
                                                  **/}
