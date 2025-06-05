@@ -1,0 +1,112 @@
+ .app-details__container {
+    /* container around all application details */
+    background-color: #121212;         /* keep it dark to match TeachTeam dark drawer */
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+.app-details__header {
+    /* wrapper around “Application #…” + badges + date */
+    padding: 16px;
+    border-bottom: 1px solid #333;
+}
+
+.app-details__title {
+    /* “Application #8” */
+    color: white;
+    font-size: 1.6rem;
+    margin-bottom: 8px;
+}
+
+.app-details__badges-container {
+    /* flex‐container for badges */
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.app-details__badge--accepted {
+    background-color: #48bb78;  /* green */
+    color: white;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+
+.app-details__badge--pending {
+    background-color: #ffd73b;  /* yellow */
+    color: #121212;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+
+.app-details__badge--rejected {
+    background-color: #f56565;  /* red */
+    color: white;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+
+.app-details__applied-date {
+    color: #ccc;
+    font-size: 0.875rem;
+}
+
+.app-details__section-title {
+    /* e.g. “Candidate”, “Skills” */
+    color: white;
+    margin-bottom: 8px;
+}
+
+.app-details__field-row {
+    display: flex;
+    gap: 8px;
+}
+
+.app-details__field-label {
+    color: #ccc;
+    width: 120px;
+}
+
+.app-details__field-value {
+    color: white;
+}
+
+.app-details__skills-section,
+.app-details__credentials-section,
+.app-details__course-section {
+    padding: 16px;
+    border-bottom: 1px solid #333;
+}
+
+.app-details__skills-list,
+.app-details__course-skills-list {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.app-details__skill-badge,
+.app-details__course-skill-badge {
+    background-color: #2d3748;  /* dark gray background */
+    color: white;
+    font-size: 0.75rem;
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+
+.app-details__credential-item {
+    color: #bbb;
+    font-size: 0.875rem;
+}
+
+/* No‐data text (— None —) */
+.app-details__none-text {
+    color: #666;
+    font-size: 0.875rem;
+}
