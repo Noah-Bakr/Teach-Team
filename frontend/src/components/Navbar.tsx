@@ -34,8 +34,7 @@ const Navbar: React.FC = () => {
 
     const handleSignOutClick = async () => {
         try {
-            await logoutUser();
-            //setCurrentUser(null);
+            logout();
             router.push('/');
         } catch (error) {
             console.error("Error signing out:", error);
