@@ -15,6 +15,7 @@ import {
     PreviousRoleUI,
     AcademicCredentialsUI,
 } from "../../types/applicationTypes";
+import { mapRawSkillToUI } from "./skillMapper";
 
 /** Helper: extract skill names from BackendSkill[] */
 function extractSkillNames(skills: BackendSkill[] | undefined): string[] {
@@ -122,14 +123,16 @@ export function mapRawAppToUI(raw: BackendApp): ApplicationUI {
     const userUI = mapRawUserToUI(raw.user);
     const courseUI = mapRawCourseToUI(raw.course);
     const reviewsUI = mapRawReviews(raw.reviews);
+    const skillsUI = extractSkillNames(raw.skills);
 
     const result: ApplicationUI = {
         id: raw.application_id,
         positionType: raw.position_type,
-        status: raw.status,
+        status: raw.status ?? "pending",
         appliedAt: raw.applied_at,
         selected: raw.selected,
         availability: raw.availability,
+        skills: skillsUI,
         user: userUI,
         course: courseUI,
         ...(reviewsUI ? { reviews: reviewsUI } : {}),
