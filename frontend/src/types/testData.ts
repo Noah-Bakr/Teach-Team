@@ -1,5 +1,6 @@
 import { Applicant, Course, User } from "./types";
 
+
 export const DEFAULT_USERS: User[] = [
   // Default users for testing purposes
   { id: "U0000001", 
