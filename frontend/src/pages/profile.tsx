@@ -44,6 +44,12 @@ const ProfilePage: React.FC = () => {
     const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
     const [previousRoles, setPreviousRoles] = useState<PreviousRoleUI[]>([]);
     const [userApplicants, setUserApplicants] = useState<ApplicationUI[]>([]);
+    const [isExperienceLoading, setExperienceIsLoading] = useState(false);
+    const [experienceRoleError, setExperienceRoleError] = useState(false);
+    const [experienceCompanyError, setExperienceCompanyError] = useState(false);
+    const [experienceStartDateError, setExperienceStartDateError] = useState(false);
+
+
 
 
     // // State to manage the new experience input fields
@@ -151,11 +157,21 @@ const ProfilePage: React.FC = () => {
     // };
 
     const handleAddExperience = async () => {
-        if (!newPreviousRole.role || !newPreviousRole.company || !newPreviousRole.startDate) {
-            alert("Role, company, and start date are required.");
+        if (newPreviousRole.role === '' || !newPreviousRole.role) {
+            setExperienceRoleError(true);
             return;
-        }
+        } else { setExperienceRoleError(false); }
+        if (newPreviousRole.company === '' || !newPreviousRole.company) {
+            setExperienceCompanyError(true);
+            return;
+        } else { setExperienceCompanyError(false); }
+        if (newPreviousRole.startDate === '' || !newPreviousRole.startDate) {
+            setExperienceStartDateError(true);
+            return;
+        } else { setExperienceStartDateError(false); }
+
         try {
+            setExperienceIsLoading(true);
             const roleToCreate = {
                 previous_role: newPreviousRole.role,
                 company: newPreviousRole.company,
@@ -174,6 +190,13 @@ const ProfilePage: React.FC = () => {
                 startDate: "",
                 endDate: "",
                 description: "",
+            });
+            setExperienceIsLoading(false);
+            toaster.create({
+                title: "Success",
+                description: `${roleToCreate.previous_role} at ${roleToCreate.company} added successfully.`,
+                type: "success",
+                duration: 5000,
             });
         } catch (error) {
             console.error("Error adding previous role:", error);
@@ -361,32 +384,35 @@ const ProfilePage: React.FC = () => {
                                         </Stack>
                                         <Separator size="md" />
                                         <Stack gap={2} padding={4}>
-                                            <Field.Root orientation="horizontal" disabled={isDisabled}>
-                                                <Field.Label>Role</Field.Label>
+                                            <Field.Root orientation="horizontal" invalid={experienceRoleError} required>
+                                                <Field.Label>Role <Field.RequiredIndicator /></Field.Label>
                                                 <Input name="role" placeholder="Role" value={newPreviousRole.role} onChange={handlePreviousRoleChange}/>
+                                                <Field.ErrorText>This field is required</Field.ErrorText>
                                             </Field.Root>
 
-                                            <Field.Root orientation="horizontal" disabled={isDisabled}>
-                                                <Field.Label>Company</Field.Label>
+                                            <Field.Root orientation="horizontal" invalid={experienceCompanyError} required>
+                                                <Field.Label>Company <Field.RequiredIndicator /></Field.Label>
                                                 <Input name="company" placeholder="Company" value={newPreviousRole.company} onChange={handlePreviousRoleChange}/>
+                                                <Field.ErrorText>This field is required</Field.ErrorText>
                                             </Field.Root>
 
-                                            <Field.Root orientation="horizontal" disabled={isDisabled}>
-                                                <Field.Label>Start Date</Field.Label>
+                                            <Field.Root orientation="horizontal" invalid={experienceStartDateError} required>
+                                                <Field.Label>Start Date <Field.RequiredIndicator /></Field.Label>
                                                 <Input type="date" name="startDate" value={newPreviousRole.startDate} onChange={handlePreviousRoleChange}/>
+                                                <Field.ErrorText>This field is required</Field.ErrorText>
                                             </Field.Root>
 
-                                            <Field.Root orientation="horizontal" disabled={isDisabled}>
+                                            <Field.Root orientation="horizontal">
                                                 <Field.Label>End Date</Field.Label>
                                                 <Input type="date" name="endDate" value={newPreviousRole.endDate} onChange={handlePreviousRoleChange}/>
                                             </Field.Root>
 
-                                            <Field.Root orientation="horizontal" disabled={isDisabled}>
+                                            <Field.Root orientation="horizontal">
                                                 <Field.Label>Description</Field.Label>
                                                 <Textarea name="description" placeholder="Description" value={newPreviousRole.description} onChange={handlePreviousRoleChange}/>
                                             </Field.Root>
 
-                                            <Button onClick={handleAddExperience} colorScheme="yellow" disabled={isDisabled}>
+                                            <Button onClick={handleAddExperience} colorScheme="yellow" loading={isExperienceLoading}>
                                                 {newPreviousRole.id ? "Save Experience" : "Add Experience"}
                                             </Button>
                                         </Stack>
