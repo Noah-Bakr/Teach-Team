@@ -1,3 +1,5 @@
+import { SkillUI } from "./skillTypes";
+
 export type ApplicationStatus = "pending" | "accepted" | "rejected";
 
 export type CommentUI = {
@@ -81,4 +83,5 @@ export type ApplicationUI = {
     course: CourseUI;
 
     reviews?: ReviewUI[];
+    skills: string[];
 };
