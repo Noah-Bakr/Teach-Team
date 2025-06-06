@@ -191,4 +191,32 @@ export class SkillsController {
             return res.status(500).json({ message: 'Error deleting skill', error });
         }
     }
+    
+    async removeSkillFromUser(req: Request, res: Response) {
+        const skillId = parseInt(req.params.skillId, 10);
+        const userId = parseInt(req.params.userId, 10);
+
+        if (isNaN(skillId) || isNaN(userId)) {
+            return res.status(400).json({ message: 'Invalid skill ID or user ID' });
+        }
+
+        try {
+            const skillRepo = AppDataSource.getRepository(Skills);
+            const skill = await skillRepo.findOne({
+                where: { skill_id: skillId },
+                relations: ['users'],
+            });
+
+            if (!skill) return res.status(404).json({ message: 'Skill not found' });
+
+            skill.users = skill.users.filter(user => user.user_id !== userId);
+            await skillRepo.save(skill);
+
+            return res.status(200).json({ message: 'Skill unlinked from user' });
+        } catch (error) {
+            console.error('Error removing skill from user:', error);
+            return res.status(500).json({ message: 'Error unlinking skill from user', error });
+        }
+    }
+
 }
