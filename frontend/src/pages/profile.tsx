@@ -8,13 +8,20 @@
 // import { fetchUserById, updateUser } from "@/services/userApi";
 // import { getCurrentUser } from "@/services/api";
 
-import { Avatar, Box, Button, Card, Field, Input, NativeSelect, Separator, Stack, Textarea } from "@chakra-ui/react";
+import { Avatar, Box, Button, Card, Field, Input, NativeSelect, Separator, Stack, Textarea, Text, IconButton } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { UserUI } from "@/types/userTypes";
 import { fetchUserById, updateUser } from "@/services/userService";
 import { Roles } from "@/types/roleTypes";
 import { getCurrentUser } from "@/services/authService";
 import { mapBackendUserToUI } from "@/services/mappers/authMapper"
+import { fetchAllPreviousRoles, fetchPreviousRoleById } from "@/services/previousRoleService";
+import { fetchAllApplications, fetchApplicationById } from "@/services/applicationService"; // You may need to create this if not present
+import { PreviousRoleUI } from "@/types/previousRoleTypes";
+import { ApplicationUI } from "@/types/applicationTypes";
+import { LuPencil } from "react-icons/lu";
+import { createPreviousRole } from "@/services/previousRoleService"; // Ensure this service exists
+import { toaster } from "@/components/ui/toaster";
 
 
 const ProfilePage: React.FC = () => {
@@ -35,28 +42,45 @@ const ProfilePage: React.FC = () => {
         academicCredentials: [],
     });
     const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+    const [previousRoles, setPreviousRoles] = useState<PreviousRoleUI[]>([]);
+    const [userApplicants, setUserApplicants] = useState<ApplicationUI[]>([]);
+
 
     // // State to manage the new experience input fields
     // const [previousRoles, setPreviousRoles] = useState<PreviousRoles[]>(updatedUser.previousRoles || []);
-    // const [newPreviousRole, setNewPreviousRole] = useState({
-    //     previous_role_id: 0,
-    //     previous_role: "",
-    //     company: "",
-    //     start_date: "",
-    //     end_date: "",
-    //     description: "",
-    // });
+    const [newPreviousRole, setNewPreviousRole] = useState({
+        id: 0,
+        userId: 0,
+        role: "",
+        company: "",
+        startDate: "",
+        endDate: "",
+        description: "",
+    });
 
     // Fetch current user ID from /auth/me and then fetch user data from /user/:id
     useEffect(() => {
         const fetchUserData = async () => {
             try {
                 const response = await getCurrentUser();
-                
                 const user: UserUI = mapBackendUserToUI(response);
-                
                 setCurrentUser(user);
                 setUpdatedUser(user);
+
+                // setPreviousRoles(
+                //     (user.previousRoles || []).map(role =>
+                //         typeof role === "string"
+                //         ? { id: 0, userId: user.id, role, company: "", startDate: "", endDate: "", description: "" }
+                //         : role
+                //     )
+                // );
+
+                const allPreviousRoles = await fetchAllPreviousRoles();
+                setPreviousRoles(allPreviousRoles.filter(role => role.userId === user.id));
+                
+                const allApps = await fetchAllApplications();
+                setUserApplicants(allApps.filter(app => app.user?.id === user.id));
+
             } catch (error) {
                 console.error("Error fetching user data:", error);
             }
@@ -85,12 +109,20 @@ const ProfilePage: React.FC = () => {
     // IS seperate from handleChange to avoid confusion with role state
     // const handlePreviousRoleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     //     const { name, value } = e.target;
-    //     setNewPreviousRole((prevExperience) => ({
+    //     setPreviousRoles((prevExperience) => ({
     //         ...prevExperience,
     //         [name]: value,
     //     }));
     //     setHasUnsavedChanges(true);
     // };
+
+    const handlePreviousRoleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        const { name, value } = e.target;
+        setNewPreviousRole((prev) => ({
+            ...prev,
+            [name]: value,
+        }));
+    };
 
     // Function to handle changes to the select input for role
     const handleEventChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -117,6 +149,42 @@ const ProfilePage: React.FC = () => {
     //         description: "",
     //     });
     // };
+
+    const handleAddExperience = async () => {
+        if (!newPreviousRole.role || !newPreviousRole.company || !newPreviousRole.startDate) {
+            alert("Role, company, and start date are required.");
+            return;
+        }
+        try {
+            const roleToCreate = {
+                previous_role: newPreviousRole.role,
+                company: newPreviousRole.company,
+                start_date: newPreviousRole.startDate,
+                end_date: newPreviousRole.endDate || null,
+                description: newPreviousRole.description,
+                user_id: updatedUser.id, // tie to current user
+            };
+            const createdRole = await createPreviousRole(roleToCreate);
+            setPreviousRoles((prev) => [...prev, createdRole]);
+            setNewPreviousRole({
+                id: 0,
+                userId: 0,
+                role: "",
+                company: "",
+                startDate: "",
+                endDate: "",
+                description: "",
+            });
+        } catch (error) {
+            console.error("Error adding previous role:", error);
+            toaster.create({
+                title: "Error",
+                description: "Failed to add previous experience.",
+                type: "error",
+                duration: 5000,
+            });
+        }
+    };
 
     // Function to handle saving the updated user data
     // const handleSave = async () => {
@@ -255,7 +323,34 @@ const ProfilePage: React.FC = () => {
                         </Box>
                     </Card.Root>
 
-                    {/* {updatedUser.role.includes("tutor") && (
+                    {/* {previousRoles.length > 0 && (
+                        <Card.Root colorPalette="yellow" flexDirection="row" width="35rem" overflow="hidden" maxW="xl" variant="outline" size="sm">
+                            <Box width={"100%"}>
+                                <Card.Body>
+                                    <Stack gap={2}>
+                                        <Stack gap={0}>
+                                            <Card.Title mb="2">Previous Work Experience</Card.Title>
+                                            <Card.Description>View, add, or edit your work experience here.</Card.Description>
+                                        </Stack>
+                                        <Separator size="md" />
+                                        <Stack gap={2}>
+                                            {previousRoles.map((prevRole) => (
+                                                <Card.Root colorPalette="yellow" flexDirection="row" overflow="hidden" maxW="xl" variant="outline" size="sm" key={prevRole.id}>
+                                                    <Box direction="row" p={4}>
+                                                        <Text>{prevRole.role} at {prevRole.company}</Text>
+                                                        <Text>{new Date(prevRole.startDate).toLocaleDateString()} - {prevRole.endDate ? new Date(prevRole.endDate).toLocaleDateString() : "Present"}</Text>
+                                                        <Text>{prevRole.description}</Text>
+                                                    </Box>
+                                                </Card.Root>
+                                            ))}
+                                        </Stack>
+                                    </Stack>
+                                </Card.Body>
+                                <Card.Footer />
+                            </Box>
+                        </Card.Root>)} */}
+
+                    {updatedUser.role.includes("candidate") && (
                         <Card.Root colorPalette="yellow" flexDirection="row" width="35rem" overflow="hidden" maxW="xl" variant="outline" size="sm">
                             <Box width={"100%"}>
                                 <Card.Body>
@@ -300,9 +395,9 @@ const ProfilePage: React.FC = () => {
                                         <Stack gap={2}>
                                             {previousRoles?.map((prevRole) => (
                                                 <Card.Root colorPalette="yellow" flexDirection="row" overflow="hidden" maxW="xl" variant="outline" size="sm">
-                                                    <IconButton position="absolute" right="0px" top="0px" disabled={isDisabled} aria-label="Edit" variant="ghost" colorScheme="yellow" size="sm" onClick={() => handleEditPreviousRole(prevRole.id)} >
+                                                    {/* <IconButton position="absolute" right="0px" top="0px" disabled={isDisabled} aria-label="Edit" variant="ghost" colorScheme="yellow" size="sm" onClick={() => handleEditPreviousRole(prevRole.id)} >
                                                         <LuPencil />
-                                                    </IconButton>
+                                                    </IconButton> */}
                                                     <Box direction="row" key={prevRole.id} p={4}>
                                                         <Text>{prevRole.role} at {prevRole.company}</Text>
                                                         <Text>{new Date(prevRole.startDate).toLocaleDateString()} - {prevRole.endDate ? new Date(prevRole.endDate).toLocaleDateString() : "Present"}</Text>
@@ -320,7 +415,7 @@ const ProfilePage: React.FC = () => {
                         </Card.Root>
                     )}
 
-                    {updatedUser.role.includes("tutor") && (
+                    {updatedUser.role.includes("candidate") && (
                     <Card.Root colorPalette="yellow" flexDirection="row" width="25rem" overflow="hidden" maxW="xl" variant="outline" size="sm">
                         <Box width={"100%"}>
                             <Card.Body>
@@ -335,14 +430,21 @@ const ProfilePage: React.FC = () => {
                                         (userApplicants.map((app) => (
                                             <Card.Root colorPalette="yellow" flexDirection="row" overflow="hidden" maxW="xl" variant="outline" size="sm">
                                                 <Box key={app.id} p="4" >
-                                                    <Text fontWeight="bold">Course ID: {app.courseId}</Text>
-                                                    <Text>Date Submitted: {new Date(app.date).toLocaleDateString()}</Text>
-                                                    <Text>Availability: {app.availability.join(", ")}</Text>
-                                                    <Text>Skills: {app.skills.join(", ")}</Text>
-                                                    <Text>Academic Credentials: {app.academicCredentials || "None"}</Text>
-                                                    <Text>Status: <strong>{app.selected ? "Selected" : "Pending"}</strong></Text>
+                                                    <Text fontWeight="bold">{app.course.name}</Text>
+                                                    <Text>Course ID: {app.course.code}</Text>
+                                                    <Text>Date Submitted: {new Date(app.appliedAt).toLocaleDateString()}</Text>
+                                                    <Text>Availability: {app.availability}</Text>
+                                                    {/* <Text>Skills: {app.skills.join(", ")}</Text> No aplication skills in db */}
+                                                    {/* <Text>
+                                                        Academic Credentials: {
+                                                            Array.isArray(app.user.academicCredentials)
+                                                                ? app.user.academicCredentials.join(", ")
+                                                                : (app.user.academicCredentials || "None")
+                                                        }
+                                                    </Text> */}
+                                                    <Text>Status: <strong>{app.status}</strong></Text>
 
-                                                    {app.previousRoles && app.previousRoles.length > 0 && (
+                                                    {/* {app.previousRoles && app.previousRoles.length > 0 && (
                                                     <>
                                                     <Text mt={2} fontWeight="bold">Submitted Work Experience:</Text>
                                                     {app.previousRoles.map((role) => (
@@ -365,7 +467,7 @@ const ProfilePage: React.FC = () => {
                                                         </Box>
                                                     ))}
                                                     </>
-                                                )}
+                                                )} */}
                                                 </Box>
                                             </Card.Root>
                                         ))
@@ -376,7 +478,7 @@ const ProfilePage: React.FC = () => {
                             <Card.Footer>
                             </Card.Footer>
                         </Box>
-                    </Card.Root>)} */}
+                    </Card.Root>)}
 
                 </Stack>
             </Stack>
