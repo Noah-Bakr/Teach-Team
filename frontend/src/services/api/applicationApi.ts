@@ -67,6 +67,7 @@ export interface Application {
     user: UserNested;
     course: CourseNested;
     reviews: Review[];
+    skills: Skill[];
 }
 
 export interface CreateApplicationDto {
