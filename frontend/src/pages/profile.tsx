@@ -1,7 +1,7 @@
-import { Box, Button, Card, Field, Input, NativeSelect, Separator, Stack, Textarea, Text, IconButton, HStack } from "@chakra-ui/react";
+import { Box, Button, Card, Field, Input, NativeSelect, Separator, Stack, Textarea, Text, IconButton, HStack, Tag } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { UserUI } from "@/types/userTypes";
-import { updateUser } from "@/services/userService";
+import { addSkillsToUser, updateUser } from "@/services/userService";
 import { Roles } from "@/types/roleTypes";
 import { getCurrentUser } from "@/services/authService";
 import { mapBackendUserToUI } from "@/services/mappers/authMapper"
@@ -12,6 +12,8 @@ import { ApplicationUI } from "@/types/applicationTypes";
 import { LuPencil, LuPencilOff, LuTrash2 } from "react-icons/lu";
 import { createPreviousRole } from "@/services/previousRoleService";
 import { toaster } from "@/components/ui/toaster";
+import { fetchAllSkills, createSkill } from "@/services/skillService";
+import { SkillUI } from "@/types/skillTypes";
 
 const ProfilePage: React.FC = () => {
     const [currentUser, setCurrentUser] = useState<UserUI | null>(null);
@@ -42,6 +44,8 @@ const ProfilePage: React.FC = () => {
 
     const [editingPreviousRoleId, setEditingPreviousRoleId] = useState<number | null>(null);
     const [editPreviousRole, setEditPreviousRole] = useState<PreviousRoleUI | null>(null);
+
+    const [allSkills, setAllSkills] = useState<SkillUI[]>([]);
 
     // // State to manage the new experience input fields
     // const [previousRoles, setPreviousRoles] = useState<PreviousRoles[]>(updatedUser.previousRoles || []);
@@ -76,6 +80,11 @@ const ProfilePage: React.FC = () => {
         };
 
         fetchUserData();
+    }, []);
+
+    useEffect(() => {
+        // Fetch all skills on wake
+        fetchAllSkills().then(setAllSkills);
     }, []);
     
     // Effect to toggle the disabled state of the input fields based on isEditing
@@ -240,6 +249,35 @@ const ProfilePage: React.FC = () => {
 
             await updateUser(updatedUser.id, payload);
 
+            const existingSkillNames = allSkills.map((s) => s.name.toLowerCase());
+            const newSkillNames = (updatedUser.skills ?? []).filter(
+                (skill) => !existingSkillNames.includes(skill.toLowerCase())
+            );
+
+            const newSkillIds: number[] = [];
+
+            // Only if there are new skills
+            if (newSkillNames.length > 0) {
+                for (const skillName of newSkillNames) {
+                    const created = await createSkill({ skill_name: skillName });
+                    const skillId = created.id || created.id;
+                    if (skillId) newSkillIds.push(skillId);
+                    setAllSkills((prev) => [...prev, created]);
+                }
+
+                // Link new skills to the user
+                const updated = await addSkillsToUser(updatedUser.id, newSkillIds);
+
+                // Sync updated user.skills (only if API returns them)
+                if (updated?.skills) {
+                    setUpdatedUser((prev) => ({
+                        ...prev,
+                        skills: updated?.skills?.map((s: any) => s.name || s.skill_name),
+                    }));
+                }
+            }
+
+
             setIsEditing(false);
             setIsDisabled(true);
             setHasUnsavedChanges(false);
@@ -376,10 +414,54 @@ const ProfilePage: React.FC = () => {
                                             <Textarea name="academicCredentials" placeholder="Academic Credentials" value={updatedUser.academicCredentials?.join(", ") || ""} onChange={handleChange} />
                                         </Field.Root>
 
-                                        <Field.Root orientation="horizontal" disabled={isDisabled}>
+                                        {/* <Field.Root orientation="horizontal" disabled={isDisabled}>
                                             <Field.Label>Skills</Field.Label>
                                             <Textarea name="skills" placeholder="Skills" value={updatedUser.skills?.join(", ") || ""} onChange={handleChange} />
+                                        </Field.Root> */}
+                                        <Field.Root orientation="horizontal" disabled={isDisabled}>
+                                            <Field.Label>Skills</Field.Label>
+                                            <Box w="100%">
+                                                <Input
+                                                placeholder="Type a skill and press Enter"
+                                                onKeyDown={(e) => {
+                                                    if ((e.key === "Enter" || e.key === ",") && e.currentTarget.value.trim()) {
+                                                    e.preventDefault();
+                                                    const newSkill = e.currentTarget.value.trim();
+                                                    if (!updatedUser?.skills?.includes(newSkill)) {
+                                                        setUpdatedUser((prev) => ({
+                                                        ...prev,
+                                                        skills: [...(prev.skills || []), newSkill],
+                                                        }));
+                                                        setHasUnsavedChanges(true);
+                                                    }
+                                                    e.currentTarget.value = "";
+                                                    }
+                                                }}
+                                                disabled={isDisabled}
+                                                />
+                                                <HStack padding={2} mt={2} wrap="wrap">
+                                                {updatedUser?.skills?.map((skill, index) => (
+                                                    <Tag.Root key={index} colorScheme="yellow" size="md">
+                                                    <Tag.Label>{skill}</Tag.Label>
+                                                    {!isDisabled && (
+                                                        <Tag.EndElement>
+                                                        <Tag.CloseTrigger
+                                                            onClick={() => {
+                                                            setUpdatedUser((prev) => ({
+                                                                ...prev,
+                                                                skills: (prev.skills ?? []).filter((_, i) => i !== index),
+                                                            }));
+                                                            setHasUnsavedChanges(true);
+                                                            }}
+                                                        />
+                                                        </Tag.EndElement>
+                                                    )}
+                                                    </Tag.Root>
+                                                ))}
+                                                </HStack>
+                                            </Box>
                                         </Field.Root>
+
 
                                         {/* <Field.Root orientation="horizontal" disabled={isDisabled}>
                                             <Field.Label>Availability</Field.Label>
