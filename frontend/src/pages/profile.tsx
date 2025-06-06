@@ -1,15 +1,15 @@
-import { Box, Button, Card, Field, Input, NativeSelect, Separator, Stack, Textarea, Text, IconButton } from "@chakra-ui/react";
+import { Box, Button, Card, Field, Input, NativeSelect, Separator, Stack, Textarea, Text, IconButton, HStack } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { UserUI } from "@/types/userTypes";
 import { updateUser } from "@/services/userService";
 import { Roles } from "@/types/roleTypes";
 import { getCurrentUser } from "@/services/authService";
 import { mapBackendUserToUI } from "@/services/mappers/authMapper"
-import { fetchAllPreviousRoles, updatePreviousRole } from "@/services/previousRoleService";
+import { deletePreviousRole, fetchAllPreviousRoles, updatePreviousRole } from "@/services/previousRoleService";
 import { fetchAllApplications } from "@/services/applicationService";
 import { PreviousRoleUI } from "@/types/previousRoleTypes";
 import { ApplicationUI } from "@/types/applicationTypes";
-import { LuPencil, LuPencilOff } from "react-icons/lu";
+import { LuPencil, LuPencilOff, LuTrash2 } from "react-icons/lu";
 import { createPreviousRole } from "@/services/previousRoleService";
 import { toaster } from "@/components/ui/toaster";
 
@@ -218,7 +218,7 @@ const ProfilePage: React.FC = () => {
             setExperienceIsLoading(false);
             toaster.create({
                 title: "Error",
-                description: /*"Failed to update previous experience.",*/ error instanceof Error ? error.message : String(error),
+                description: "Failed to update previous experience.",
                 type: "error",
                 duration: 5000,
             });
@@ -268,6 +268,26 @@ const ProfilePage: React.FC = () => {
         const month = String(date.getMonth() + 1).padStart(2, "0");
         const year = date.getFullYear();
         return `${day}-${month}-${year}`;
+    };
+
+    const handleDeletePreviousRole = async (id: number) => {
+        try {
+            await deletePreviousRole(id);
+            setPreviousRoles((prev) => prev.filter((role) => role.id !== id));
+            toaster.create({
+                title: "Deleted",
+                description: "Previous role deleted successfully.",
+                type: "success",
+                duration: 4000,
+            });
+        } catch (error) {
+            toaster.create({
+                title: "Error",
+                description: "Failed to delete previous role.",
+                type: "error",
+                duration: 4000,
+            });
+        }
     };
 
     return (
@@ -457,9 +477,14 @@ const ProfilePage: React.FC = () => {
                                         <Stack gap={2}>
                                             {previousRoles?.map((prevRole) => (
                                                 <Card.Root key={prevRole.id} colorPalette="yellow" flexDirection="row" overflow="hidden" maxW="xl" variant="outline" size="sm">
-                                                    <IconButton position="absolute" right="0px" top="0px" aria-label="Edit" variant="ghost" colorScheme="yellow" size="sm" onClick={() => handleEditPreviousRole(prevRole.id)} disabled={isExperienceLoading} >
-                                                        {editingPreviousRoleId === prevRole.id ? <LuPencilOff /> : <LuPencil />}
-                                                    </IconButton>
+                                                    <HStack p={2} justify="flex-end">
+                                                        <IconButton position="absolute" right="0px" top="0px" aria-label="Edit" variant="ghost" colorScheme="yellow" size="sm" onClick={() => handleEditPreviousRole(prevRole.id)} disabled={isExperienceLoading} >
+                                                            {editingPreviousRoleId === prevRole.id ? <LuPencilOff /> : <LuPencil />}
+                                                        </IconButton>
+                                                        <IconButton position="absolute" right="40px" top="0px" aria-label="Delete" variant="ghost" colorScheme="yellow" size="sm" onClick={() => handleDeletePreviousRole(prevRole.id)} disabled={isExperienceLoading} >
+                                                            <LuTrash2 />
+                                                        </IconButton>
+                                                    </HStack>
                                                     <Box direction="row" key={prevRole.id} p={4}>
                                                         {editingPreviousRoleId === prevRole.id && editPreviousRole ? (
                                                         <Stack gap={2} padding={4}>
