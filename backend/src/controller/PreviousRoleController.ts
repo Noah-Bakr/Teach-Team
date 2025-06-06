@@ -189,8 +189,15 @@ export class PreviousRoleController {
                 existing.description = newDescription;
             }
 
-            const updated = await this.previousRoleRepository.save(existing);
-            return res.status(200).json(updated);
+            await this.previousRoleRepository.save(existing);
+
+            // Fetch again with user relation
+            const updatedWithUser = await this.previousRoleRepository.findOne({
+                where: { previous_role_id: previousRoleId },
+                relations: ['user'],
+            });
+
+            return res.status(200).json(updatedWithUser);
         } catch (error) {
             console.error(`Error updating previous role id=${previousRoleId}:`, error);
             return res
