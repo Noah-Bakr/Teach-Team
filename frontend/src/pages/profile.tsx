@@ -1,7 +1,7 @@
 import { Box, Button, Card, Field, Input, NativeSelect, Separator, Stack, Textarea, Text, IconButton, HStack, Tag } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { UserUI } from "@/types/userTypes";
-import { addSkillsToUser, updateUser } from "@/services/userService";
+import { addSkillsToUser, removeSkillFromUser, updateUser } from "@/services/userService";
 import { Roles } from "@/types/roleTypes";
 import { getCurrentUser } from "@/services/authService";
 import { mapBackendUserToUI } from "@/services/mappers/authMapper"
@@ -12,7 +12,7 @@ import { ApplicationUI } from "@/types/applicationTypes";
 import { LuPencil, LuPencilOff, LuTrash2 } from "react-icons/lu";
 import { createPreviousRole } from "@/services/previousRoleService";
 import { toaster } from "@/components/ui/toaster";
-import { fetchAllSkills, createSkill } from "@/services/skillService";
+import { fetchAllSkills, createSkill, fetchSkillById, deleteSkill } from "@/services/skillService";
 import { SkillUI } from "@/types/skillTypes";
 
 const ProfilePage: React.FC = () => {
@@ -46,6 +46,8 @@ const ProfilePage: React.FC = () => {
     const [editPreviousRole, setEditPreviousRole] = useState<PreviousRoleUI | null>(null);
 
     const [allSkills, setAllSkills] = useState<SkillUI[]>([]);
+    const [removedSkills, setRemovedSkills] = useState<string[]>([]);
+
 
     // // State to manage the new experience input fields
     // const [previousRoles, setPreviousRoles] = useState<PreviousRoles[]>(updatedUser.previousRoles || []);
@@ -249,6 +251,7 @@ const ProfilePage: React.FC = () => {
 
             await updateUser(updatedUser.id, payload);
 
+            // Create and attach new skills
             const existingSkillNames = allSkills.map((s) => s.name.toLowerCase());
             const newSkillNames = (updatedUser.skills ?? []).filter(
                 (skill) => !existingSkillNames.includes(skill.toLowerCase())
@@ -275,6 +278,34 @@ const ProfilePage: React.FC = () => {
                         skills: updated?.skills?.map((s: any) => s.name || s.skill_name),
                     }));
                 }
+            }
+
+            // Remove unlinked skills
+            if (removedSkills.length > 0) {
+                for (const skillName of removedSkills) {
+                    const skillObj = allSkills.find(
+                        (s) => s.name.toLowerCase() === skillName.toLowerCase()
+                    );
+                    const skillId = skillObj?.id || skillObj?.id;
+
+                    if (!skillId) continue;
+
+                    try {
+                        // Remove skill from user
+                        await removeSkillFromUser(updatedUser.id, skillId);
+
+                        // Fetch the skill to check if it has any users left
+                        const response = await fetchSkillById(skillId);
+                        // If the skill has no users, delete it
+                        if (!response.users || response.users.length === 0) {
+                            await deleteSkill(skillId);
+                        }
+                    } catch (err) {
+                        console.error(`Failed to remove/unlink skill "${skillName}":`, err);
+                    }
+                }
+
+                setRemovedSkills([]);
             }
 
 
@@ -327,6 +358,7 @@ const ProfilePage: React.FC = () => {
             });
         }
     };
+
 
     return (
         <div>
@@ -445,15 +477,18 @@ const ProfilePage: React.FC = () => {
                                                     <Tag.Label>{skill}</Tag.Label>
                                                     {!isDisabled && (
                                                         <Tag.EndElement>
-                                                        <Tag.CloseTrigger
-                                                            onClick={() => {
-                                                            setUpdatedUser((prev) => ({
-                                                                ...prev,
-                                                                skills: (prev.skills ?? []).filter((_, i) => i !== index),
-                                                            }));
-                                                            setHasUnsavedChanges(true);
-                                                            }}
-                                                        />
+                                                        <Tag.CloseTrigger onClick={() => {
+                                                        const skillToRemove = skill;
+
+                                                        // Remove from the visual list
+                                                        setUpdatedUser(prev => ({
+                                                            ...prev,
+                                                            skills: prev.skills?.filter(s => s !== skillToRemove)
+                                                        }));
+
+                                                        // Track it for deletion
+                                                        setRemovedSkills(prev => [...prev, skillToRemove]);
+                                                        }} />
                                                         </Tag.EndElement>
                                                     )}
                                                     </Tag.Root>
