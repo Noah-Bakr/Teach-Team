@@ -1,13 +1,3 @@
-// import { Avatar, Box, Button, Card, Collapsible, Field, Heading, HStack, IconButton, Input, NativeSelect, 
-//     Separator, Stack, Text, Textarea } from "@chakra-ui/react";
-// import { useAuth } from "@/context/AuthContext";
-// import { useEffect, useState } from "react";
-// import { Applicant, Availability, PreviousRoles, Role, Roles, User } from "@/types/types";
-// import { PasswordInput } from "@/components/ui/password-input";
-// import { LuPencil, LuPencilOff, LuPlus } from "react-icons/lu";
-// import { fetchUserById, updateUser } from "@/services/userApi";
-// import { getCurrentUser } from "@/services/api";
-
 import { Avatar, Box, Button, Card, Field, Input, NativeSelect, Separator, Stack, Textarea, Text, IconButton } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { UserUI } from "@/types/userTypes";
@@ -16,11 +6,11 @@ import { Roles } from "@/types/roleTypes";
 import { getCurrentUser } from "@/services/authService";
 import { mapBackendUserToUI } from "@/services/mappers/authMapper"
 import { fetchAllPreviousRoles, fetchPreviousRoleById } from "@/services/previousRoleService";
-import { fetchAllApplications, fetchApplicationById } from "@/services/applicationService"; // You may need to create this if not present
+import { fetchAllApplications, fetchApplicationById } from "@/services/applicationService";
 import { PreviousRoleUI } from "@/types/previousRoleTypes";
 import { ApplicationUI } from "@/types/applicationTypes";
 import { LuPencil } from "react-icons/lu";
-import { createPreviousRole } from "@/services/previousRoleService"; // Ensure this service exists
+import { createPreviousRole } from "@/services/previousRoleService";
 import { toaster } from "@/components/ui/toaster";
 
 
@@ -223,11 +213,36 @@ const ProfilePage: React.FC = () => {
 
     const handleSave = async () => {
         try {
-            await updateUser(updatedUser.id, updatedUser);
+            // only sends the data that API expects
+            const payload = {
+                username: updatedUser.username,
+                email: updatedUser.email,
+                first_name: updatedUser.firstName,
+                last_name: updatedUser.lastName,
+                avatar: updatedUser.avatar,
+                // role_id: updatedUser.role,
+                // TODO: handle password change
+            };
+
+            await updateUser(updatedUser.id, payload);
+            
             setIsEditing(false);
+            setIsDisabled(true);
             setHasUnsavedChanges(false);
+            toaster.create({
+                title: "Profile Updated",
+                description: "Your profile has been updated.",
+                type: "success",
+                duration: 5000,
+            });
         } catch (error) {
             console.error("Error saving user data:", error);
+            toaster.create({
+                title: "Error",
+                description: "Failed to update profile.",
+                type: "error",
+                duration: 5000,
+            });
         }
     };
 
@@ -341,7 +356,7 @@ const ProfilePage: React.FC = () => {
                                 
                             </Card.Body>
                             <Card.Footer>
-                                <Button onClick={() => {isEditing ? handleSave() : setIsEditing(true); }}>{isEditing ? "Save" : "Edit"}</Button>
+                                <Button onClick={() => {isEditing ? handleSave() : setIsEditing(true); setIsDisabled(false);}}>{isEditing ? "Save" : "Edit"}</Button>
                             </Card.Footer>
                         </Box>
                     </Card.Root>
