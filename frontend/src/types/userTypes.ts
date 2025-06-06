@@ -24,7 +24,8 @@ export type UserUI = {
     role: 'admin' | 'lecturer' | 'candidate';
 
     skills?: string[];
-    courses?: CourseUI[];
+    // courses?: CourseUI[];
+    courses?: string[];
     previousRoles?: string[];
     academicCredentials?: string[];
 
