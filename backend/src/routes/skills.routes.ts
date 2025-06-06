@@ -26,4 +26,8 @@ router.delete("/:id", async (req, res) => {
     await skillsController.deleteSkill(req, res);
 });
 
+router.delete("/skills/:skillId/users/:userId", async (req, res) => {
+    await skillsController.removeSkillFromUser(req, res);
+});
+
 export default router;
