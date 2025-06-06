@@ -5,4 +5,5 @@ export type PreviousRoleUI = {
     startDate: string;
     endDate: string | null;
     description: string | null;
+    userId: number;
 };
