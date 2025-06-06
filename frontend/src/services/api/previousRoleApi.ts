@@ -7,6 +7,7 @@ export interface User {
 }
 
 export interface PreviousRole {
+    user_id: number;
     previous_role_id: number;
     previous_role: string;
     company: string;
