@@ -15,5 +15,6 @@ export function mapRawPreviousRoleToUI(
         startDate: raw.start_date,
         endDate: raw.end_date,
         description: raw.description,
+        userId: raw.user.user_id,
     };
 }
