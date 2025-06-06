@@ -55,7 +55,7 @@ export function mapRawUserToUI(raw: BackendUser): UserUI {
         email: raw.email,
         avatar: raw.avatar,
 
-        role: raw.role.role_name,
+        role: typeof raw.role === "object" && raw.role !== null ? raw.role.role_name : raw.role,
 
         skills: extractSkillNames(raw.skills),
         courses: extractCourseNames(raw.courses),
@@ -63,5 +63,6 @@ export function mapRawUserToUI(raw: BackendUser): UserUI {
         academicCredentials: extractAcademicDegreeNames(raw.academicCredentials),
 
         reviews: mapRawReviews(raw.reviews),
+        createdAt: raw.created_at,
     };
 }
