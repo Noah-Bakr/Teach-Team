@@ -28,5 +28,7 @@ export function mapBackendUserToUI(raw: BackendUser): UserUI {
             lecturerId: r.lecturer_id,
             applicationId: r.application_id,
             })) || undefined,
+        createdAt: raw.created_at,
+        // updatedAt: raw.updated_at,
     };
 }

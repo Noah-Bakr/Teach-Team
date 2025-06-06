@@ -1,12 +1,12 @@
-import { Avatar, Box, Button, Card, Field, Input, NativeSelect, Separator, Stack, Textarea, Text, IconButton } from "@chakra-ui/react";
+import { Box, Button, Card, Field, Input, NativeSelect, Separator, Stack, Textarea, Text, IconButton } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { UserUI } from "@/types/userTypes";
-import { fetchUserById, updateUser } from "@/services/userService";
+import { updateUser } from "@/services/userService";
 import { Roles } from "@/types/roleTypes";
 import { getCurrentUser } from "@/services/authService";
 import { mapBackendUserToUI } from "@/services/mappers/authMapper"
-import { fetchAllPreviousRoles, fetchPreviousRoleById, updatePreviousRole } from "@/services/previousRoleService";
-import { fetchAllApplications, fetchApplicationById } from "@/services/applicationService";
+import { fetchAllPreviousRoles, updatePreviousRole } from "@/services/previousRoleService";
+import { fetchAllApplications } from "@/services/applicationService";
 import { PreviousRoleUI } from "@/types/previousRoleTypes";
 import { ApplicationUI } from "@/types/applicationTypes";
 import { LuPencil, LuPencilOff } from "react-icons/lu";
@@ -29,15 +29,19 @@ const ProfilePage: React.FC = () => {
         courses: [],
         previousRoles: [],
         academicCredentials: [],
+        createdAt: "",
     });
     const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
     const [previousRoles, setPreviousRoles] = useState<PreviousRoleUI[]>([]);
     const [userApplicants, setUserApplicants] = useState<ApplicationUI[]>([]);
     const [isExperienceLoading, setExperienceIsLoading] = useState(false);
+
     const [experienceRoleError, setExperienceRoleError] = useState(false);
     const [experienceCompanyError, setExperienceCompanyError] = useState(false);
     const [experienceStartDateError, setExperienceStartDateError] = useState(false);
+
     const [editingPreviousRoleId, setEditingPreviousRoleId] = useState<number | null>(null);
+    const [editPreviousRole, setEditPreviousRole] = useState<PreviousRoleUI | null>(null);
 
     // // State to manage the new experience input fields
     // const [previousRoles, setPreviousRoles] = useState<PreviousRoles[]>(updatedUser.previousRoles || []);
@@ -163,23 +167,13 @@ const ProfilePage: React.FC = () => {
         }
     };
 
-    // const handleEditPreviousRole = (id: number) => {
-    //     const role = previousRoles.find((r) => r.id === id);
-    //     if (role) {
-    //         setNewPreviousRole(role);
-    //         setEditingPreviousRoleId(id);
-    //         setIsEditing(true);
-    //         setIsDisabled(false);
-    //     }
-    // };
-
     const handleEditPreviousRole = (id: number) => {
         if (editingPreviousRoleId === id) {
             handleUpdateExperience();
         } else {
             const role = previousRoles.find((r) => r.id === id);
             if (role) {
-                setNewPreviousRole(role);
+                setEditPreviousRole(role);
                 setEditingPreviousRoleId(id);
                 setIsEditing(true);
                 setIsDisabled(false);
@@ -187,35 +181,33 @@ const ProfilePage: React.FC = () => {
         }
     };
 
+    const handleEditPreviousRoleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        const { name, value } = e.target;
+        setEditPreviousRole((prev) => prev ? { ...prev, [name]: value } : prev);
+    };
+
     const handleUpdateExperience = async () => {
-        if (!editingPreviousRoleId) return;
+        if (!editingPreviousRoleId || !editPreviousRole) return;
         try {
             setExperienceIsLoading(true);
             const payload = {
-                previous_role: newPreviousRole.role,
-                company: newPreviousRole.company,
-                start_date: newPreviousRole.startDate,
-                end_date: newPreviousRole.endDate || null,
-                description: newPreviousRole.description,
-                // user_id: updatedUser.id,
+                previous_role: editPreviousRole.role,
+                company: editPreviousRole.company,
+                start_date: editPreviousRole.startDate,
+                end_date: editPreviousRole.endDate || null,
+                description: editPreviousRole.description,
             };
             const updatedRole = await updatePreviousRole(editingPreviousRoleId, payload);
             setPreviousRoles((prev) =>
                 prev.map((role) => (role.id === editingPreviousRoleId ? updatedRole : role))
             );
-            setNewPreviousRole({
-                id: 0,
-                userId: 0,
-                role: "",
-                company: "",
-                startDate: "",
-                endDate: "",
-                description: "",
-            });
+
+            setEditPreviousRole(null);
             setEditingPreviousRoleId(null);
             setIsEditing(false);
             setIsDisabled(true);
             setExperienceIsLoading(false);
+
             toaster.create({
                 title: "Experience Updated",
                 description: "Your previous experience has been updated.",
@@ -268,6 +260,16 @@ const ProfilePage: React.FC = () => {
         }
     };
 
+    // Helper to format date as dd-mm-yyyy
+    const formatDate = (dateString?: string) => {
+        if (!dateString) return "";
+        const date = new Date(dateString);
+        const day = String(date.getDate()).padStart(2, "0");
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const year = date.getFullYear();
+        return `${day}-${month}-${year}`;
+    };
+
     return (
         <div>
             <Stack gap={8}>
@@ -280,6 +282,11 @@ const ProfilePage: React.FC = () => {
                                         <Card.Title mb="2">Profile Information</Card.Title>
                                         <Card.Description>View or change your profile information here.</Card.Description>
                                     </Stack>
+                                    {/* {currentUser?.createdAt && ( */}
+                                        <Text fontSize="sm" color="gray.500" mt={2}>
+                                            Account created: {formatDate(currentUser?.createdAt)}
+                                        </Text>
+                                    {/* // )} */}
                                     <Separator size="md" />
                                     <Stack gap={2} padding={4}>
                                         <Field.Root orientation="horizontal" disabled={isDisabled}>
@@ -454,37 +461,37 @@ const ProfilePage: React.FC = () => {
                                                         {editingPreviousRoleId === prevRole.id ? <LuPencilOff /> : <LuPencil />}
                                                     </IconButton>
                                                     <Box direction="row" key={prevRole.id} p={4}>
-                                                        {editingPreviousRoleId === prevRole.id ? (
+                                                        {editingPreviousRoleId === prevRole.id && editPreviousRole ? (
                                                         <Stack gap={2} padding={4}>
                                                             <Input
                                                                 name="role"
                                                                 placeholder="Role"
-                                                                value={newPreviousRole.role}
-                                                                onChange={handlePreviousRoleChange}
+                                                                value={editPreviousRole.role}
+                                                                onChange={handleEditPreviousRoleChange}
                                                             />
                                                             <Input
                                                                 name="company"
                                                                 placeholder="Company"
-                                                                value={newPreviousRole.company}
-                                                                onChange={handlePreviousRoleChange}
+                                                                value={editPreviousRole.company}
+                                                                onChange={handleEditPreviousRoleChange}
                                                             />
                                                             <Input
                                                                 type="date"
                                                                 name="startDate"
-                                                                value={newPreviousRole.startDate}
-                                                                onChange={handlePreviousRoleChange}
+                                                                value={editPreviousRole.startDate}
+                                                                onChange={handleEditPreviousRoleChange}
                                                             />
                                                             <Input
                                                                 type="date"
                                                                 name="endDate"
-                                                                value={newPreviousRole.endDate || ""}
-                                                                onChange={handlePreviousRoleChange}
+                                                                value={editPreviousRole.endDate || ""}
+                                                                onChange={handleEditPreviousRoleChange}
                                                             />
                                                             <Textarea
                                                                 name="description"
                                                                 placeholder="Description"
-                                                                value={newPreviousRole.description || ""}
-                                                                onChange={handlePreviousRoleChange}
+                                                                value={editPreviousRole.description || ""}
+                                                                onChange={handleEditPreviousRoleChange}
                                                             />
                                                         </Stack>
                                                     ) : (

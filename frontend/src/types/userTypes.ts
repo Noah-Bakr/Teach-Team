@@ -30,4 +30,5 @@ export type UserUI = {
     academicCredentials?: string[];
 
     reviews?: ReviewUI[];
+    createdAt: string;      // ISO datetime
 };
