@@ -53,3 +53,12 @@ export async function updateSkill(
 export function deleteSkill(id: number) {
     return api.delete<{ message: string }>(`/skills/${id}`);
 }
+
+//
+// DELETE /skills/:skillId/users/:userId
+//
+export function removeSkillFromUser(skillId: number, userId: number) {
+    return api.delete<{ message: string }>(
+        `/skills/${skillId}/users/${userId}`
+    );
+}
