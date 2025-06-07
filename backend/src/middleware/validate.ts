@@ -2,6 +2,7 @@ import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
 import { Request, Response, NextFunction } from 'express';
 
+// This middleware validates the DTO (Data Transfer Object) against the class-validator rules.
 export function validateDto(dtoClass: any, source: 'body' | 'params' | 'query' = 'body') {
     return async (req: Request, res: Response, next: NextFunction) => {
         const dtoObject = plainToInstance(dtoClass, req[source]);
