@@ -13,6 +13,7 @@ import skillsRoutes from "./routes/skills.routes";
 import reviewRoutes from "./routes/review.routes";
 import courseRoutes from "./routes/course.routes";
 import userRoutes from "./routes/user.routes";
+import lecturerRoutes from "./routes/lecturer.routes";
 
 const app = express();
 const PORT = Number(process.env.PORT) || 3001;
@@ -39,6 +40,7 @@ app.use("/api/reviews", reviewRoutes);
 app.use("/api/roles", roleRoutes);
 app.use("/api/skills", skillsRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/lecturer", lecturerRoutes);
 
 AppDataSource.initialize()
     .then(async () => {
