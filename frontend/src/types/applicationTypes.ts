@@ -2,24 +2,6 @@ import { SkillUI } from "./skillTypes";
 
 export type ApplicationStatus = "pending" | "accepted" | "rejected";
 
-export type CommentUI = {
-    id: number;             // comment_id
-    text: string;           // comment
-    createdAt: string;      // ISO datetime
-    updatedAt: string;      // ISO datetime
-    lecturerName: string;   // “First Last”
-    lecturerId: number;
-};
-
-export type RankingUI = {
-    id: number;             // ranking_id
-    ranking: number;
-    createdAt: string;      // ISO datetime
-    updatedAt: string;      // ISO datetime
-    lecturerName: string;   // “First Last”
-    lecturerId: number;
-};
-
 export type CourseUI = {
     id: number;             // course_id
     code: string;           // course_code
@@ -56,8 +38,8 @@ export type UserUI = {
     avatar: string;
     skills: string[];              // array of skill_name
     academicCredentials?: AcademicCredentialsUI[]; // array of degree_name
-    courses: CourseUI[];           // courses the user is enrolled in
-    previousRoles: PreviousRoleUI[]; // user’s prior job roles
+    courses?: CourseUI[];           // courses the user is enrolled in
+    previousRoles?: PreviousRoleUI[]; // user’s prior job roles
 };
 
 // ReviewUI (combines rank + comment per review)
