@@ -10,7 +10,8 @@ import {
     Textarea,
     Button,
 } from "@chakra-ui/react";
-import { ApplicationUI, ReviewUI } from "@/types/lecturerTypes";
+//import { ApplicationUI, ReviewUI } from "@/types/lecturerTypes";
+import { ApplicationUI, ReviewUI } from "@/types/types";
 import CustomFormControl from "./CustomFormControl";
 import {
     saveReviewForApplication as createReview
@@ -18,6 +19,7 @@ import {
 import { toaster } from "@/components/ui/toaster";
 import { useAuth } from "@/context/AuthContext";
 
+// Define the props for the SelectedApplicantCard component
 interface SelectedApplicantCardProps {
     applicant: ApplicationUI;
     error?: { rank?: string; comment?: string };
@@ -26,6 +28,7 @@ interface SelectedApplicantCardProps {
     allApplications: ApplicationUI[];
 }
 
+// The SelectedApplicantCard component displays a card for a selected application
 const SelectedApplicantCard: React.FC<SelectedApplicantCardProps> = ({
                                                                          applicant,
                                                                          error,
@@ -48,7 +51,6 @@ const SelectedApplicantCard: React.FC<SelectedApplicantCardProps> = ({
         ? myExistingReviewObj.comment ?? ""
         : "";
 
-    // Local state for the two inputs, seeded from existing values:
     const [localRank, setLocalRank] = useState<string>(existingRankValue);
     const [localComment, setLocalComment] = useState<string>(
         existingCommentValue
@@ -93,6 +95,7 @@ const SelectedApplicantCard: React.FC<SelectedApplicantCardProps> = ({
             }
             parsedRank = num;
         }
+
         // Check for same rank in same course for this lecturer
         const duplicateInSameCourse = allApplications.some((otherApp) => {
             return (
@@ -103,6 +106,8 @@ const SelectedApplicantCard: React.FC<SelectedApplicantCardProps> = ({
                 )
             );
         });
+
+        // If duplicate rank found in same course, show warning toast
         if (duplicateInSameCourse) {
             toaster.create({
                 title: "Duplicate rank",
@@ -127,7 +132,7 @@ const SelectedApplicantCard: React.FC<SelectedApplicantCardProps> = ({
         }
 
         try {
-            const saved = await createReview(applicant.id, {
+            const saved = await createReview(lecturerId, applicant.id, {
                 rank: parsedRank ?? undefined,
                 comment: localComment.trim() || undefined,
             });
@@ -159,7 +164,6 @@ const SelectedApplicantCard: React.FC<SelectedApplicantCardProps> = ({
 
     };
 
-    // Render the card; the “Rank” input is seeded with localRank (which came from existingRankValue).
     //    If no ranking existed, localRank === "" and the input stays blank.
     return (
         <Box
@@ -170,7 +174,7 @@ const SelectedApplicantCard: React.FC<SelectedApplicantCardProps> = ({
             borderRadius="md"
             boxShadow="md"
             mb={2}
-            opacity={lecturerId ? 1 : 0.6} // greyed out if not signed in
+            opacity={lecturerId ? 1 : 0.6}
         >
             {/* Header */}
             <Heading as="h3" size="md" mb={4}>
@@ -187,7 +191,6 @@ const SelectedApplicantCard: React.FC<SelectedApplicantCardProps> = ({
                         value={localRank}
                         onChange={(e) => setLocalRank(e.target.value)}
                         maxW="80px"
-                        //isDisabled={!lecturerId}
                     />
                 </CustomFormControl>
             </Flex>
@@ -199,7 +202,6 @@ const SelectedApplicantCard: React.FC<SelectedApplicantCardProps> = ({
                     value={localComment}
                     onChange={(e) => setLocalComment(e.target.value)}
                     size="sm"
-                    //isDisabled={!lecturerId}
                 />
             </CustomFormControl>
 
@@ -209,7 +211,6 @@ const SelectedApplicantCard: React.FC<SelectedApplicantCardProps> = ({
                 colorScheme="blue"
                 size="sm"
                 onClick={handleSave}
-                //isDisabled={!lecturerId}
             >
                 Save to Database
             </Button>
