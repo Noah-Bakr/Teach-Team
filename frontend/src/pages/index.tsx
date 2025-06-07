@@ -1,6 +1,5 @@
 import {Box, Button, Flex, Heading, Text} from "@chakra-ui/react"
 import {CreamCard} from "@/components/CreamCard";
-import { toaster } from "@/components/ui/toaster";
 import { useState } from "react";
 import LoginForm from '@/components/LoginForm';
 import SignUpForm from "@/components/SignUpForm";
