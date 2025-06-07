@@ -1,7 +1,7 @@
 import { Box, Button, Card, Field, Input, NativeSelect, Separator, Stack, Textarea, Text, IconButton, HStack, Tag } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { UserUI } from "@/types/userTypes";
-import { addSkillsToUser, removeSkillFromUser, updateUser } from "@/services/userService";
+import { addCredentialsToUser, addSkillsToUser, removeSkillFromUser, updateUser } from "@/services/userService";
 import { Roles } from "@/types/roleTypes";
 import { getCurrentUser } from "@/services/authService";
 import { mapBackendUserToUI } from "@/services/mappers/authMapper"
@@ -14,6 +14,8 @@ import { createPreviousRole } from "@/services/previousRoleService";
 import { toaster } from "@/components/ui/toaster";
 import { fetchAllSkills, createSkill, fetchSkillById, deleteSkill } from "@/services/skillService";
 import { SkillUI } from "@/types/skillTypes";
+import { AcademicCredentialUI } from "@/types/academicCredentialTypes";
+import { createAcademicCredential, deleteAcademicCredential, updateAcademicCredential } from "@/services/academicCredentialService";
 
 const ProfilePage: React.FC = () => {
     const [currentUser, setCurrentUser] = useState<UserUI | null>(null);
@@ -36,7 +38,9 @@ const ProfilePage: React.FC = () => {
     const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
     const [previousRoles, setPreviousRoles] = useState<PreviousRoleUI[]>([]);
     const [userApplicants, setUserApplicants] = useState<ApplicationUI[]>([]);
-    const [isExperienceLoading, setExperienceIsLoading] = useState(false);
+    const [isExperienceLoading, setIsExperienceLoading] = useState(false);
+
+    const [isSaveLoading, setSaveLoading] = useState(false);
 
     const [experienceRoleError, setExperienceRoleError] = useState(false);
     const [experienceCompanyError, setExperienceCompanyError] = useState(false);
@@ -50,7 +54,6 @@ const ProfilePage: React.FC = () => {
 
 
     // // State to manage the new experience input fields
-    // const [previousRoles, setPreviousRoles] = useState<PreviousRoles[]>(updatedUser.previousRoles || []);
     const [newPreviousRole, setNewPreviousRole] = useState<PreviousRoleUI>({
         id: 0,
         userId: 0,
@@ -61,6 +64,20 @@ const ProfilePage: React.FC = () => {
         description: "",
     });
 
+
+    const [academicCredentials, setAcademicCredentials] = useState<AcademicCredentialUI[]>([]);
+    const [newAcademicCredential, setNewAcademicCredential] = useState<AcademicCredentialUI>({
+        id: 0,
+        degreeName: "",
+        institution: "",
+        startDate: "",
+        endDate: "",
+        description: "",
+    });
+    const [editingAcademicCredentialId, setEditingAcademicCredentialId] = useState<number | null>(null);
+    const [editAcademicCredential, setEditAcademicCredential] = useState<AcademicCredentialUI | null>(null);
+    const [isAcademicLoading, setIsAcademicLoading] = useState(false);
+
     // Fetch current user ID from /auth/me and then fetch user data from /user/:id
     useEffect(() => {
         const fetchUserData = async () => {
@@ -70,11 +87,27 @@ const ProfilePage: React.FC = () => {
                 setCurrentUser(user);
                 setUpdatedUser(user);
 
+                const backendCreds = response.academicCredentials || [];
+                console.log(backendCreds)
+                // Map backend credentials to AcademicCredentialUI shape
+                setAcademicCredentials(
+                    backendCreds.map((cred: any) => ({
+                        id: cred.academic_id,
+                        degreeName: cred.degree_name ?? "",
+                        institution: cred.institution ?? "",
+                        startDate: cred.start_date ?? "",
+                        endDate: cred.end_date ?? "",
+                        description: cred.description ?? "",
+                    }))
+                );
+
                 const allPreviousRoles = await fetchAllPreviousRoles();
                 setPreviousRoles(allPreviousRoles.filter(role => role.userId === user.id));
                 
                 const allApps = await fetchAllApplications();
                 setUserApplicants(allApps.filter(app => app.user?.id === user.id));
+
+                
 
             } catch (error) {
                 console.error("Error fetching user data:", error);
@@ -140,7 +173,7 @@ const ProfilePage: React.FC = () => {
         } else { setExperienceStartDateError(false); }
 
         try {
-            setExperienceIsLoading(true);
+            setIsExperienceLoading(true);
             const roleToCreate = {
                 previous_role: newPreviousRole.role,
                 company: newPreviousRole.company,
@@ -160,7 +193,7 @@ const ProfilePage: React.FC = () => {
                 endDate: "",
                 description: "",
             });
-            setExperienceIsLoading(false);
+            setIsExperienceLoading(false);
             toaster.create({
                 title: "Success",
                 description: `${roleToCreate.previous_role} at ${roleToCreate.company} added successfully.`,
@@ -200,7 +233,7 @@ const ProfilePage: React.FC = () => {
     const handleUpdateExperience = async () => {
         if (!editingPreviousRoleId || !editPreviousRole) return;
         try {
-            setExperienceIsLoading(true);
+            setIsExperienceLoading(true);
             const payload = {
                 previous_role: editPreviousRole.role,
                 company: editPreviousRole.company,
@@ -217,7 +250,7 @@ const ProfilePage: React.FC = () => {
             setEditingPreviousRoleId(null);
             setIsEditing(false);
             setIsDisabled(true);
-            setExperienceIsLoading(false);
+            setIsExperienceLoading(false);
 
             toaster.create({
                 title: "Experience Updated",
@@ -226,7 +259,7 @@ const ProfilePage: React.FC = () => {
                 duration: 5000,
             });
         } catch (error) {
-            setExperienceIsLoading(false);
+            setIsExperienceLoading(false);
             toaster.create({
                 title: "Error",
                 description: "Failed to update previous experience.",
@@ -238,6 +271,7 @@ const ProfilePage: React.FC = () => {
 
     const handleSave = async () => {
         try {
+            setSaveLoading(true);
             // only sends the data that API expects
             const payload = {
                 username: updatedUser.username,
@@ -296,22 +330,35 @@ const ProfilePage: React.FC = () => {
 
                         // Fetch the skill to check if it has any users left
                         const response = await fetchSkillById(skillId);
-                        // If the skill has no users, delete it
-                        if (!response.users || response.users.length === 0) {
+                        // If the skill has no users or courses, delete it (for cleanup)
+                        if ((!response.users || response.users.length === 0) && (!response.courses || response.courses.length === 0)) {
                             await deleteSkill(skillId);
                         }
                     } catch (err) {
                         console.error(`Failed to remove/unlink skill "${skillName}":`, err);
                     }
                 }
-
+                // Clear the removed skills state
                 setRemovedSkills([]);
+            }
+
+            try {
+                const refreshedUser = await getCurrentUser();
+                const refreshedSkills = refreshedUser.skills || [];
+
+                setUpdatedUser((prev) => ({
+                    ...prev,
+                    skills: refreshedSkills.map((s: any) => s.name || s.skill_name),
+                }));
+            } catch (error) {
+                console.error("Failed to re-fetch skills after saving:", error);
             }
 
 
             setIsEditing(false);
             setIsDisabled(true);
             setHasUnsavedChanges(false);
+            setSaveLoading(false);
             toaster.create({
                 title: "Profile Updated",
                 description: "Your profile has been updated.",
@@ -359,11 +406,194 @@ const ProfilePage: React.FC = () => {
         }
     };
 
+    // Function to handle changes to the NEW academic credential input fields
+    const handleAcademicCredentialChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        const { name, value } = e.target;
+        setNewAcademicCredential((prev) => ({
+            ...prev,
+            [name]: value,
+        }));
+    };
+
+    // Function to handle changes to the EDIT academic credential input fields
+    // const handleEditAcademicCredentialChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    //     const { name, value } = e.target;
+    //     setEditAcademicCredential((prev) => prev ? { ...prev, [name]: value } : prev);
+    // };
+
+    const handleEditAcademicCredentialChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        const { name, value } = e.target;
+        setEditAcademicCredential((prev) =>
+            prev ? { ...prev, [name]: value } : prev
+        );
+    };
+
+
+
+    // Function to handle adding a new academic credential
+    const handleAddAcademicCredential = async () => {
+        try {
+            setIsAcademicLoading(true);
+            const payload = {
+                degree_name: newAcademicCredential.degreeName,
+                institution: newAcademicCredential.institution,
+                start_date: newAcademicCredential.startDate,
+                end_date: newAcademicCredential.endDate || null,
+                description: newAcademicCredential.description,
+            };
+            const created = await createAcademicCredential(payload);
+
+            addCredentialsToUser(updatedUser.id, [created.id]);
+
+            setAcademicCredentials((prev) => [...prev, created]);
+            setNewAcademicCredential({
+                id: 0,
+                degreeName: "",
+                institution: "",
+                startDate: "",
+                endDate: "",
+                description: "",
+            });
+            setIsAcademicLoading(false);
+            toaster.create({
+                title: "Success",
+                description: "Academic credential added successfully.",
+                type: "success",
+                duration: 5000,
+            });
+        } catch (error) {
+            setIsAcademicLoading(false);
+            toaster.create({
+                title: "Error",
+                description: "Failed to add academic credential.",
+                type: "error",
+                duration: 5000,
+            });
+        }
+    };
+
+    // const handleEditAcademicCredential = (id: number) => {
+    //     const cred = academicCredentials.find((c) => c.id === id);
+    //     if (cred) {
+    //         setEditAcademicCredential(cred);
+    //         setEditingAcademicCredentialId(id);
+    //     }
+    // };
+    const handleEditAcademicCredential = (id: number) => {
+        if (editingAcademicCredentialId === id) {
+            handleUpdateAcademicCredential();
+        } else {
+            const cred = academicCredentials.find((c) => c.id === id);
+            if (cred) {
+                setEditAcademicCredential({ ...cred, id: cred.id });
+                setEditingAcademicCredentialId(id);
+            }
+        }
+    };
+
+
+    // const handleUpdateAcademicCredential = async () => {
+    //     if (!editingAcademicCredentialId || !editAcademicCredential) return;
+    //     try {
+    //         setIsAcademicLoading(true);
+    //         const payload = {
+    //             degree_name: editAcademicCredential.degreeName,
+    //             institution: editAcademicCredential.institution,
+    //             start_date: editAcademicCredential.startDate,
+    //             end_date: editAcademicCredential.endDate || null,
+    //             description: editAcademicCredential.description,
+    //         };
+    //         const updated = await updateAcademicCredential(editingAcademicCredentialId, payload);
+    //         setAcademicCredentials((prev) =>
+    //             prev.map((cred) => (cred.id === editingAcademicCredentialId ? updated : cred))
+    //         );
+    //         setEditAcademicCredential(null);
+    //         setEditingAcademicCredentialId(null);
+    //         setIsAcademicLoading(false);
+    //         toaster.create({
+    //             title: "Academic Credential Updated",
+    //             description: "Your academic credential has been updated.",
+    //             type: "success",
+    //             duration: 5000,
+    //         });
+    //     } catch (error) {
+    //         setIsAcademicLoading(false);
+    //         toaster.create({
+    //             title: "Error",
+    //             description: "Failed to update academic credential.",
+    //             type: "error",
+    //             duration: 5000,
+    //         });
+    //     }
+    // };
+    const handleUpdateAcademicCredential = async () => {
+        if (!editingAcademicCredentialId || !editAcademicCredential) return;
+
+        try {
+            setIsAcademicLoading(true);
+            const payload = {
+                degree_name: editAcademicCredential.degreeName,
+                institution: editAcademicCredential.institution,
+                start_date: editAcademicCredential.startDate,
+                end_date: editAcademicCredential.endDate || null,
+                description: editAcademicCredential.description,
+            };
+
+            const updated = await updateAcademicCredential(editingAcademicCredentialId, payload);
+
+            setAcademicCredentials((prev) =>
+                prev.map((c) => (c.id === editingAcademicCredentialId ? updated : c))
+            );
+
+            // Reset state
+            setEditAcademicCredential(null);
+            setEditingAcademicCredentialId(null);
+            setIsAcademicLoading(false);
+
+            toaster.create({
+                title: "Academic Credential Updated",
+                description: "Your academic credential has been updated.",
+                type: "success",
+                duration: 5000,
+            });
+        } catch (error) {
+            setIsAcademicLoading(false);
+            toaster.create({
+                title: "Error",
+                description: "Failed to update academic credential.",
+                type: "error",
+                duration: 5000,
+            });
+        }
+    };
+
+
+
+    const handleDeleteAcademicCredential = async (id: number) => {
+        try {
+            await deleteAcademicCredential(id);
+            setAcademicCredentials((prev) => prev.filter((cred) => cred.id !== id));
+            toaster.create({
+                title: "Deleted",
+                description: "Academic credential deleted successfully.",
+                type: "success",
+                duration: 4000,
+            });
+        } catch (error) {
+            toaster.create({
+                title: "Error",
+                description: "Failed to delete academic credential.",
+                type: "error",
+                duration: 4000,
+            });
+        }
+    };
+
 
     return (
         <div>
             <Stack gap={8}>
-                <Stack gap={4} direction={"row"} width={"90rem"} wrap="wrap">
+                <Stack gap={4} direction={"row"} width={"90rem"} overflow={"wrap"}>
                     <Card.Root colorPalette="yellow" flexDirection="row" width="25rem" overflow="hidden" maxW="xl" variant="outline" size="sm">
                         <Box width={"100%"}>
                             <Card.Body>
@@ -372,11 +602,11 @@ const ProfilePage: React.FC = () => {
                                         <Card.Title mb="2">Profile Information</Card.Title>
                                         <Card.Description>View or change your profile information here.</Card.Description>
                                     </Stack>
-                                    {/* {currentUser?.createdAt && ( */}
+                                    {currentUser?.createdAt && (
                                         <Text fontSize="sm" color="gray.500" mt={2}>
                                             Account created: {formatDate(currentUser?.createdAt)}
                                         </Text>
-                                    {/* // )} */}
+                                    )}
                                     <Separator size="md" />
                                     <Stack gap={2} padding={4}>
                                         <Field.Root orientation="horizontal" disabled={isDisabled}>
@@ -436,29 +666,26 @@ const ProfilePage: React.FC = () => {
                                 {updatedUser.role === "candidate" && (
                                 <Stack gap={2}>
                                     <Stack gap={0}>
-                                        <Card.Title mb="2">Academic Information</Card.Title>
-                                        <Card.Description>View or change your academic information here.</Card.Description>
+                                        <Card.Title mb="2">Skill Information</Card.Title>
+                                        <Card.Description>View or change your skills here.</Card.Description>
                                     </Stack>
                                     <Separator size="md" />
                                     <Stack gap={2} padding={4}>
-                                        <Field.Root orientation="horizontal" disabled={isDisabled}>
+                                        {/* <Field.Root orientation="horizontal" disabled={isDisabled}>
                                             <Field.Label>Academic Credentials</Field.Label>
                                             <Textarea name="academicCredentials" placeholder="Academic Credentials" value={updatedUser.academicCredentials?.join(", ") || ""} onChange={handleChange} />
-                                        </Field.Root>
-
-                                        {/* <Field.Root orientation="horizontal" disabled={isDisabled}>
-                                            <Field.Label>Skills</Field.Label>
-                                            <Textarea name="skills" placeholder="Skills" value={updatedUser.skills?.join(", ") || ""} onChange={handleChange} />
                                         </Field.Root> */}
+
                                         <Field.Root orientation="horizontal" disabled={isDisabled}>
-                                            <Field.Label>Skills</Field.Label>
+                                            {/* <Field.Label>Skills</Field.Label> */}
                                             <Box w="100%">
                                                 <Input
                                                 placeholder="Type a skill and press Enter"
+                                                // Add new skill badge on key down (enter or comma)
                                                 onKeyDown={(e) => {
                                                     if ((e.key === "Enter" || e.key === ",") && e.currentTarget.value.trim()) {
                                                     e.preventDefault();
-                                                    const newSkill = e.currentTarget.value.trim();
+                                                    const newSkill = e.currentTarget.value.trim(); // Get the new skill from the input
                                                     if (!updatedUser?.skills?.includes(newSkill)) {
                                                         setUpdatedUser((prev) => ({
                                                         ...prev,
@@ -514,40 +741,118 @@ const ProfilePage: React.FC = () => {
                                 
                             </Card.Body>
                             <Card.Footer>
-                                <Button onClick={() => {isEditing ? handleSave() : setIsEditing(true); setIsDisabled(false);}}>{isEditing ? "Save" : "Edit"}</Button>
+                                <Button onClick={() => {isEditing ? handleSave() : setIsEditing(true); setIsDisabled(false);}} loading={isSaveLoading}>{isEditing ? "Save" : "Edit"}</Button>
                             </Card.Footer>
                         </Box>
                     </Card.Root>
 
-                    {/* {previousRoles.length > 0 && (
-                        <Card.Root colorPalette="yellow" flexDirection="row" width="35rem" overflow="hidden" maxW="xl" variant="outline" size="sm">
+                    {updatedUser.role.includes("candidate") && (
+                        <Card.Root colorPalette="yellow" flexDirection="row" width="30rem" overflow="hidden" maxW="xl" variant="outline" size="sm">
                             <Box width={"100%"}>
                                 <Card.Body>
                                     <Stack gap={2}>
-                                        <Stack gap={0}>
-                                            <Card.Title mb="2">Previous Work Experience</Card.Title>
-                                            <Card.Description>View, add, or edit your work experience here.</Card.Description>
+                                            <Stack gap={0}>
+                                                <Card.Title mb="2">Academic Credentials</Card.Title>
+                                                <Card.Description>View, add, or edit your academic credentials here.</Card.Description>
+                                            </Stack>
+                                            <Separator size="md" />
+                                            <Stack gap={2} padding={4}>
+                                                <Field.Root orientation="horizontal" invalid={experienceRoleError} required>
+                                                    <Field.Label>Degree Name <Field.RequiredIndicator /></Field.Label>
+                                                    <Input name="degreeName" placeholder="Degree Name" value={newAcademicCredential.degreeName} onChange={handleAcademicCredentialChange} />
+                                                    <Field.ErrorText>This field is required</Field.ErrorText>
+                                                </Field.Root>
+                                                <Field.Root orientation="horizontal" invalid={experienceRoleError} required>
+                                                    <Field.Label>Institution <Field.RequiredIndicator /></Field.Label>
+                                                    <Input name="institution" placeholder="Institution" value={newAcademicCredential.institution} onChange={handleAcademicCredentialChange} />
+                                                    <Field.ErrorText>This field is required</Field.ErrorText>
+                                                </Field.Root>
+                                                <Field.Root orientation="horizontal" invalid={experienceRoleError} required>
+                                                    <Field.Label>Start Date <Field.RequiredIndicator /></Field.Label>
+                                                    <Input type="date" name="startDate" value={newAcademicCredential.startDate} onChange={handleAcademicCredentialChange} />
+                                                    <Field.ErrorText>This field is required</Field.ErrorText>
+                                                </Field.Root>
+                                                <Field.Root orientation="horizontal" invalid={experienceRoleError} required>
+                                                    <Field.Label>End Date <Field.RequiredIndicator /></Field.Label>
+                                                    <Input type="date" name="endDate" value={newAcademicCredential.endDate || ""} onChange={handleAcademicCredentialChange} />
+                                                    <Field.ErrorText>This field is required</Field.ErrorText>
+                                                </Field.Root>
+                                                <Field.Root orientation="horizontal">
+                                                    <Field.Label>Description</Field.Label>
+                                                    <Textarea name="description" placeholder="Description" value={newAcademicCredential.description || ""} onChange={handleAcademicCredentialChange} />
+                                                </Field.Root>
+                                                <Button onClick={handleAddAcademicCredential} colorScheme="yellow" loading={isAcademicLoading}>
+                                                    Add Academic Credential
+                                                </Button>
+                                            </Stack>
+
+                                            <Separator size="md" />
+                                            <Stack gap={2}>
+                                                {academicCredentials.map((cred) => (
+                                                    <Card.Root key={cred.id} colorPalette="yellow" flexDirection="row" overflow="hidden" maxW="xl" variant="outline" size="sm">
+                                                        <HStack p={2} justify="flex-end">
+                                                            <IconButton position="absolute" right="0px" top="0px" aria-label="Edit" variant="ghost" colorScheme="yellow" size="sm" onClick={() => handleEditAcademicCredential(cred.id)} >
+                                                                {editingAcademicCredentialId === cred.id ? <LuPencilOff /> : <LuPencil />}
+                                                            </IconButton>
+                                                            <IconButton position="absolute" right="40px" top="0px" aria-label="Delete" variant="ghost" colorScheme="yellow" size="sm" onClick={() => handleDeleteAcademicCredential(cred.id)} >
+                                                                <LuTrash2 />
+                                                            </IconButton>
+                                                        </HStack>
+                                                        <Box direction="row" key={cred.id} p={4}>
+                                                            {editingAcademicCredentialId === cred.id && editAcademicCredential?.id === cred.id ? (
+                                                                <Stack gap={2} padding={4}>
+                                                                    <Input
+                                                                    name="degreeName"
+                                                                    placeholder="Degree Name"
+                                                                    value={editAcademicCredential.degreeName}
+                                                                    onChange={handleEditAcademicCredentialChange}
+                                                                    />
+                                                                    <Input
+                                                                    name="institution"
+                                                                    placeholder="Institution"
+                                                                    value={editAcademicCredential.institution}
+                                                                    onChange={handleEditAcademicCredentialChange}
+                                                                    />
+                                                                    <Input
+                                                                    type="date"
+                                                                    name="startDate"
+                                                                    value={editAcademicCredential.startDate}
+                                                                    onChange={handleEditAcademicCredentialChange}
+                                                                    />
+                                                                    <Input
+                                                                    type="date"
+                                                                    name="endDate"
+                                                                    value={editAcademicCredential.endDate || ""}
+                                                                    onChange={handleEditAcademicCredentialChange}
+                                                                    />
+                                                                    <Textarea
+                                                                    name="description"
+                                                                    placeholder="Description"
+                                                                    value={editAcademicCredential.description || ""}
+                                                                    onChange={handleEditAcademicCredentialChange}
+                                                                    />
+                                                                </Stack>
+                                                            ) : (
+                                                                <>
+                                                                    <Text width={"75%"}>{cred.degreeName} at {cred.institution}</Text>
+                                                                    <Text>{new Date(cred.startDate).toLocaleDateString()} - {cred.endDate ? new Date(cred.endDate).toLocaleDateString() : "Present"}</Text>
+                                                                    <Text>{cred.description}</Text>
+                                                                </>
+                                                            )}
+                                                        </Box>
+                                                    </Card.Root>
+                                                ))}
+                                            </Stack>
                                         </Stack>
-                                        <Separator size="md" />
-                                        <Stack gap={2}>
-                                            {previousRoles.map((prevRole) => (
-                                                <Card.Root colorPalette="yellow" flexDirection="row" overflow="hidden" maxW="xl" variant="outline" size="sm" key={prevRole.id}>
-                                                    <Box direction="row" p={4}>
-                                                        <Text>{prevRole.role} at {prevRole.company}</Text>
-                                                        <Text>{new Date(prevRole.startDate).toLocaleDateString()} - {prevRole.endDate ? new Date(prevRole.endDate).toLocaleDateString() : "Present"}</Text>
-                                                        <Text>{prevRole.description}</Text>
-                                                    </Box>
-                                                </Card.Root>
-                                            ))}
-                                        </Stack>
-                                    </Stack>
                                 </Card.Body>
-                                <Card.Footer />
+                                <Card.Footer>
+                                </Card.Footer>
                             </Box>
-                        </Card.Root>)} */}
+                        </Card.Root>
+                    )}
 
                     {updatedUser.role.includes("candidate") && (
-                        <Card.Root colorPalette="yellow" flexDirection="row" width="35rem" overflow="hidden" maxW="xl" variant="outline" size="sm">
+                        <Card.Root colorPalette="yellow" flexDirection="row" width="30rem" overflow="hidden" maxW="xl" variant="outline" size="sm">
                             <Box width={"100%"}>
                                 <Card.Body>
                                     <Stack gap={2}>
@@ -638,7 +943,7 @@ const ProfilePage: React.FC = () => {
                                                         </Stack>
                                                     ) : (
                                                         <>
-                                                            <Text>{prevRole.role} at {prevRole.company}</Text>
+                                                            <Text width={"99%"}>{prevRole.role} at {prevRole.company}</Text>
                                                             <Text>{new Date(prevRole.startDate).toLocaleDateString()} - {prevRole.endDate ? new Date(prevRole.endDate).toLocaleDateString() : "Present"}</Text>
                                                             <Text>{prevRole.description}</Text>
                                                         </>

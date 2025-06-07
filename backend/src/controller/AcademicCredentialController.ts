@@ -84,12 +84,6 @@ export class AcademicCredentialController {
     async createAcademicCredential(req: Request, res: Response) {
         const { degree_name, institution, start_date, end_date, description } = req.body as CreateAcademicCredentialDto;
 
-        // if (!degree_name || !institution || !start_date) {
-        //     return res
-        //         .status(400)
-        //         .json({ message: 'degree_name, institution, and start_date are required' });
-        // }
-
         try {
             const newCredential = this.credentialRepository.create({
                 degree_name,
