@@ -22,6 +22,40 @@ export class LecturerController {
         }
     }
 
+    // GET /lecturer/:id/applications/all
+    async getAllApplicationsByLecturer(req: Request, res: Response) {
+        const lecturer = req.lecturer;
+
+        if (!lecturer) {
+            return res.status(403).json({ message: "Lecturer not attached to request" });
+        }
+
+        const courseIds = lecturer.courses.map((c: Course) => c.course_id);
+
+        if (!courseIds.length) {
+            return res.status(200).json([]); // Lecturer has no assigned courses
+        }
+
+        try {
+            const applications = await AppDataSource.getRepository(Application)
+                .createQueryBuilder("application")
+                .leftJoinAndSelect("application.user", "user")
+                .leftJoinAndSelect("user.skills", "skills")
+                .leftJoinAndSelect("user.academicCredentials", "credentials")
+                .leftJoinAndSelect("user.previousRoles", "previousRoles")
+                .leftJoinAndSelect("application.course", "course")
+                .leftJoinAndSelect("course.skills", "courseSkills")
+                .leftJoinAndSelect("application.reviews", "review", "review.lecturer = :lecturerId", { lecturerId: lecturer.user_id })
+                .where("application.course IN (:...courseIds)", { courseIds })
+                .getMany();
+
+            return res.status(200).json(applications);
+        } catch (error) {
+            console.error("Error fetching applications:", error);
+            return res.status(500).json({ message: "Error fetching applications", error });
+        }
+    }
+
 
     // GET /lecturer/:id/applications?courseId=X
     async getApplications(req: Request, res: Response) {
@@ -46,6 +80,9 @@ export class LecturerController {
             .leftJoinAndSelect("application.user", "user")
             .leftJoinAndSelect("user.skills", "skills")
             .leftJoinAndSelect("user.academicCredentials", "credentials")
+            .leftJoinAndSelect("user.previousRoles", "previousRoles")
+            .leftJoinAndSelect("course.skills", "courseSkills")
+            .leftJoinAndSelect("application.reviews", "review", "review.lecturer = :lecturerId", { lecturerId: lecturer.user_id })
             .where("application.course_id = :courseId", { courseId })
             .getMany();
 
