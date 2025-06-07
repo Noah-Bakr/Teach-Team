@@ -37,6 +37,7 @@ export interface BackendUser {
     user_id: number;
     username: string;
     email: string;
+    role?: string;
     password: string;
     created_at: string;
     updated_at: string;
