@@ -36,22 +36,40 @@ const ProfilePage: React.FC = () => {
         createdAt: "",
     });
     const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
-    const [previousRoles, setPreviousRoles] = useState<PreviousRoleUI[]>([]);
     const [userApplicants, setUserApplicants] = useState<ApplicationUI[]>([]);
+
     const [isExperienceLoading, setIsExperienceLoading] = useState(false);
-
-    const [isSaveLoading, setSaveLoading] = useState(false);
-
     const [experienceRoleError, setExperienceRoleError] = useState(false);
     const [experienceCompanyError, setExperienceCompanyError] = useState(false);
     const [experienceStartDateError, setExperienceStartDateError] = useState(false);
 
+    const [editExperienceRoleError, setEditExperienceRoleError] = useState(false);
+    const [editExperienceCompanyError, setEditExperienceCompanyError] = useState(false);
+    const [editExperienceStartDateError, setEditExperienceStartDateError] = useState(false);
+
+    const [previousRoles, setPreviousRoles] = useState<PreviousRoleUI[]>([]);
     const [editingPreviousRoleId, setEditingPreviousRoleId] = useState<number | null>(null);
     const [editPreviousRole, setEditPreviousRole] = useState<PreviousRoleUI | null>(null);
 
     const [allSkills, setAllSkills] = useState<SkillUI[]>([]);
     const [removedSkills, setRemovedSkills] = useState<string[]>([]);
 
+    const [isSaveLoading, setSaveLoading] = useState(false);
+
+    const [academicCredentialDegreeNameError, setAcademicCredentialDegreeNameError] = useState(false);
+    const [academicCredentialInstitutionError, setAcademicCredentialInstitutionError] = useState(false);
+    const [academicCredentialStartDateError, setAcademicCredentialStartDateError] = useState(false);
+    const [academicCredentialEndDateError, setAcademicCredentialEndDateError] = useState(false);
+
+    const [editAcademicCredentialDegreeNameError, setEditAcademicCredentialDegreeNameError] = useState(false);
+    const [editAcademicCredentialInstitutionError, setEditAcademicCredentialInstitutionError] = useState(false);
+    const [editAcademicCredentialStartDateError, setEditAcademicCredentialStartDateError] = useState(false);
+    const [editAcademicCredentialEndDateError, setEditAcademicCredentialEndDateError] = useState(false);
+
+    const [firstNameError, setFirstNameError] = useState(false);
+    const [lastNameError, setLastNameError] = useState(false);
+    const [usernameError, setUsernameError] = useState(false);
+    const [emailError, setEmailError] = useState(false);
 
     // // State to manage the new experience input fields
     const [newPreviousRole, setNewPreviousRole] = useState<PreviousRoleUI>({
@@ -63,7 +81,6 @@ const ProfilePage: React.FC = () => {
         endDate: "" ,
         description: "",
     });
-
 
     const [academicCredentials, setAcademicCredentials] = useState<AcademicCredentialUI[]>([]);
     const [newAcademicCredential, setNewAcademicCredential] = useState<AcademicCredentialUI>({
@@ -219,8 +236,8 @@ const ProfilePage: React.FC = () => {
             if (role) {
                 setEditPreviousRole(role);
                 setEditingPreviousRoleId(id);
-                setIsEditing(true);
-                setIsDisabled(false);
+                // setIsEditing(true);
+                // setIsDisabled(false);
             }
         }
     };
@@ -232,6 +249,20 @@ const ProfilePage: React.FC = () => {
 
     const handleUpdateExperience = async () => {
         if (!editingPreviousRoleId || !editPreviousRole) return;
+
+        if (editPreviousRole.role === '' || !editPreviousRole.role) {
+            setEditExperienceRoleError(true);
+            return;
+        } else { setEditExperienceRoleError(false); }
+        if (editPreviousRole.company === '' || !editPreviousRole.company) {
+            setEditExperienceCompanyError(true);
+            return;
+        } else { setEditExperienceCompanyError(false); }
+        if (editPreviousRole.startDate === '' || !editPreviousRole.startDate) {
+            setEditExperienceStartDateError(true);
+            return;
+        } else { setEditExperienceStartDateError(false); }
+
         try {
             setIsExperienceLoading(true);
             const payload = {
@@ -270,6 +301,23 @@ const ProfilePage: React.FC = () => {
     };
 
     const handleSave = async () => {
+        if (!updatedUser.firstName || updatedUser.firstName.trim() === "") {
+            setFirstNameError(true);
+            return;
+        } else { setFirstNameError(false); }
+        if (!updatedUser.lastName || updatedUser.lastName.trim() === "") {
+            setLastNameError(true);
+            return;
+        } else { setLastNameError(false); }
+        if (!updatedUser.username || updatedUser.username.trim() === "") {
+            setUsernameError(true);
+            return;
+        } else { setUsernameError(false); }
+        if (!updatedUser.email || updatedUser.email.trim() === "") {
+            setEmailError(true);
+            return;
+        } else { setEmailError(false); }
+
         try {
             setSaveLoading(true);
             // only sends the data that API expects
@@ -354,7 +402,6 @@ const ProfilePage: React.FC = () => {
                 console.error("Failed to re-fetch skills after saving:", error);
             }
 
-
             setIsEditing(false);
             setIsDisabled(true);
             setHasUnsavedChanges(false);
@@ -415,12 +462,6 @@ const ProfilePage: React.FC = () => {
         }));
     };
 
-    // Function to handle changes to the EDIT academic credential input fields
-    // const handleEditAcademicCredentialChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    //     const { name, value } = e.target;
-    //     setEditAcademicCredential((prev) => prev ? { ...prev, [name]: value } : prev);
-    // };
-
     const handleEditAcademicCredentialChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
         setEditAcademicCredential((prev) =>
@@ -428,10 +469,25 @@ const ProfilePage: React.FC = () => {
         );
     };
 
-
-
     // Function to handle adding a new academic credential
     const handleAddAcademicCredential = async () => {
+        if (newAcademicCredential.degreeName === '' || !newAcademicCredential.degreeName) {
+            setAcademicCredentialDegreeNameError(true);
+            return;
+        } else { setAcademicCredentialDegreeNameError(false); }
+        if (newAcademicCredential.institution === '' || !newAcademicCredential.institution) {
+            setAcademicCredentialInstitutionError(true);
+            return;
+        } else { setAcademicCredentialInstitutionError(false); }
+        if (newAcademicCredential.startDate === '' || !newAcademicCredential.startDate) {
+            setAcademicCredentialStartDateError(true);
+            return;
+        } else { setAcademicCredentialStartDateError(false); }
+        if (newAcademicCredential.endDate && new Date(newAcademicCredential.endDate) < new Date(newAcademicCredential.startDate)) {
+            setAcademicCredentialEndDateError(true);
+            return;
+        } else { setAcademicCredentialEndDateError(false); }
+
         try {
             setIsAcademicLoading(true);
             const payload = {
@@ -472,13 +528,6 @@ const ProfilePage: React.FC = () => {
         }
     };
 
-    // const handleEditAcademicCredential = (id: number) => {
-    //     const cred = academicCredentials.find((c) => c.id === id);
-    //     if (cred) {
-    //         setEditAcademicCredential(cred);
-    //         setEditingAcademicCredentialId(id);
-    //     }
-    // };
     const handleEditAcademicCredential = (id: number) => {
         if (editingAcademicCredentialId === id) {
             handleUpdateAcademicCredential();
@@ -491,43 +540,25 @@ const ProfilePage: React.FC = () => {
         }
     };
 
-
-    // const handleUpdateAcademicCredential = async () => {
-    //     if (!editingAcademicCredentialId || !editAcademicCredential) return;
-    //     try {
-    //         setIsAcademicLoading(true);
-    //         const payload = {
-    //             degree_name: editAcademicCredential.degreeName,
-    //             institution: editAcademicCredential.institution,
-    //             start_date: editAcademicCredential.startDate,
-    //             end_date: editAcademicCredential.endDate || null,
-    //             description: editAcademicCredential.description,
-    //         };
-    //         const updated = await updateAcademicCredential(editingAcademicCredentialId, payload);
-    //         setAcademicCredentials((prev) =>
-    //             prev.map((cred) => (cred.id === editingAcademicCredentialId ? updated : cred))
-    //         );
-    //         setEditAcademicCredential(null);
-    //         setEditingAcademicCredentialId(null);
-    //         setIsAcademicLoading(false);
-    //         toaster.create({
-    //             title: "Academic Credential Updated",
-    //             description: "Your academic credential has been updated.",
-    //             type: "success",
-    //             duration: 5000,
-    //         });
-    //     } catch (error) {
-    //         setIsAcademicLoading(false);
-    //         toaster.create({
-    //             title: "Error",
-    //             description: "Failed to update academic credential.",
-    //             type: "error",
-    //             duration: 5000,
-    //         });
-    //     }
-    // };
     const handleUpdateAcademicCredential = async () => {
         if (!editingAcademicCredentialId || !editAcademicCredential) return;
+
+        if (editAcademicCredential.degreeName === '' || !editAcademicCredential.degreeName) {
+            setEditAcademicCredentialDegreeNameError(true);
+            return;
+        } else { setEditAcademicCredentialDegreeNameError(false); }
+        if (editAcademicCredential.institution === '' || !editAcademicCredential.institution) {
+            setEditAcademicCredentialInstitutionError(true);
+            return;
+        } else { setEditAcademicCredentialInstitutionError(false); }
+        if (editAcademicCredential.startDate === '' || !editAcademicCredential.startDate) {
+            setEditAcademicCredentialStartDateError(true);
+            return;
+        } else { setEditAcademicCredentialStartDateError(false); }
+        if (editAcademicCredential.endDate && new Date(editAcademicCredential.endDate) < new Date(editAcademicCredential.startDate)) {
+            setEditAcademicCredentialEndDateError(true);
+            return;
+        } else { setEditAcademicCredentialEndDateError(false); }
 
         try {
             setIsAcademicLoading(true);
@@ -567,8 +598,6 @@ const ProfilePage: React.FC = () => {
         }
     };
 
-
-
     const handleDeleteAcademicCredential = async (id: number) => {
         try {
             await deleteAcademicCredential(id);
@@ -589,7 +618,6 @@ const ProfilePage: React.FC = () => {
         }
     };
 
-
     return (
         <div>
             <Stack gap={8}>
@@ -609,17 +637,19 @@ const ProfilePage: React.FC = () => {
                                     )}
                                     <Separator size="md" />
                                     <Stack gap={2} padding={4}>
-                                        <Field.Root orientation="horizontal" disabled={isDisabled}>
-                                            <Field.Label>First Name</Field.Label>
+                                        <Field.Root disabled={isDisabled} invalid={firstNameError} required>
+                                            <Field.Label>First Name <Field.RequiredIndicator /></Field.Label>
                                             <Input name="firstName" placeholder="First Name" value={updatedUser.firstName} onChange={handleChange} />
+                                            <Field.ErrorText>This field is required</Field.ErrorText>
                                         </Field.Root>
 
-                                        <Field.Root orientation="horizontal" disabled={isDisabled}>
-                                            <Field.Label>Last Name</Field.Label>
+                                        <Field.Root disabled={isDisabled} invalid={lastNameError} required>
+                                            <Field.Label>Last Name <Field.RequiredIndicator /></Field.Label>
                                             <Input name="lastName" placeholder="Last Name" value={updatedUser.lastName} onChange={handleChange} />
+                                            <Field.ErrorText>This field is required</Field.ErrorText>
                                         </Field.Root>
 
-                                        <Field.Root orientation="horizontal" disabled={isDisabled}>
+                                        <Field.Root disabled={isDisabled}>
                                             <Field.Label>Avatar</Field.Label>
                                             <Input name="avatar" placeholder="Avatar URL" value={updatedUser.avatar || ""} onChange={handleChange} />
                                         </Field.Root>
@@ -633,14 +663,16 @@ const ProfilePage: React.FC = () => {
                                     </Stack>
                                     <Separator size="md" />
                                     <Stack gap={2} padding={4}>
-                                        <Field.Root orientation="horizontal" disabled={isDisabled}>
-                                            <Field.Label>Username</Field.Label>
+                                        <Field.Root disabled={isDisabled} invalid={usernameError} required>
+                                            <Field.Label>Username <Field.RequiredIndicator /></Field.Label>
                                             <Input name="username" placeholder="Username" value={updatedUser.username} onChange={handleChange}/>
+                                            <Field.ErrorText>This field is required</Field.ErrorText>
                                         </Field.Root>
 
-                                        <Field.Root orientation="horizontal" disabled={isDisabled}>
-                                            <Field.Label>Email</Field.Label>
+                                        <Field.Root disabled={isDisabled} invalid={emailError} required>
+                                            <Field.Label>Email <Field.RequiredIndicator /></Field.Label>
                                             <Input name="email" placeholder="Email" value={updatedUser.email} onChange={handleChange}/>
+                                            <Field.ErrorText>This field is required</Field.ErrorText>
                                         </Field.Root>
 
                                         {/* <Field.Root orientation="horizontal" disabled={isDisabled}>
@@ -648,7 +680,7 @@ const ProfilePage: React.FC = () => {
                                             <PasswordInput disabled={isDisabled} name="password" placeholder="Password" value={updatedUser.password} onChange={handleChange}/>
                                         </Field.Root> */}
 
-                                        <Field.Root orientation="horizontal" disabled>
+                                        <Field.Root disabled>
                                             <Field.Label>Role</Field.Label>
                                             <NativeSelect.Root onChange={handleEventChange} disabled>
                                                 <NativeSelect.Field name="role" value={updatedUser.role}>
@@ -671,11 +703,6 @@ const ProfilePage: React.FC = () => {
                                     </Stack>
                                     <Separator size="md" />
                                     <Stack gap={2} padding={4}>
-                                        {/* <Field.Root orientation="horizontal" disabled={isDisabled}>
-                                            <Field.Label>Academic Credentials</Field.Label>
-                                            <Textarea name="academicCredentials" placeholder="Academic Credentials" value={updatedUser.academicCredentials?.join(", ") || ""} onChange={handleChange} />
-                                        </Field.Root> */}
-
                                         <Field.Root orientation="horizontal" disabled={isDisabled}>
                                             {/* <Field.Label>Skills</Field.Label> */}
                                             <Box w="100%">
@@ -723,19 +750,6 @@ const ProfilePage: React.FC = () => {
                                                 </HStack>
                                             </Box>
                                         </Field.Root>
-
-
-                                        {/* <Field.Root orientation="horizontal" disabled={isDisabled}>
-                                            <Field.Label>Availability</Field.Label>
-                                            <NativeSelect.Root onChange={handleEventChange}>
-                                                <NativeSelect.Field name="availability" value={updatedUser.availability}>
-                                                    {Availability.map((availability) => (
-                                                        <option key={availability} value={availability}>{availability}</option>
-                                                    ))}
-                                                </NativeSelect.Field>
-                                                <NativeSelect.Indicator />
-                                            </NativeSelect.Root>
-                                        </Field.Root> */}
                                     </Stack>
                                 </Stack>)}
                                 
@@ -757,30 +771,36 @@ const ProfilePage: React.FC = () => {
                                             </Stack>
                                             <Separator size="md" />
                                             <Stack gap={2} padding={4}>
-                                                <Field.Root orientation="horizontal" invalid={experienceRoleError} required>
+
+                                                <Field.Root invalid={academicCredentialDegreeNameError} required>
                                                     <Field.Label>Degree Name <Field.RequiredIndicator /></Field.Label>
                                                     <Input name="degreeName" placeholder="Degree Name" value={newAcademicCredential.degreeName} onChange={handleAcademicCredentialChange} />
                                                     <Field.ErrorText>This field is required</Field.ErrorText>
                                                 </Field.Root>
-                                                <Field.Root orientation="horizontal" invalid={experienceRoleError} required>
+
+                                                <Field.Root invalid={academicCredentialInstitutionError} required>
                                                     <Field.Label>Institution <Field.RequiredIndicator /></Field.Label>
                                                     <Input name="institution" placeholder="Institution" value={newAcademicCredential.institution} onChange={handleAcademicCredentialChange} />
                                                     <Field.ErrorText>This field is required</Field.ErrorText>
                                                 </Field.Root>
-                                                <Field.Root orientation="horizontal" invalid={experienceRoleError} required>
+
+                                                <Field.Root invalid={academicCredentialStartDateError} required>
                                                     <Field.Label>Start Date <Field.RequiredIndicator /></Field.Label>
                                                     <Input type="date" name="startDate" value={newAcademicCredential.startDate} onChange={handleAcademicCredentialChange} />
                                                     <Field.ErrorText>This field is required</Field.ErrorText>
                                                 </Field.Root>
-                                                <Field.Root orientation="horizontal" invalid={experienceRoleError} required>
+
+                                                <Field.Root invalid={academicCredentialEndDateError} required>
                                                     <Field.Label>End Date <Field.RequiredIndicator /></Field.Label>
                                                     <Input type="date" name="endDate" value={newAcademicCredential.endDate || ""} onChange={handleAcademicCredentialChange} />
                                                     <Field.ErrorText>This field is required</Field.ErrorText>
                                                 </Field.Root>
-                                                <Field.Root orientation="horizontal">
+
+                                                <Field.Root>
                                                     <Field.Label>Description</Field.Label>
                                                     <Textarea name="description" placeholder="Description" value={newAcademicCredential.description || ""} onChange={handleAcademicCredentialChange} />
                                                 </Field.Root>
+
                                                 <Button onClick={handleAddAcademicCredential} colorScheme="yellow" loading={isAcademicLoading}>
                                                     Add Academic Credential
                                                 </Button>
@@ -798,39 +818,37 @@ const ProfilePage: React.FC = () => {
                                                                 <LuTrash2 />
                                                             </IconButton>
                                                         </HStack>
-                                                        <Box direction="row" key={cred.id} p={4}>
+                                                        <Box direction="row" key={cred.id} paddingTop={4}>
                                                             {editingAcademicCredentialId === cred.id && editAcademicCredential?.id === cred.id ? (
                                                                 <Stack gap={2} padding={4}>
-                                                                    <Input
-                                                                    name="degreeName"
-                                                                    placeholder="Degree Name"
-                                                                    value={editAcademicCredential.degreeName}
-                                                                    onChange={handleEditAcademicCredentialChange}
-                                                                    />
-                                                                    <Input
-                                                                    name="institution"
-                                                                    placeholder="Institution"
-                                                                    value={editAcademicCredential.institution}
-                                                                    onChange={handleEditAcademicCredentialChange}
-                                                                    />
-                                                                    <Input
-                                                                    type="date"
-                                                                    name="startDate"
-                                                                    value={editAcademicCredential.startDate}
-                                                                    onChange={handleEditAcademicCredentialChange}
-                                                                    />
-                                                                    <Input
-                                                                    type="date"
-                                                                    name="endDate"
-                                                                    value={editAcademicCredential.endDate || ""}
-                                                                    onChange={handleEditAcademicCredentialChange}
-                                                                    />
-                                                                    <Textarea
-                                                                    name="description"
-                                                                    placeholder="Description"
-                                                                    value={editAcademicCredential.description || ""}
-                                                                    onChange={handleEditAcademicCredentialChange}
-                                                                    />
+                                                                    <Field.Root invalid={editAcademicCredentialDegreeNameError} required>
+                                                                        <Field.Label>Degree Name <Field.RequiredIndicator /></Field.Label>
+                                                                        <Input width={"18rem"} name="degreeName" placeholder="Degree Name" value={editAcademicCredential.degreeName} onChange={handleEditAcademicCredentialChange}/>
+                                                                        <Field.ErrorText>This field is required</Field.ErrorText>
+                                                                    </Field.Root>
+
+                                                                    <Field.Root invalid={editAcademicCredentialInstitutionError} required>
+                                                                        <Field.Label>Institution <Field.RequiredIndicator /></Field.Label>
+                                                                        <Input name="institution" placeholder="Institution" value={editAcademicCredential.institution} onChange={handleEditAcademicCredentialChange}/>
+                                                                        <Field.ErrorText>This field is required</Field.ErrorText>
+                                                                    </Field.Root>
+
+                                                                    <Field.Root invalid={editAcademicCredentialStartDateError} required>
+                                                                        <Field.Label>Start Date <Field.RequiredIndicator /></Field.Label>
+                                                                        <Input type="date" name="startDate" value={editAcademicCredential.startDate} onChange={handleEditAcademicCredentialChange}/>
+                                                                        <Field.ErrorText>This field is required</Field.ErrorText>
+                                                                    </Field.Root>
+
+                                                                    <Field.Root invalid={editAcademicCredentialEndDateError} required>
+                                                                        <Field.Label>End Date <Field.RequiredIndicator /></Field.Label>
+                                                                        <Input type="date" name="endDate" value={editAcademicCredential.endDate || ""} onChange={handleEditAcademicCredentialChange}/>
+                                                                        <Field.ErrorText>This field is required</Field.ErrorText>
+                                                                    </Field.Root>
+
+                                                                    <Field.Root>
+                                                                        <Field.Label>Description</Field.Label>
+                                                                        <Textarea name="description" placeholder="Description" value={editAcademicCredential.description || ""} onChange={handleEditAcademicCredentialChange}/>
+                                                                    </Field.Root>
                                                                 </Stack>
                                                             ) : (
                                                                 <>
@@ -862,30 +880,30 @@ const ProfilePage: React.FC = () => {
                                         </Stack>
                                         <Separator size="md" />
                                         <Stack gap={2} padding={4}>
-                                            <Field.Root orientation="horizontal" invalid={experienceRoleError} required>
+                                            <Field.Root invalid={experienceRoleError} required>
                                                 <Field.Label>Role <Field.RequiredIndicator /></Field.Label>
                                                 <Input name="role" placeholder="Role" value={newPreviousRole.role} onChange={handlePreviousRoleChange}/>
                                                 <Field.ErrorText>This field is required</Field.ErrorText>
                                             </Field.Root>
 
-                                            <Field.Root orientation="horizontal" invalid={experienceCompanyError} required>
+                                            <Field.Root invalid={experienceCompanyError} required>
                                                 <Field.Label>Company <Field.RequiredIndicator /></Field.Label>
                                                 <Input name="company" placeholder="Company" value={newPreviousRole.company} onChange={handlePreviousRoleChange}/>
                                                 <Field.ErrorText>This field is required</Field.ErrorText>
                                             </Field.Root>
 
-                                            <Field.Root orientation="horizontal" invalid={experienceStartDateError} required>
+                                            <Field.Root invalid={experienceStartDateError} required>
                                                 <Field.Label>Start Date <Field.RequiredIndicator /></Field.Label>
                                                 <Input type="date" name="startDate" value={newPreviousRole.startDate} onChange={handlePreviousRoleChange}/>
                                                 <Field.ErrorText>This field is required</Field.ErrorText>
                                             </Field.Root>
 
-                                            <Field.Root orientation="horizontal">
+                                            <Field.Root>
                                                 <Field.Label>End Date</Field.Label>
                                                 <Input type="date" name="endDate" value={newPreviousRole.endDate || ""} onChange={handlePreviousRoleChange}/>
                                             </Field.Root>
 
-                                            <Field.Root orientation="horizontal">
+                                            <Field.Root>
                                                 <Field.Label>Description</Field.Label>
                                                 <Textarea name="description" placeholder="Description" value={newPreviousRole.description || ""} onChange={handlePreviousRoleChange}/>
                                             </Field.Root>
@@ -907,39 +925,36 @@ const ProfilePage: React.FC = () => {
                                                             <LuTrash2 />
                                                         </IconButton>
                                                     </HStack>
-                                                    <Box direction="row" key={prevRole.id} p={4}>
+                                                    <Box direction="row" key={prevRole.id} paddingTop={4}>
                                                         {editingPreviousRoleId === prevRole.id && editPreviousRole ? (
                                                         <Stack gap={2} padding={4}>
-                                                            <Input
-                                                                name="role"
-                                                                placeholder="Role"
-                                                                value={editPreviousRole.role}
-                                                                onChange={handleEditPreviousRoleChange}
-                                                            />
-                                                            <Input
-                                                                name="company"
-                                                                placeholder="Company"
-                                                                value={editPreviousRole.company}
-                                                                onChange={handleEditPreviousRoleChange}
-                                                            />
-                                                            <Input
-                                                                type="date"
-                                                                name="startDate"
-                                                                value={editPreviousRole.startDate}
-                                                                onChange={handleEditPreviousRoleChange}
-                                                            />
-                                                            <Input
-                                                                type="date"
-                                                                name="endDate"
-                                                                value={editPreviousRole.endDate || ""}
-                                                                onChange={handleEditPreviousRoleChange}
-                                                            />
-                                                            <Textarea
-                                                                name="description"
-                                                                placeholder="Description"
-                                                                value={editPreviousRole.description || ""}
-                                                                onChange={handleEditPreviousRoleChange}
-                                                            />
+                                                            <Field.Root invalid={editExperienceRoleError} required>
+                                                                <Field.Label>Role <Field.RequiredIndicator /></Field.Label>
+                                                                <Input width={"18rem"} name="role" placeholder="Role" value={editPreviousRole.role} onChange={handleEditPreviousRoleChange}/>
+                                                                <Field.ErrorText>This field is required</Field.ErrorText>
+                                                            </Field.Root>
+
+                                                            <Field.Root invalid={editExperienceCompanyError} required>
+                                                                <Field.Label>Company <Field.RequiredIndicator /></Field.Label>
+                                                                <Input name="company" placeholder="Company" value={editPreviousRole.company} onChange={handleEditPreviousRoleChange}/>
+                                                                <Field.ErrorText>This field is required</Field.ErrorText>
+                                                            </Field.Root>
+
+                                                            <Field.Root invalid={editExperienceStartDateError} required>
+                                                                <Field.Label>Start Date <Field.RequiredIndicator /></Field.Label>
+                                                                <Input type="date" name="startDate" value={editPreviousRole.startDate} onChange={handleEditPreviousRoleChange}/>
+                                                                <Field.ErrorText>This field is required</Field.ErrorText>
+                                                            </Field.Root>
+
+                                                            <Field.Root>
+                                                                <Field.Label>End Date</Field.Label>
+                                                                <Input type="date" name="endDate" value={editPreviousRole.endDate || ""} onChange={handleEditPreviousRoleChange}/>
+                                                            </Field.Root>
+
+                                                            <Field.Root>
+                                                                <Field.Label>Description</Field.Label>
+                                                                <Textarea name="description" placeholder="Description" value={editPreviousRole.description || ""} onChange={handleEditPreviousRoleChange}/>
+                                                            </Field.Root>
                                                         </Stack>
                                                     ) : (
                                                         <>
