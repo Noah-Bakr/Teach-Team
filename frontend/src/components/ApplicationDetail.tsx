@@ -11,7 +11,8 @@ import {
     Button,
     Stack,
 } from "@chakra-ui/react";
-import { ApplicationUI, ApplicationStatus } from "@/types/lecturerTypes";
+//import { ApplicationUI, ApplicationStatus } from "@/types/lecturerTypes";
+import { ApplicationUI, ApplicationStatus } from "@/types/types";
 import { updateApplicationStatusByLecturer } from "@/services/lecturerService";
 import { toaster } from "@/components/ui/toaster";
 import { useAuth } from "@/context/AuthContext";
@@ -44,7 +45,7 @@ export const ApplicationDetails: React.FC<ApplicationDetailsProps> = ({
     const onApprove = async () => {
         try {
             setIsUpdating(true);
-            const payload = { status: "accepted" as const };
+           // const payload = { status: "accepted" as const };
             await updateApplicationStatusByLecturer(currentUser!.id, application.id, { status: "accepted" });
 
             // Display notification toaster if approved successfully
