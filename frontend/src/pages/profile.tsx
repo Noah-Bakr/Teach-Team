@@ -5,12 +5,11 @@ import { addCredentialsToUser, addSkillsToUser, removeSkillFromUser, updateUser 
 import { Roles } from "@/types/roleTypes";
 import { getCurrentUser } from "@/services/authService";
 import { mapBackendUserToUI } from "@/services/mappers/authMapper"
-import { deletePreviousRole, fetchAllPreviousRoles, updatePreviousRole } from "@/services/previousRoleService";
+import { deletePreviousRole, fetchAllPreviousRoles, updatePreviousRole, createPreviousRole } from "@/services/previousRoleService";
 import { fetchAllApplications } from "@/services/applicationService";
 import { PreviousRoleUI } from "@/types/previousRoleTypes";
 import { ApplicationUI } from "@/types/applicationTypes";
 import { LuPencil, LuPencilOff, LuTrash2 } from "react-icons/lu";
-import { createPreviousRole } from "@/services/previousRoleService";
 import { toaster } from "@/components/ui/toaster";
 import { fetchAllSkills, createSkill, fetchSkillById, deleteSkill } from "@/services/skillService";
 import { SkillUI } from "@/types/skillTypes";
