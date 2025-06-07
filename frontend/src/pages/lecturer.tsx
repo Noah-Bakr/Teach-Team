@@ -2,8 +2,8 @@
 
 import React, { useState, useEffect } from "react";
 import { Box, Heading } from "@chakra-ui/react";
-import { ApplicationUI, ReviewUI } from "@/types/lecturerTypes";
-import { fetchApplicationsByLecturer, fetchCoursesByLecturer } from "@/services/lecturerService";
+import { ApplicationUI, ReviewUI, CourseUI } from "@/types/lecturerTypes";
+import { fetchApplicationsByLecturer, fetchApplicationsByCourse, fetchCoursesByLecturer } from "@/services/lecturerService";
 import SearchAndSortBar from "@/components/SearchAndSortBar";
 import ApplicantsTable from "@/components/ApplicantsTable";
 import VisualRepresentation from "@/components/VisualRepresentation";
@@ -20,6 +20,8 @@ export const LecturerPage: React.FC = () => {
     }>({});
     const [search, setSearch] = useState<string>("");
     const [sortBy, setSortBy] = useState<string>("");
+    const [courses, setCourses] = useState<CourseUI[]>([]);
+    const [selectedCourseId, setSelectedCourseId] = useState<number | null>(null);
     const courseLookup = useCourseLookup();
     const { currentUser } = useAuth();
     const lecturerId = currentUser?.id ?? null;
@@ -40,15 +42,33 @@ export const LecturerPage: React.FC = () => {
     //     })();
     // }, [currentUser]);
 
+    // Fetch applications for the lecturer, optionally filtered by selected course
     useEffect(() => {
         if (!lecturerId) return;
 
         (async () => {
             try {
-                const apps = await fetchApplicationsByLecturer(lecturerId);
+                const apps = selectedCourseId
+                    ? await fetchApplicationsByCourse(lecturerId, selectedCourseId)
+                    : await fetchApplicationsByLecturer(lecturerId);
+
                 setApplications(apps);
             } catch (err) {
-                console.error("Error fetching applications for lecturer:", err);
+                console.error("Error fetching applications:", err);
+            }
+        })();
+    }, [lecturerId, selectedCourseId]);
+
+    // Fetch courses for the lecturer
+    useEffect(() => {
+        if (!lecturerId) return;
+
+        (async () => {
+            try {
+                const lecturerCourses = await fetchCoursesByLecturer(lecturerId);
+                setCourses(lecturerCourses);
+            } catch (err) {
+                console.error("Error fetching lecturer courses:", err);
             }
         })();
     }, [lecturerId]);
@@ -180,6 +200,9 @@ export const LecturerPage: React.FC = () => {
                     setSearch={setSearch}
                     sortBy={sortBy}
                     setSortBy={setSortBy}
+                    selectedCourseId={selectedCourseId}
+                    setSelectedCourseId={setSelectedCourseId}
+                    courses={courses}
                 />
 
                 {/* Applicants Table */}
