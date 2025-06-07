@@ -16,8 +16,8 @@ export interface Course {
     course_name: string;
     course_code: string;
     semester: '1' | '2';
-    skills: Skill[];
-    lecturers: User[];
+    skills?: Skill[];
+    lecturers?: User[];
 }
 
 //

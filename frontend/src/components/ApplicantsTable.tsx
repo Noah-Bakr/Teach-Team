@@ -1,7 +1,11 @@
 "use client";
 import React from "react";
 import { Button, Box, Table, Drawer, Portal, CloseButton, } from "@chakra-ui/react";
-import { ApplicationUI, ReviewUI, ApplicationStatus } from "@/types/applicationTypes";
+import {
+    ApplicationUI,
+    ReviewUI,
+    ApplicationStatus
+} from "@/types/lecturerTypes";
 import SelectedApplicantCard from "./SelectedApplicantCard";
 import ApplicationDetail from "./ApplicationDetail";
 import { useAuth } from "@/context/AuthContext";
@@ -62,7 +66,7 @@ const ApplicantsTable: React.FC<ApplicantsTableProps> = ({
                         {/* Join the skills array into a comma-separated string */}
                         <Table.Cell>
                             {application.user.skills.length > 0
-                                ? application.user.skills.join(", ")
+                                ? application.user.skills.map((s) => s.name).join(", ")
                                 : "—"}
                         </Table.Cell>
 

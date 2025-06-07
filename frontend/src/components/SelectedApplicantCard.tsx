@@ -10,9 +10,11 @@ import {
     Textarea,
     Button,
 } from "@chakra-ui/react";
-import { ApplicationUI, ReviewUI } from "@/types/applicationTypes";
+import { ApplicationUI, ReviewUI } from "@/types/lecturerTypes";
 import CustomFormControl from "./CustomFormControl";
-import { createReview, updateReview } from "@/services/reviewService";
+import {
+    saveReviewForApplication as createReview
+} from "@/services/lecturerService";
 import { toaster } from "@/components/ui/toaster";
 import { useAuth } from "@/context/AuthContext";
 
@@ -124,41 +126,24 @@ const SelectedApplicantCard: React.FC<SelectedApplicantCardProps> = ({
             return;
         }
 
-
         try {
-            if (myExistingReviewObj) {
-                // Update existing review
-                const updated = await updateReview(myExistingReviewObj.id, {
-                    rank: parsedRank,
-                    comment: localComment.trim() || null,
-                });
-                handleRankChange(updated.rank ?? 0);
-                handleCommentChange(updated.comment ?? "");
-                toaster.create({
-                    title: "Review updated",
-                    description: "Your review has been updated.",
-                    type: "success",
-                    duration: 3000,
-                    meta: { closable: true },
-                });
-            } else {
-                // Create new review
-                const created = await createReview({
-                    lecturer_id: lecturerId,
-                    application_id: applicant.id,
-                    rank: parsedRank ?? undefined,
-                    comment: localComment.trim() || undefined,
-                });
-                handleRankChange(created.rank ?? 0);
-                handleCommentChange(created.comment ?? "");
-                toaster.create({
-                    title: "Review saved",
-                    description: "Your review has been recorded.",
-                    type: "success",
-                    duration: 3000,
-                    meta: { closable: true },
-                });
-            }
+            const saved = await createReview(applicant.id, {
+                rank: parsedRank ?? undefined,
+                comment: localComment.trim() || undefined,
+            });
+
+            handleRankChange(saved.rank ?? 0);
+            handleCommentChange(saved.comment ?? "");
+
+            toaster.create({
+                title: myExistingReviewObj ? "Review updated" : "Review saved",
+                description: myExistingReviewObj
+                    ? "Your review has been updated."
+                    : "Your review has been recorded.",
+                type: "success",
+                duration: 3000,
+                meta: { closable: true },
+            });
         } catch (err: any) {
             console.error("Failed to save review:", err);
             toaster.create({
@@ -171,6 +156,7 @@ const SelectedApplicantCard: React.FC<SelectedApplicantCardProps> = ({
                 meta: { closable: true },
             });
         }
+
     };
 
     // Render the card; the “Rank” input is seeded with localRank (which came from existingRankValue).

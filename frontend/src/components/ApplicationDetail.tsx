@@ -12,11 +12,14 @@ import {
     Button,
     Stack,
 } from "@chakra-ui/react";
-import { ApplicationUI, ApplicationStatus } from "@/types/applicationTypes";
+import { ApplicationUI } from "@/types/lecturerTypes";
 import "../styles/drawerStyles.css";
-import { updateApplication } from "@/services/applicationService";
-import { UpdateApplicationDto } from "@/services/api/applicationApi";
+
+import { updateApplicationStatusByLecturer } from "@/services/lecturerService";
 import { toaster } from "@/components/ui/toaster";
+import { useAuth } from "@/context/AuthContext";
+import { ApplicationStatus } from "@/types/lecturerTypes";
+
 
 interface ApplicationDetailsProps {
     application: ApplicationUI;
@@ -29,6 +32,8 @@ export const ApplicationDetails: React.FC<ApplicationDetailsProps> = ({
                                                                       }) => {
     const { user, course, positionType, status, appliedAt, availability } =
         application;
+    const { currentUser } = useAuth();
+    const lecturerId = currentUser?.id;
 
     const [isUpdating, setIsUpdating] = useState(false);
 
@@ -43,8 +48,8 @@ export const ApplicationDetails: React.FC<ApplicationDetailsProps> = ({
     const onApprove = async () => {
         try {
             setIsUpdating(true);
-            const payload: UpdateApplicationDto = { status: "accepted" };
-            await updateApplication(application.id, payload);
+            const payload = { status: "accepted" as const };
+            await updateApplicationStatusByLecturer(currentUser!.id, application.id, { status: "accepted" });
             // Refresh to show new status (replace with your own data‐refresh logic if desired)
             toaster.create({
                 title: "Application Approved",
@@ -74,8 +79,10 @@ export const ApplicationDetails: React.FC<ApplicationDetailsProps> = ({
     const onReject = async () => {
         try {
             setIsUpdating(true);
-            const payload: UpdateApplicationDto = { status: "rejected" };
-            await updateApplication(application.id, payload);
+            const payload = { status: "rejected" as const };
+            if (!lecturerId) return; // or show toaster
+            await updateApplicationStatusByLecturer(currentUser!.id, application.id, { status: "rejected" });
+
             toaster.create({
                 title: "Application Rejected",
                 description: `You have rejected application #${application.id}.`,
@@ -233,16 +240,16 @@ export const ApplicationDetails: React.FC<ApplicationDetailsProps> = ({
                         <Heading className="app-details__section-title" size="sm" mt={4} mb={2}>
                             User Skills
                         </Heading>
-                        {user.skills && user.skills.length > 0 ? (
+                        {application.user.skills && application.user.skills.length > 0 ? (
                             <HStack
                                 className="app-details__skills-list"
                                 wrap="wrap"
                                 ml={2}
                                 margin={2}
                             >
-                                {user.skills.map((skill) => (
+                                {application.user.skills.map((s) => (
                                     <Badge
-                                        key={skill}
+                                        key={s.name}
                                         className="app-details__skill-badge"
                                         colorScheme="teal"
                                         fontSize="0.75rem"
@@ -250,7 +257,7 @@ export const ApplicationDetails: React.FC<ApplicationDetailsProps> = ({
                                         py={1}
                                         borderRadius="sm"
                                     >
-                                        {skill}
+                                        {s.name}
                                     </Badge>
                                 ))}
                             </HStack>
