@@ -3,6 +3,7 @@ import { AppDataSource } from "../data-source";
 import { Course } from "../entity/Course";
 import { Application } from "../entity/Application";
 import { Review } from "../entity/Review";
+import {User} from "../entity/User";
 
 export class LecturerController {
     // GET /lecturer/:id/courses Lecturer can see all courses they are assigned to
@@ -132,28 +133,61 @@ export class LecturerController {
 
     // POST /applications/:id/review Lecturer can save a review for an application
     async saveReview(req: Request, res: Response) {
-        const applicationId = parseInt(req.params.id, 10);
-        const { rank, comment } = req.body;
-        const lecturer = req.lecturer;
-        if (!lecturer) {
-            return res.status(403).json({ message: "Lecturer not attached to request" });
-        }
+            const { lecturerId, applicationId } = req.params;
+            const { rank, comment } = req.body;
 
-        if (isNaN(applicationId)) {
-            return res.status(400).json({ message: "Invalid application ID" });
-        }
+            const parsedLecturerId = parseInt(lecturerId, 10);
+            const parsedApplicationId = parseInt(applicationId, 10);
 
-        const appRepo = AppDataSource.getRepository(Application);
-        const reviewRepo = AppDataSource.getRepository(Review);
+            if (isNaN(parsedLecturerId) || isNaN(parsedApplicationId)) {
+                return res.status(400).json({ message: "Invalid lecturer or application ID" });
+            }
 
-        const application = await appRepo.findOne({
-            where: { application_id: applicationId },
-            relations: ["course"],
-        });
+            const appRepo = AppDataSource.getRepository(Application);
+            const reviewRepo = AppDataSource.getRepository(Review);
+            const userRepo = AppDataSource.getRepository(User);
 
-        if (!application) {
-            return res.status(404).json({ message: "Application not found" });
-        }
+            const lecturer = await userRepo.findOne({
+                where: { user_id: parsedLecturerId },
+                relations: ["courses", "role"],
+            });
+
+            if (!lecturer || lecturer.role.role_name !== "lecturer") {
+                return res.status(403).json({ message: "Invalid lecturer" });
+            }
+
+            const application = await appRepo.findOne({
+                where: { application_id: parsedApplicationId },
+                relations: ["course"],
+            });
+
+            if (!application) {
+                return res.status(404).json({ message: "Application not found" });
+            }
+
+
+        // const applicationId = parseInt(req.params.id, 10);
+        // const { rank, comment } = req.body;
+        // const lecturer = req.lecturer;
+        // if (!lecturer) {
+        //     return res.status(403).json({ message: "Lecturer not attached to request" });
+        // }
+        //
+        // if (isNaN(applicationId)) {
+        //     return res.status(400).json({ message: "Invalid application ID" });
+        // }
+
+        // const appRepo = AppDataSource.getRepository(Application);
+        // const reviewRepo = AppDataSource.getRepository(Review);
+        //
+        // const application = await appRepo.findOne({
+        //     where: { application_id: applicationId },
+        //     relations: ["course"],
+        // });
+        //
+        // if (!application) {
+        //     return res.status(404).json({ message: "Application not found" });
+        // }
 
         const courseId = application.course.course_id;
         const positionType = application.position_type;
@@ -198,6 +232,77 @@ export class LecturerController {
         return res.status(200).json({ message: "Review saved", review: savedReview });
     }
 
+    async updateApplicationStatus(req: Request, res: Response) {
+        const { lecturerId, applicationId } = req.params;
+        const { status } = req.body;
+
+        const parsedLecturerId = parseInt(lecturerId, 10);
+        const parsedApplicationId = parseInt(applicationId, 10);
+
+        if (isNaN(parsedLecturerId)) {
+            return res.status(400).json({ message: "Invalid or missing lecturer ID" });
+        }
+
+        try {
+            const lecturer = await AppDataSource.getRepository(User).findOne({
+                where: { user_id: parsedLecturerId },
+                relations: ["courses", "role"],
+            });
+
+            if (!lecturer || lecturer.role.role_name !== "lecturer") {
+                return res.status(403).json({ message: "Lecturer not found or not a lecturer" });
+            }
+
+            const appRepo = AppDataSource.getRepository(Application);
+            const application = await appRepo.findOneBy({ application_id: parsedApplicationId });
+
+            if (!application) {
+                return res.status(404).json({ message: "Application not found" });
+            }
+
+            // Optional: Verify lecturer is allowed to update this application
+            // (e.g., only if course is in lecturer.courses)
+
+            application.status = status;
+            await appRepo.save(application);
+
+            return res.status(200).json({ message: "Application status updated", application });
+        } catch (error) {
+            console.error("Update error:", error);
+            return res.status(500).json({ message: "Internal server error" });
+        }
+    }
+
+
+    // // PATCH /lecturer/:lecturerId/applications/:applicationId
+    // async updateApplicationStatus(req: Request, res: Response) {
+    //     const lecturer = req.lecturer;
+    //     if (!lecturer) {
+    //         return res.status(403).json({ message: "Lecturer not attached to request" });
+    //     }
+    //     const { applicationId } = req.params;
+    //     const { status } = req.body;
+    //
+    //     try {
+    //         const appRepo = AppDataSource.getRepository(Application);
+    //         const application = await appRepo.findOneBy({
+    //             application_id: parseInt(applicationId, 10),
+    //         });
+    //
+    //         if (!application) {
+    //             return res.status(404).json({ message: "Application not found" });
+    //         }
+    //
+    //         application.status = status;
+    //         await appRepo.save(application);
+    //
+    //         return res.status(200).json({ message: "Application status updated", application });
+    //     } catch (error) {
+    //         console.error("Update error:", error);
+    //         return res.status(500).json({ message: "Internal server error" });
+    //     }
+    // }
+
 
     // GET /applications/:id/review?lecturerId=3 Lecturer can see their review for a specific application
     async getReviewByApplication(req: Request, res: Response) {
@@ -226,3 +331,5 @@ export class LecturerController {
         return res.status(200).json(review);
     }
 }
+
+
