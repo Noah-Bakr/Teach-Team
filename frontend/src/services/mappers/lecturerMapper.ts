@@ -1,3 +1,12 @@
+// import {
+//     ApplicationUI,
+//     UserUI,
+//     SkillUI,
+//     AcademicCredentialsUI,
+//     CourseUI,
+//     ReviewUI,
+//     PreviousRoleUI,
+// } from "@/types/lecturerTypes";
 import {
     ApplicationUI,
     UserUI,
@@ -6,7 +15,7 @@ import {
     CourseUI,
     ReviewUI,
     PreviousRoleUI,
-} from "@/types/lecturerTypes";
+} from "@/types/types";
 
 
 function mapRawPreviousRole(role: any): PreviousRoleUI {
