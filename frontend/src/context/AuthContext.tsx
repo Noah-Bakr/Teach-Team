@@ -27,7 +27,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [currentUser, setCurrentUser] = useState<UserUI | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
@@ -58,13 +58,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 	};
 
 	fetchSessionUser();
-
-	// Periodic session refresh every 5 minutes
-	const interval = setInterval(fetchSessionUser, 5 * 60 * 1000);
-
-	return () => clearInterval(interval);
-  }, [router]);
-
+  }, []);
 
   const login = async ( email: string, password: string ): Promise<boolean> => {
 	setLoading(true);
