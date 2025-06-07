@@ -2,16 +2,15 @@
 
 import React, { useState, useEffect } from "react";
 import { Box, Heading } from "@chakra-ui/react";
-import { ApplicationUI, ReviewUI, CourseUI } from "@/types/lecturerTypes";
+//import { ApplicationStatus, ApplicationUI, ReviewUI, CourseUI } from "@/types/lecturerTypes";
+import { ApplicationStatus, ApplicationUI, ReviewUI, CourseUI } from "@/types/types";
 import { fetchApplicationsByLecturer, fetchApplicationsByCourse, fetchCoursesByLecturer } from "@/services/lecturerService";
 import SearchAndSortBar from "@/components/SearchAndSortBar";
 import ApplicantsTable from "@/components/ApplicantsTable";
 import VisualRepresentation from "@/components/VisualRepresentation";
-import { useCourseLookup } from "@/utils/courseLookup";
-import "@/styles/Lecturer.css";
 import { CreamCard } from "@/components/CreamCard";
 import { useAuth } from "@/context/AuthContext";
-import { ApplicationStatus } from "@/types/lecturerTypes";
+import "@/styles/Lecturer.css";
 
 export const LecturerPage: React.FC = () => {
     const [applications, setApplications] = useState<ApplicationUI[]>([]);
@@ -22,25 +21,8 @@ export const LecturerPage: React.FC = () => {
     const [sortBy, setSortBy] = useState<string>("");
     const [courses, setCourses] = useState<CourseUI[]>([]);
     const [selectedCourseId, setSelectedCourseId] = useState<number | null>(null);
-    const courseLookup = useCourseLookup();
     const { currentUser } = useAuth();
     const lecturerId = currentUser?.id ?? null;
-
-    // useEffect(() => {
-    //     (async () => {
-    //         try {
-    //             // Fetch all Applications
-    //             const appsUI: ApplicationUI[] = await fetchAllApplications();
-    //             // Filter courses by lecturer
-    //             const myCourseIds = (currentUser?.courses ?? []).map((c) => c.id);
-    //             const myApps = appsUI.filter((app) => myCourseIds.includes(app.course.id));
-    //
-    //             setApplications(myApps);
-    //         } catch (err) {
-    //             console.error("Error loading applications:", err);
-    //         }
-    //     })();
-    // }, [currentUser]);
 
     // Fetch applications for the lecturer, optionally filtered by selected course
     useEffect(() => {
@@ -113,7 +95,7 @@ export const LecturerPage: React.FC = () => {
 
                     // Overwrite or insert ReviewUI
                     // If this app already has a reviews array, keep any existing comment from “my” review
-                    const oldComment = app.reviews?.find(r => r.lecturerId === lecturerId)
+                    const oldComment = app.reviews?.find(review => review.lecturerId === lecturerId)
                         ?.comment;
 
                     const newReview: ReviewUI = {
@@ -141,7 +123,7 @@ export const LecturerPage: React.FC = () => {
                 if (app.id !== appId) return app;
 
                 // If this app already has a reviews array, keep any existing rank from “my” review
-                const oldRank = app.reviews?.find(r => r.lecturerId === lecturerId)
+                const oldRank = app.reviews?.find(review => review.lecturerId === lecturerId)
                     ?.rank;
 
                 const newReview: ReviewUI = {
@@ -177,10 +159,13 @@ export const LecturerPage: React.FC = () => {
             .toLowerCase()
             .includes(lower);
 
-        const matchesSkills = app.user.skills
-            .map((s) => s.name.toLowerCase())
-            .join(" ")
-            .includes(lower);
+        const matchesSkills =
+            app.user.skills?.map((s) => s.name).join(" ").toLowerCase().includes(lower) ?? false;
+
+        // const matchesSkills = app.user.skills
+        //     .map((s) => s.name.toLowerCase())
+        //     .join(" ")
+        //     .includes(lower);
 
         return matchesName || matchesCourse || matchesAvailability || matchesSkills;
     });
@@ -195,16 +180,6 @@ export const LecturerPage: React.FC = () => {
             return 0;
         })
         : filteredApps;
-
-    // Group selected by course ID
-    const selectedByCourse = applications
-        .filter((app) => app.selected)
-        .reduce((acc, app) => {
-            const key = app.course.id;
-            if (!acc[key]) acc[key] = [];
-            acc[key].push(app);
-            return acc;
-        }, {} as Record<number, ApplicationUI[]>);
 
     return (
         <Box p={4}>
