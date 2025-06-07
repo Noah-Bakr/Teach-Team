@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { AppDataSource } from "../data-source";
 import { User } from "../entity/User";
 
+// Middleware to check if the user is a lecturer
 export const isLecturer = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const lecturerIdStr =
         req.body?.lecturerId || req.query?.lecturerId || req.params?.id;
