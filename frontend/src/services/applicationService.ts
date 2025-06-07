@@ -50,3 +50,9 @@ export function deleteApplication(id: number) {
         `/applications/${id}`
     );
 }
+
+/** GET /user/:userId/applications → ApplicationUI[] */
+export async function fetchApplicationsByUserId(userId: number | string): Promise<ApplicationUI[]> {
+    const resp = await api.get<BackendApp[]>(`/users/${userId}`);
+    return resp.data.map(mapRawAppToUI);
+}
