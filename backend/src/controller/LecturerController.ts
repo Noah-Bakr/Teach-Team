@@ -81,6 +81,7 @@ export class LecturerController {
             .leftJoinAndSelect("user.skills", "skills")
             .leftJoinAndSelect("user.academicCredentials", "credentials")
             .leftJoinAndSelect("user.previousRoles", "previousRoles")
+            .leftJoinAndSelect("application.course", "course")
             .leftJoinAndSelect("course.skills", "courseSkills")
             .leftJoinAndSelect("application.reviews", "review", "review.lecturer = :lecturerId", { lecturerId: lecturer.user_id })
             .where("application.course_id = :courseId", { courseId })

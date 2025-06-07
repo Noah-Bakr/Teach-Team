@@ -42,7 +42,7 @@ export interface CourseUI {
     name: string;
     code: string;
     semester: '1' | '2';
-    skills: string[];
+    skills?: string[];
 }
 
 export interface ReviewUI {
