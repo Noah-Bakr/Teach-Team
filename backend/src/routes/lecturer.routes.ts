@@ -13,6 +13,10 @@ router.get("/:id/applications", isLecturer, async (req, res) => {
     await lecturerController.getApplications(req, res);
 });
 
+router.get("/:id/applications/all", isLecturer, async (req, res) => {
+    await lecturerController.getAllApplicationsByLecturer(req, res);
+});
+
 router.post("/applications/:id/review", isLecturer, async (req, res) => {
     await lecturerController.saveReview(req, res);
 });
