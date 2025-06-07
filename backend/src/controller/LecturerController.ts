@@ -1,12 +1,11 @@
 import { Request, Response } from "express";
 import { AppDataSource } from "../data-source";
-import { User } from "../entity/User";
 import { Course } from "../entity/Course";
 import { Application } from "../entity/Application";
 import { Review } from "../entity/Review";
 
 export class LecturerController {
-    // GET /lecturer/:id/courses
+    // GET /lecturer/:id/courses Lecturer can see all courses they are assigned to
     async getCourses(req: Request, res: Response) {
         try {
             const lecturer = req.lecturer;
@@ -22,7 +21,7 @@ export class LecturerController {
         }
     }
 
-    // GET /lecturer/:id/applications/all
+    // GET /lecturer/:id/applications/all Lecturer can see all applications for all courses they are assigned to
     async getAllApplicationsByLecturer(req: Request, res: Response) {
         const lecturer = req.lecturer;
 
@@ -37,7 +36,11 @@ export class LecturerController {
         }
 
         try {
-            const applications = await AppDataSource.getRepository(Application)
+            const search = (req.query.search as string)?.toLowerCase() || "";
+            const sort = req.query.sort as string;
+
+            // Base query setup and join tables...
+            const query = AppDataSource.getRepository(Application)
                 .createQueryBuilder("application")
                 .leftJoinAndSelect("application.user", "user")
                 .leftJoinAndSelect("user.skills", "skills")
@@ -47,7 +50,23 @@ export class LecturerController {
                 .leftJoinAndSelect("course.skills", "courseSkills")
                 .leftJoinAndSelect("application.reviews", "review", "review.lecturer = :lecturerId", { lecturerId: lecturer.user_id })
                 .where("application.course IN (:...courseIds)", { courseIds })
-                .getMany();
+
+            //  Search Functionality
+            if (search) {
+                query.andWhere(
+                    `(LOWER(user.first_name) LIKE :search OR LOWER(user.last_name) LIKE :search OR LOWER(course.course_name) LIKE :search OR LOWER(course.course_code) LIKE :search OR LOWER(application.availability) LIKE :search OR LOWER(skills.skill_name) LIKE :search)`,
+                    { search: `%${search}%` }
+                );
+            }
+
+            //  Sort Functionality
+            if (sort === "course") {
+                query.orderBy("course.course_name", "ASC");
+            } else if (sort === "availability") {
+                query.orderBy("application.availability", "ASC");
+            }
+
+            const applications = await query.getMany();
 
             return res.status(200).json(applications);
         } catch (error) {
@@ -57,7 +76,7 @@ export class LecturerController {
     }
 
 
-    // GET /lecturer/:id/applications?courseId=X
+    // GET /lecturer/:id/applications?courseId=X Lecturer can see applications for a specific course they are assigned to
     async getApplications(req: Request, res: Response) {
         const lecturer = req.lecturer;
         if (!lecturer) {
@@ -75,7 +94,11 @@ export class LecturerController {
             return res.status(403).json({ message: "You are not assigned to this course" });
         }
 
-        const applications = await AppDataSource.getRepository(Application)
+        const search = (req.query.search as string)?.toLowerCase() || "";
+        const sort = req.query.sort as string;
+
+        // Base query setup and join tables...
+        const query = AppDataSource.getRepository(Application)
             .createQueryBuilder("application")
             .leftJoinAndSelect("application.user", "user")
             .leftJoinAndSelect("user.skills", "skills")
@@ -84,13 +107,30 @@ export class LecturerController {
             .leftJoinAndSelect("application.course", "course")
             .leftJoinAndSelect("course.skills", "courseSkills")
             .leftJoinAndSelect("application.reviews", "review", "review.lecturer = :lecturerId", { lecturerId: lecturer.user_id })
-            .where("application.course_id = :courseId", { courseId })
-            .getMany();
+            .where("application.course_id = :courseId", { courseId });
+
+        // Search functionality
+        if (search) {
+            query.andWhere(
+                `(LOWER(user.first_name) LIKE :search OR LOWER(user.last_name) LIKE :search OR LOWER(course.course_name) LIKE :search OR LOWER(course.course_code) LIKE :search OR LOWER(application.availability) LIKE :search OR LOWER(skills.skill_name) LIKE :search)`,
+                { search: `%${search}%` }
+            );
+        }
+
+        // Sort functionality
+        if (sort === "course") {
+            query.orderBy("course.course_name", "ASC");
+        } else if (sort === "availability") {
+            query.orderBy("application.availability", "ASC");
+        }
+
+        const applications = await query.getMany();
+
 
         return res.status(200).json(applications);
     }
 
-    // POST /applications/:id/review
+    // POST /applications/:id/review Lecturer can save a review for an application
     async saveReview(req: Request, res: Response) {
         const applicationId = parseInt(req.params.id, 10);
         const { rank, comment } = req.body;
@@ -159,7 +199,7 @@ export class LecturerController {
     }
 
 
-    // GET /applications/:id/review?lecturerId=3
+    // GET /applications/:id/review?lecturerId=3 Lecturer can see their review for a specific application
     async getReviewByApplication(req: Request, res: Response) {
         const applicationId = parseInt(req.params.id, 10);
         const lecturer = req.lecturer;

@@ -8,33 +8,29 @@ import {
     Badge,
     Flex,
     HStack,
-    VStack,
     Button,
     Stack,
 } from "@chakra-ui/react";
-import { ApplicationUI } from "@/types/lecturerTypes";
-import "../styles/drawerStyles.css";
-
+import { ApplicationUI, ApplicationStatus } from "@/types/lecturerTypes";
 import { updateApplicationStatusByLecturer } from "@/services/lecturerService";
 import { toaster } from "@/components/ui/toaster";
 import { useAuth } from "@/context/AuthContext";
-import { ApplicationStatus } from "@/types/lecturerTypes";
+import "../styles/drawerStyles.css";
 
-
+// Props for the ApplicationDetails component
 interface ApplicationDetailsProps {
     application: ApplicationUI;
     onStatusChange: (appId: number, newStatus: ApplicationStatus) => void;
 }
 
+// Main component to display application details
 export const ApplicationDetails: React.FC<ApplicationDetailsProps> = ({
                                                                           application,
                                                                           onStatusChange,
                                                                       }) => {
-    const { user, course, positionType, status, appliedAt, availability } =
-        application;
+    const { user, course, positionType, status, appliedAt, availability } = application;
     const { currentUser } = useAuth();
     const lecturerId = currentUser?.id;
-
     const [isUpdating, setIsUpdating] = useState(false);
 
     // Format "Applied on" date as “Apr 2, 2025”
@@ -50,7 +46,8 @@ export const ApplicationDetails: React.FC<ApplicationDetailsProps> = ({
             setIsUpdating(true);
             const payload = { status: "accepted" as const };
             await updateApplicationStatusByLecturer(currentUser!.id, application.id, { status: "accepted" });
-            // Refresh to show new status (replace with your own data‐refresh logic if desired)
+
+            // Display notification toaster if approved successfully
             toaster.create({
                 title: "Application Approved",
                 description: `You have approved application #${application.id}.`,
@@ -59,11 +56,14 @@ export const ApplicationDetails: React.FC<ApplicationDetailsProps> = ({
                 meta: { closable: true },
             });
 
+            // Call the onStatusChange callback to update the parent component
             onStatusChange(application.id, "accepted");
             setIsUpdating(false);
 
         } catch (err) {
             console.error("Error approving application:", err);
+
+            // Display error toaster if approval fails
             toaster.create({
                 title: "Approval Failed",
                 description: `Could not approve application #${application.id}.`,
@@ -71,6 +71,8 @@ export const ApplicationDetails: React.FC<ApplicationDetailsProps> = ({
                 duration: 4000,
                 meta: { closable: true },
             });
+
+            // Reset updating state
             setIsUpdating(false);
         }
     };
@@ -83,6 +85,7 @@ export const ApplicationDetails: React.FC<ApplicationDetailsProps> = ({
             if (!lecturerId) return; // or show toaster
             await updateApplicationStatusByLecturer(currentUser!.id, application.id, { status: "rejected" });
 
+            // Display notification toaster if rejected successfully
             toaster.create({
                 title: "Application Rejected",
                 description: `You have rejected application #${application.id}.`,
@@ -90,11 +93,15 @@ export const ApplicationDetails: React.FC<ApplicationDetailsProps> = ({
                 duration: 4000,
                 meta: { closable: true },
             });
+
+            // Call the onStatusChange callback to update the parent component
             onStatusChange(application.id, "rejected");
             setIsUpdating(false);
 
         } catch (err) {
             console.error("Error rejecting application:", err);
+
+            // Display error toaster if rejection fails
             toaster.create({
                 title: "Rejection Failed",
                 description: `Could not reject application #${application.id}.`,
@@ -106,7 +113,7 @@ export const ApplicationDetails: React.FC<ApplicationDetailsProps> = ({
         }
     };
 
-    // Build CSS class for status badge (you already have these classes defined in drawerStyles.css)
+    // Build CSS class for status badge, to change colour based on status
     const statusClass = `app-details__badge app-details__badge--${status}`;
 
     return (
@@ -119,7 +126,7 @@ export const ApplicationDetails: React.FC<ApplicationDetailsProps> = ({
             mb={6}
             _dark={{ bg: "black/93" }}
         >
-            {/** ── 1) HEADER: Application #, Badges, Applied On ── **/}
+            {/** HEADER: Application #, Badges, Applied On ── **/}
             <Box className="app-details__header" mb={6}>
                 <Flex justify="space-between" align="center">
                     <Box>
@@ -182,10 +189,9 @@ export const ApplicationDetails: React.FC<ApplicationDetailsProps> = ({
                 </Flex>
             </Box>
 
-            {/** TWO-COLUMN LAYOUT: Candidate (left) & Course Applied For (right) ── **/}
+            {/** TWO-COLUMN LAYOUT: Candidate (left) & Course Applied For (right) **/}
             <Box className="app-details__two-column" mb={6}>
                 <HStack align="start" margin={6} mx={2}>
-                    {/** Left Column: Candidate Details **/}
                     <Box flex="1">
                         <Heading
                             className="app-details__section-title"
@@ -406,7 +412,7 @@ export const ApplicationDetails: React.FC<ApplicationDetailsProps> = ({
                 )}
             </Box>
 
-            {/** ── 4) PREVIOUS ROLES (full‐width) ── **/}
+            {/** PREVIOUS ROLES **/}
             <Box className="app-details__roles-section" mb={4} mx={2}>
                 <Heading className="app-details__section-title" size="sm" mb={3}>
                     Previous Roles:
