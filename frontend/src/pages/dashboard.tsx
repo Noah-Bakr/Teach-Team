@@ -24,7 +24,7 @@ const DashboardPage: React.FC = () => {
             return <TutorPage />;
        // add admin here
         default:
-            return <div>Unauthorised: Role not recognized.</div>;
+            return <div>Unauthorised: Role not recognised.</div>;
     }
 };
 
