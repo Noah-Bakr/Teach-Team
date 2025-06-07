@@ -2,8 +2,8 @@
 
 import React, { useState, useEffect } from "react";
 import { Box, Heading } from "@chakra-ui/react";
-import { ApplicationUI, ReviewUI, ApplicationStatus } from "@/types/applicationTypes";
-import { fetchAllApplications } from "@/services/applicationService";
+import { ApplicationUI, ReviewUI } from "@/types/lecturerTypes";
+import { fetchApplicationsByLecturer, fetchCoursesByLecturer } from "@/services/lecturerService";
 import SearchAndSortBar from "@/components/SearchAndSortBar";
 import ApplicantsTable from "@/components/ApplicantsTable";
 import VisualRepresentation from "@/components/VisualRepresentation";
@@ -11,6 +11,7 @@ import { useCourseLookup } from "@/utils/courseLookup";
 import "@/styles/Lecturer.css";
 import { CreamCard } from "@/components/CreamCard";
 import { useAuth } from "@/context/AuthContext";
+import { ApplicationStatus } from "@/types/lecturerTypes";
 
 export const LecturerPage: React.FC = () => {
     const [applications, setApplications] = useState<ApplicationUI[]>([]);
@@ -23,21 +24,34 @@ export const LecturerPage: React.FC = () => {
     const { currentUser } = useAuth();
     const lecturerId = currentUser?.id ?? null;
 
+    // useEffect(() => {
+    //     (async () => {
+    //         try {
+    //             // Fetch all Applications
+    //             const appsUI: ApplicationUI[] = await fetchAllApplications();
+    //             // Filter courses by lecturer
+    //             const myCourseIds = (currentUser?.courses ?? []).map((c) => c.id);
+    //             const myApps = appsUI.filter((app) => myCourseIds.includes(app.course.id));
+    //
+    //             setApplications(myApps);
+    //         } catch (err) {
+    //             console.error("Error loading applications:", err);
+    //         }
+    //     })();
+    // }, [currentUser]);
+
     useEffect(() => {
+        if (!lecturerId) return;
+
         (async () => {
             try {
-                // Fetch all Applications
-                const appsUI: ApplicationUI[] = await fetchAllApplications();
-                // Filter courses by lecturer
-                const myCourseIds = (currentUser?.courses ?? []).map((c) => c.id);
-                const myApps = appsUI.filter((app) => myCourseIds.includes(app.course.id));
-
-                setApplications(myApps);
+                const apps = await fetchApplicationsByLecturer(lecturerId);
+                setApplications(apps);
             } catch (err) {
-                console.error("Error loading applications:", err);
+                console.error("Error fetching applications for lecturer:", err);
             }
         })();
-    }, [currentUser]);
+    }, [lecturerId]);
 
     // Handler to update a single application’s status in state
     const handleStatusChange = (appId: number, newStatus: ApplicationStatus) => {
@@ -73,6 +87,7 @@ export const LecturerPage: React.FC = () => {
                         reviewedAt: "",
                         updatedAt: "",
                         lecturerId: lecturerId!,
+                        applicationId: appId,
                     };
 
                     return {
@@ -100,6 +115,7 @@ export const LecturerPage: React.FC = () => {
                     reviewedAt: "",
                     updatedAt: "",
                     lecturerId: lecturerId!,
+                    applicationId: appId,
                 };
 
                 return {
@@ -126,7 +142,7 @@ export const LecturerPage: React.FC = () => {
             .includes(lower);
 
         const matchesSkills = app.user.skills
-            .map((s) => s.toLowerCase())
+            .map((s) => s.name.toLowerCase())
             .join(" ")
             .includes(lower);
 
