@@ -1,5 +1,6 @@
-import { CourseUI } from "@/types/courseTypes";
-import { ApplicationUI, ReviewUI } from "@/types/lecturerTypes";
+//import { CourseUI } from "@/types/courseTypes";
+//import { ApplicationUI, ReviewUI } from "@/types/lecturerTypes";
+import { ApplicationUI, ReviewUI, CourseUI } from "@/types/types";
 import { api } from "./api"; // your Axios wrapper
 
 import {
@@ -107,12 +108,17 @@ export async function updateApplicationStatusByLecturer(
 }
 
 export async function saveReviewForApplication(
+    lecturerId: number,
     applicationId: number,
     payload: ReviewPayload
 ): Promise<ReviewUI> {
-    const resp = await api.post<{ review: BackendReview }>(
-        `lecturer/applications/${applicationId}/review`,
-        payload
+    const resp = await api.post(
+        `/lecturer/${lecturerId}/applications/${applicationId}/review`,
+        {
+            rank: payload.rank,
+            comment: payload.comment,
+        }
     );
+
     return mapRawReview(resp.data.review);
 }
