@@ -12,7 +12,7 @@ import DataInitialiser from "@/components/DataInitialiser";
 export default function App({ Component, pageProps }: AppProps) {
     return(
     <AuthProvider>
-        <DataInitialiser>
+        {/* <DataInitialiser> */}
             <Provider>
                 <Header />
                 <Container maxW="1400px" py={2} px={2}>
@@ -23,7 +23,7 @@ export default function App({ Component, pageProps }: AppProps) {
                 </Container>
                 <Footer />
             </Provider>
-        </DataInitialiser>
+        {/* </DataInitialiser> */}
     </AuthProvider>
     
     ); 
