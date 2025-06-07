@@ -27,25 +27,40 @@ export async function fetchCoursesByLecturer(id: number): Promise<CourseUI[]> {
 //
 export async function fetchApplicationsByCourse(
     lecturerId: number,
-    courseId: number
+    courseId: number,
+    search?: string,
+    sortBy?: string
 ): Promise<ApplicationUI[]> {
-    const resp = await api.get<BackendApplication[]>(
-        `/lecturer/${lecturerId}/applications?courseId=${courseId}`
+    const params = new URLSearchParams();
+    params.append("courseId", courseId.toString());
+    if (search) params.append("search", search);
+    if (sortBy) params.append("sort", sortBy);
+
+    const res = await api.get<BackendApplication[]>(
+        `/lecturer/${lecturerId}/applications?${params.toString()}`
     );
-    return resp.data.map(mapRawApplication);
+    return res.data.map(mapRawApplication);
 }
+
 
 //
 // Fetch all applications across all courses assigned to the lecturer
 //
 export async function fetchApplicationsByLecturer(
-    lecturerId: number
+    lecturerId: number,
+    search?: string,
+    sortBy?: string
 ): Promise<ApplicationUI[]> {
+    const params = new URLSearchParams();
+    if (search) params.append("search", search);
+    if (sortBy) params.append("sort", sortBy);
+
     const res = await api.get<BackendApplication[]>(
-        `/lecturer/${lecturerId}/applications/all`
+        `/lecturer/${lecturerId}/applications/all?${params.toString()}`
     );
     return res.data.map(mapRawApplication);
 }
+
 
 //
 // Optionally, a duplicate with different naming — not strictly needed

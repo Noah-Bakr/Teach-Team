@@ -46,18 +46,34 @@ export const LecturerPage: React.FC = () => {
     useEffect(() => {
         if (!lecturerId) return;
 
-        (async () => {
+        const fetchData = async () => {
             try {
-                const apps = selectedCourseId
-                    ? await fetchApplicationsByCourse(lecturerId, selectedCourseId)
-                    : await fetchApplicationsByLecturer(lecturerId);
+                let apps: ApplicationUI[] = [];
+
+                if (selectedCourseId) {
+                    apps = await fetchApplicationsByCourse(
+                        lecturerId,
+                        selectedCourseId,
+                        search,
+                        sortBy
+                    );
+                } else {
+                    apps = await fetchApplicationsByLecturer(
+                        lecturerId,
+                        search,
+                        sortBy
+                    );
+                }
 
                 setApplications(apps);
             } catch (err) {
                 console.error("Error fetching applications:", err);
             }
-        })();
-    }, [lecturerId, selectedCourseId]);
+        };
+
+        fetchData();
+    }, [lecturerId, selectedCourseId, search, sortBy]);
+
 
     // Fetch courses for the lecturer
     useEffect(() => {
