@@ -2,13 +2,13 @@ import React from "react";
 import {
     Flex,
     Input,
-    Field,
     NativeSelect,
     Text,
     Box,
 } from "@chakra-ui/react";
 import NativeSortSelect from "./NativeSortSelect";
-import { CourseUI } from "@/types/lecturerTypes";
+//import { CourseUI } from "@/types/lecturerTypes";
+import { CourseUI } from "@/types/types";
 
 interface SearchAndSortBarProps {
     search: string;
@@ -20,6 +20,7 @@ interface SearchAndSortBarProps {
     courses: CourseUI[];
 }
 
+// SearchAndSortBar component for filtering and sorting applications
 const SearchAndSortBar: React.FC<SearchAndSortBarProps> = ({
                                                                search,
                                                                setSearch,
