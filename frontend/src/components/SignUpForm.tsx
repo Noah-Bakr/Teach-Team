@@ -1,12 +1,11 @@
 import { Button, AbsoluteCenter, Box, ButtonGroup, VStack, Input, 
-    Field, Heading, Text, CloseButton, Presence, useDisclosure, Link, Checkbox,
-    NativeSelect,
-    HStack} from "@chakra-ui/react";
+    Field, Heading, Text, CloseButton, Presence, useDisclosure, Checkbox,
+    } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
 import { useRouter } from 'next/router';
 import { PasswordInput, PasswordStrengthMeter } from "./ui/password-input";
 import { toaster } from "./ui/toaster"
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "@/context/AuthContext";
 import "../styles/PopUpForm.css";
 
 interface SignUpFormProps {
