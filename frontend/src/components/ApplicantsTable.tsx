@@ -10,6 +10,7 @@ import SelectedApplicantCard from "./SelectedApplicantCard";
 import ApplicationDetail from "./ApplicationDetail";
 import { useAuth } from "@/context/AuthContext";
 
+// Define the props for the ApplicantsTable component
 interface ApplicantsTableProps {
     applications: ApplicationUI[];
     errors: { [appId: number]: { rank?: string; comment?: string } };
@@ -19,6 +20,7 @@ interface ApplicantsTableProps {
     onStatusChange: (appId: number, newStatus: ApplicationStatus) => void;
 }
 
+// The ApplicantsTable component displays a table of applications with details and actions
 const ApplicantsTable: React.FC<ApplicantsTableProps> = ({
                                                              applications,
                                                              errors,
@@ -47,11 +49,9 @@ const ApplicantsTable: React.FC<ApplicantsTableProps> = ({
 
             <Table.Body>
                 {applications.map((application) => {
-                    //
-                    // 1) Find the “rank” entry that matches this lecturer’s ID:
-                    //
+                    // Find the “rank” entry that matches this lecturer’s ID:
                     const myReviewObj: ReviewUI | undefined = application.reviews?.find(
-                        (r) => r.lecturerId === lecturerId
+                        (review) => review.lecturerId === lecturerId
                     );
                     const myRank = myReviewObj ? myReviewObj.rank : null;
 
@@ -70,7 +70,7 @@ const ApplicantsTable: React.FC<ApplicantsTableProps> = ({
                                 : "—"}
                         </Table.Cell>
 
-                        {/* Join the academic credentials array */}
+                        {/* Join the lecturers rank for application */}
                         <Table.Cell>
                             {myRank != null ? myRank : "—"}
                         </Table.Cell>
@@ -78,7 +78,7 @@ const ApplicantsTable: React.FC<ApplicantsTableProps> = ({
                         <Table.Cell>{application.positionType}</Table.Cell>
                         <Table.Cell>{application.status}</Table.Cell>
 
-                        {/* “Display application details and reviews */}
+                        {/* Side drawer with application full details and review section */}
                         <Table.Cell>
                             <Drawer.Root size="xl">
                                 <Drawer.Trigger asChild>
@@ -112,9 +112,8 @@ const ApplicantsTable: React.FC<ApplicantsTableProps> = ({
                                                 <ApplicationDetail
                                                     application={application}
                                                     onStatusChange={onStatusChange}/>
-                                                {/**
-                                                 * Render all the review/rank/comment UI inside the drawer.
-                                                 **/}
+
+                                                {/** Render all the review/rank/comment UI**/}
                                                     <Box
                                                         bg="white"
                                                         color="black"
