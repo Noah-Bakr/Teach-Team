@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { Avatar, Menu, Portal } from "@chakra-ui/react";
-import "../styles/Navbar.css";
 import LoginForm from './LoginForm';
 import { useRouter } from 'next/router';
 import SignUpForm from './SignUpForm';
 import { useAuth } from "@/context/AuthContext";
+import "../styles/Navbar.css";
 
 const Navbar: React.FC = () => {
     const { currentUser, logout } = useAuth();
@@ -22,7 +22,7 @@ const Navbar: React.FC = () => {
         setIsLoginFormOpen(false);
     };
 
-    // State variables for sign up
+    // State variables for sign-up
     const handleSignUpClick = () => {
         setIsSignUpFormOpen(true);
         setIsLoginFormOpen(false);
@@ -33,8 +33,8 @@ const Navbar: React.FC = () => {
 
     const handleSignOutClick = async () => {
         try {
-            logout();
-            router.push('/');
+            await logout();
+            await router.push('/');
         } catch (error) {
             console.error("Error signing out:", error);
         }
@@ -49,7 +49,7 @@ const Navbar: React.FC = () => {
                             <Menu.Trigger>
                                 <Avatar.Root colorPalette="yellow" size={"xl"} >
                                     <Avatar.Fallback />
-                                    <Avatar.Image src={currentUser?.avatar || undefined}/>
+                                    <Avatar.Image src={currentUser?.avatar ?? undefined}/>
                                 </Avatar.Root>
                             </Menu.Trigger>
                             <Portal>
@@ -77,7 +77,6 @@ const Navbar: React.FC = () => {
             {isLoginFormOpen && <LoginForm closeForm={closeLoginForm} openSignUpForm={handleSignUpClick}/>}
             {isSignUpFormOpen && <SignUpForm closeForm={closeSignUpForm} />}
         </div>
-        
     )
 }
 export default Navbar;
