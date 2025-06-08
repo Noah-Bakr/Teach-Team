@@ -27,6 +27,7 @@
   "include": [
     "src/**/*.ts",
     "**/*.tsx",
+    "**/*.ts",
     "src/**/*.test.ts"
 , "__tests__/ApplicationController.test.ts"  ],
   "exclude": [
