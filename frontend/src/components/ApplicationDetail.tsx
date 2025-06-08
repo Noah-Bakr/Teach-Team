@@ -1,6 +1,6 @@
 "use client";
 
-import React, {useState} from "react";
+import React from "react";
 import { Box, Heading, Text, Badge, Flex, HStack, Button, Stack } from "@chakra-ui/react";
 import { ApplicationUI, ApplicationStatus } from "@/types/types";
 import { updateApplicationStatusByLecturer } from "@/services/lecturerService";
@@ -442,4 +442,3 @@ export const ApplicationDetail: React.FC<ApplicationDetailsProps> = ({
         </Box>
     );
 };
-
