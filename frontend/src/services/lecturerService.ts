@@ -1,7 +1,6 @@
-//import { CourseUI } from "@/types/courseTypes";
-//import { ApplicationUI, ReviewUI } from "@/types/lecturerTypes";
-import { ApplicationUI, ReviewUI, CourseUI } from "@/types/types";
 import { api } from "./api"; // your Axios wrapper
+import { ApplicationUI, CourseUI, ReviewUI } from "@/types/types";
+
 
 import {
     BackendCourse,
@@ -62,16 +61,16 @@ export async function fetchApplicationsByLecturer(
     return res.data.map(mapRawApplication);
 }
 
-
 //
-// Optionally, a duplicate with different naming — not strictly needed
-//
-export async function fetchApplicationsByLecturerAndCourse(
-    lecturerId: number,
-    courseId: number
-): Promise<ApplicationUI[]> {
-    return fetchApplicationsByCourse(lecturerId, courseId); // optional alias
-}
+// //
+// // Optionally, a duplicate with different naming — not strictly needed
+// //
+// export async function fetchApplicationsByLecturerAndCourse(
+//     lecturerId: number,
+//     courseId: number
+// ): Promise<ApplicationUI[]> {
+//     return fetchApplicationsByCourse(lecturerId, courseId); // optional alias
+// }
 
 //
 // Fetch review details for a specific application (if already reviewed)
