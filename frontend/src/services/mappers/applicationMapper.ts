@@ -118,6 +118,8 @@ function mapRawCourseToUI(raw: BackendCourse): CourseUI {
     };
 }
 
+
+
 /** Main mapper: raw BackendApp → ApplicationUI */
 export function mapRawAppToUI(raw: BackendApp): ApplicationUI {
     const userUI = mapRawUserToUI(raw.user);
