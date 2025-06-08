@@ -10,6 +10,10 @@ router.get("/", async (req, res) => {
     await applicationController.getAllApplications(req, res);
 });
 
+router.get("/visual-insights", async (req, res) => {
+    await applicationController.getVisualInsights(req, res);
+});
+
 router.get("/:id", async (req, res) => {
     await applicationController.getApplicationById(req, res);
 });
@@ -25,5 +29,7 @@ router.put("/:id", validateDto(UpdateApplicationDto), async (req, res) => {
 router.delete("/:id", async (req, res) => {
     await applicationController.deleteApplication(req, res);
 });
+
+
 
 export default router;
