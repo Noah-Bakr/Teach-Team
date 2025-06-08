@@ -55,7 +55,7 @@ export interface ReviewUI {
     updatedAt?: string;
     lecturerId: number;
     lecturerName?: string;
-    applicationId: number;
+    applicationId?: number;
     applicationCandidate?: string;
     applicationCourse?: string;
 }

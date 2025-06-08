@@ -5,8 +5,7 @@ import {
     UpdateApplicationDto,
 } from "./api/applicationApi";
 import { mapRawAppToUI } from "./mappers/applicationMapper";
-import { ApplicationUI } from "../types/applicationTypes";
-//import { ApplicationUI } from "@/types/types";
+import { ApplicationUI } from "@/types/types";
 
 /** GET /applications → ApplicationUI[] */
 export async function fetchAllApplications(): Promise<ApplicationUI[]> {
@@ -28,12 +27,6 @@ export async function fetchApplicationsByUserId(userId: number): Promise<Applica
     const resp = await api.get<BackendApp[]>(`/applications/user/${userId}`);
     return resp.data.map(mapRawAppToUI);
 }
-
-// /** GET /user/:userId/applications → ApplicationUI[] */
-// export async function fetchApplicationsByUserId(userId: number | string): Promise<ApplicationUI[]> {
-//     const resp = await api.get<BackendApp[]>(`/users/${userId}`);
-//     return resp.data.map(mapRawAppToUI);
-// }
 
 /** POST /applications → ApplicationUI */
 export async function createApplication(

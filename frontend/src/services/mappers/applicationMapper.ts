@@ -14,21 +14,12 @@ import {
     ReviewUI,
     PreviousRoleUI,
     AcademicCredentialsUI,
-} from "../../types/applicationTypes";
-import { mapRawSkillToUI } from "./skillMapper";
+} from "@/types/types";
 
 /** Helper: extract skill names from BackendSkill[] */
 function extractSkillNames(skills: BackendSkill[] | undefined): string[] {
     if (!Array.isArray(skills)) return [];
     return skills.map((s) => s.skill_name);
-}
-
-/** Helper: extract degree names from BackendAcadCred[] */
-function extractAcademicNames(
-    creds: BackendAcadCred[] | undefined
-): string[] {
-    if (!Array.isArray(creds)) return [];
-    return creds.map((c) => c.degree_name);
 }
 
 function mapRawAcademicCredentials(
@@ -100,7 +91,10 @@ function mapRawUserToUI(raw: BackendUser): UserUI {
         lastName: raw.last_name,
         email: raw.email,
         avatar: raw.avatar ?? "",
-        skills: extractSkillNames(raw.skills),
+        skills: raw.skills?.map((s) => ({
+            id: s.skill_id,
+            name: s.skill_name,
+        })) ?? [],
         academicCredentials: mapRawAcademicCredentials(raw.academicCredentials),
         courses: mapRawCourses(raw.courses),
         previousRoles: mapRawPreviousRoles(raw.previousRoles),
@@ -125,7 +119,6 @@ export function mapRawAppToUI(raw: BackendApp): ApplicationUI {
     const userUI = mapRawUserToUI(raw.user);
     const courseUI = mapRawCourseToUI(raw.course);
     const reviewsUI = mapRawReviews(raw.reviews);
-    const skillsUI = extractSkillNames(raw.skills);
 
     const result: ApplicationUI = {
         id: raw.application_id,
@@ -134,7 +127,10 @@ export function mapRawAppToUI(raw: BackendApp): ApplicationUI {
         appliedAt: raw.applied_at,
         selected: raw.selected,
         availability: raw.availability,
-        skills: skillsUI,
+        skills: raw.skills?.map((s) => ({
+            id: s.skill_id,
+            name: s.skill_name,
+        })) ?? [],
         user: userUI,
         course: courseUI,
         ...(reviewsUI ? { reviews: reviewsUI } : {}),
