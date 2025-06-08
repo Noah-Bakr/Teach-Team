@@ -5,7 +5,7 @@ import { addCredentialsToUser, addSkillsToUser, removeSkillFromUser, updateUser 
 import { Roles } from "@/types/roleTypes";
 import { getCurrentUser } from "@/services/authService";
 import { mapBackendUserToUI } from "@/services/mappers/authMapper"
-import { deletePreviousRole, fetchAllPreviousRoles, updatePreviousRole, createPreviousRole } from "@/services/previousRoleService";
+import { deletePreviousRole, fetchAllPreviousRoles, updatePreviousRole, createPreviousRole, fetchPreviousRolesByUserId } from "@/services/previousRoleService";
 import { fetchAllApplications, fetchApplicationsByUserId } from "@/services/applicationService";
 import { PreviousRoleUI } from "@/types/previousRoleTypes";
 import { ApplicationUI } from "@/types/applicationTypes";
@@ -104,7 +104,6 @@ const ProfilePage: React.FC = () => {
                 setUpdatedUser(user);
 
                 const backendCreds = response.academicCredentials || [];
-                console.log(backendCreds)
                 // Map backend credentials to AcademicCredentialUI shape
                 setAcademicCredentials(
                     backendCreds.map((cred: any) => ({
@@ -117,8 +116,13 @@ const ProfilePage: React.FC = () => {
                     }))
                 );
 
-                const allPreviousRoles = await fetchAllPreviousRoles();
-                setPreviousRoles(allPreviousRoles.filter(role => role.userId === user.id));
+                // const allPreviousRoles = await fetchAllPreviousRoles();
+                // setPreviousRoles(allPreviousRoles.filter(role => role.userId === user.id));
+
+                // fetch previous roles from the current user
+                setPreviousRoles(await fetchPreviousRolesByUserId(user.id) || []);
+                console.log("Previous Roles:", previousRoles);
+
                 
                 setUserApplicants(await fetchApplicationsByUserId(user.id) || []);
 
