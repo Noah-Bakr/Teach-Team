@@ -8,7 +8,6 @@ import SearchAndSortBar from "@/components/SearchAndSortBar";
 import ApplicantsTable from "@/components/ApplicantsTable";
 import { CreamCard } from "@/components/CreamCard";
 import { useAuth } from "@/context/AuthContext";
-import "@/styles/Lecturer.css";
 import { useRouter } from "next/router";
 
 export const LecturerPage: React.FC = () => {
