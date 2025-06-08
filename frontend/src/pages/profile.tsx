@@ -17,6 +17,7 @@ import { AcademicCredentialUI } from "@/types/academicCredentialTypes";
 import { createAcademicCredential, deleteAcademicCredential, updateAcademicCredential } from "@/services/academicCredentialService";
 
 import { ApplicationUI } from "@/types/types";
+import { AcademicCredential } from "@/services/api/userApi";
 
 const ProfilePage: React.FC = () => {
     const [currentUser, setCurrentUser] = useState<UserUI | null>(null);
@@ -36,7 +37,6 @@ const ProfilePage: React.FC = () => {
         academicCredentials: [],
         createdAt: "",
     });
-    const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
     const [userApplicants, setUserApplicants] = useState<ApplicationUI[]>([]);
 
     const [isExperienceLoading, setIsExperienceLoading] = useState(false);
@@ -108,7 +108,7 @@ const ProfilePage: React.FC = () => {
                 const backendCreds = response.academicCredentials || [];
                 // Map backend credentials to AcademicCredentialUI shape
                 setAcademicCredentials(
-                    backendCreds.map((cred: any) => ({
+                    backendCreds.map((cred: AcademicCredential) => ({
                         id: cred.academic_id,
                         degreeName: cred.degree_name ?? "",
                         institution: cred.institution ?? "",
@@ -145,7 +145,6 @@ const ProfilePage: React.FC = () => {
             ...prevUser,
             [name]: value,
         }));
-        setHasUnsavedChanges(true);
     };
 
     // Function to handle changes to the new experience input fields
@@ -164,7 +163,6 @@ const ProfilePage: React.FC = () => {
             ...prevUser,
             [name]: value,
         }));
-        setHasUnsavedChanges(true);
     };
 
     // Function to handle adding a new experience
@@ -347,7 +345,10 @@ const ProfilePage: React.FC = () => {
                 if (updated?.skills) {
                     setUpdatedUser((prev) => ({
                         ...prev,
-                        skills: updated?.skills?.map((s: any) => s.name || s.skill_name),
+                        skills: updated?.skills?.map((s) => {
+                            const skill = s as { name?: string; skill_name?: string };
+                            return skill.name || skill.skill_name || "";
+                        }),
                     }));
                 }
             }
@@ -386,7 +387,10 @@ const ProfilePage: React.FC = () => {
 
                 setUpdatedUser((prev) => ({
                     ...prev,
-                    skills: refreshedSkills.map((s: any) => s.name || s.skill_name),
+                    skills: refreshedSkills.map((s) => {
+                        const skill = s as { name?: string; skill_name?: string };
+                        return skill.name || skill.skill_name || "";
+                    }),
                 }));
             } catch (error) {
                 console.error("Failed to re-fetch skills after saving:", error);
@@ -394,7 +398,7 @@ const ProfilePage: React.FC = () => {
 
             setIsEditing(false);
             setIsDisabled(true);
-            setHasUnsavedChanges(false);
+            // setHasUnsavedChanges(false);
             setSaveLoading(false);
             toaster.create({
                 title: "Profile Updated",
@@ -693,7 +697,6 @@ const ProfilePage: React.FC = () => {
                                     <Separator size="md" />
                                     <Stack gap={2} padding={4}>
                                         <Field.Root orientation="horizontal" disabled={isDisabled}>
-                                            {/* <Field.Label>Skills</Field.Label> */}
                                             <Box w="100%">
                                                 <Input
                                                 placeholder="Type a skill and press Enter"
@@ -707,7 +710,6 @@ const ProfilePage: React.FC = () => {
                                                         ...prev,
                                                         skills: [...(prev.skills || []), newSkill],
                                                         }));
-                                                        setHasUnsavedChanges(true);
                                                     }
                                                     e.currentTarget.value = "";
                                                     }
@@ -744,7 +746,19 @@ const ProfilePage: React.FC = () => {
                                 
                             </Card.Body>
                             <Card.Footer>
-                                <Button onClick={() => {isEditing ? handleSave() : setIsEditing(true); setIsDisabled(false);}} loading={isSaveLoading}>{isEditing ? "Save" : "Edit"}</Button>
+                                <Button 
+                                    onClick={() => {
+                                        if (isEditing) {
+                                        handleSave();
+                                        } else {
+                                        setIsEditing(true);
+                                        setIsDisabled(false);
+                                        }
+                                    }} 
+                                    loading={isSaveLoading}
+                                >
+                                    {isEditing ? "Save" : "Edit"}
+                                    </Button>
                             </Card.Footer>
                         </Box>
                     </Card.Root>
@@ -978,8 +992,8 @@ const ProfilePage: React.FC = () => {
                                     <Stack gap={2}>
                                         {userApplicants.length === 0 ? (<Text>No applications submitted yet.</Text>) : 
                                         (userApplicants.map((app) => (
-                                            <Card.Root colorPalette="yellow" flexDirection="row" overflow="hidden" maxW="xl" variant="outline" size="sm">
-                                                <Box key={app.id} p="4" >
+                                            <Card.Root key={app.id} colorPalette="yellow" flexDirection="row" overflow="hidden" maxW="xl" variant="outline" size="sm">
+                                                <Box p="4" >
                                                     <Text fontWeight="bold">{app.course?.name}</Text>
                                                     <Text>Course ID: {app.course?.code}</Text>
                                                     <Text>Date Submitted: {new Date(app.appliedAt).toLocaleDateString()}</Text>
