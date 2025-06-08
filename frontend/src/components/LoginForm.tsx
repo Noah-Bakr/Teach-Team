@@ -3,7 +3,6 @@ import { Button, AbsoluteCenter, Box, ButtonGroup, VStack,
 import { useState, useEffect } from "react";
 import { useRouter } from 'next/router';
 import { PasswordInput } from "@/components/ui/password-input";
-import { toaster } from "@/components/ui/toaster"
 import { LuExternalLink } from "react-icons/lu";
 import { useAuth } from "@/context/AuthContext";
 import "../styles/PopUpForm.css";
@@ -42,7 +41,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ closeForm, openSignUpForm }) => {
         const success = await login(email, password);
 
         if (success) {
-        router.push("/dashboard");
+        await router.push("/dashboard");
         onToggle();
         closeForm();
         }

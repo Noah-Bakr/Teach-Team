@@ -1,17 +1,11 @@
 "use client";
 import React from "react";
 import { Button, Box, Table, Drawer, Portal, CloseButton, } from "@chakra-ui/react";
-// import {
-//     ApplicationUI,
-//     ReviewUI,
-//     ApplicationStatus
-// } from "@/types/lecturerTypes";
 import { ApplicationUI, ReviewUI, ApplicationStatus } from "@/types/types";
 import SelectedApplicantCard from "./SelectedApplicantCard";
 import ApplicationDetail from "./ApplicationDetail";
 import { useAuth } from "@/context/AuthContext";
 
-// Define the props for the ApplicantsTable component
 interface ApplicantsTableProps {
     applications: ApplicationUI[];
     errors: { [appId: number]: { rank?: string; comment?: string } };
@@ -64,20 +58,13 @@ const ApplicantsTable: React.FC<ApplicantsTableProps> = ({
                         <Table.Cell>{application.course.name}</Table.Cell>
                         <Table.Cell>{application.availability}</Table.Cell>
 
-                        {/* Join the skills array into a comma-separated string */}
-                        {/*<Table.Cell>*/}
-                        {/*    {application.user.skills.length > 0*/}
-                        {/*        ? application.user.skills.map((s) => s.name).join(", ")*/}
-                        {/*        : "—"}*/}
-                        {/*</Table.Cell>*/}
-
                         <Table.Cell>
                             {application.user.skills?.length
                                 ? application.user.skills.map((s) => s.name).join(", ")
                                 : "-"}
                         </Table.Cell>
 
-                        {/* Join the lecturers rank for application */}
+                        {/* Join the lecturer rank for application */}
                         <Table.Cell>
                             {myRank != null ? myRank : "—"}
                         </Table.Cell>
@@ -120,7 +107,7 @@ const ApplicantsTable: React.FC<ApplicantsTableProps> = ({
                                                     application={application}
                                                     onStatusChange={onStatusChange}/>
 
-                                                {/** Render all the review/rank/comment UI**/}
+                                                    {/** Render all the review/rank/comment UI**/}
                                                     <Box
                                                         bg="white"
                                                         color="black"
@@ -129,20 +116,20 @@ const ApplicantsTable: React.FC<ApplicantsTableProps> = ({
                                                         p={6}
                                                         _dark={{ bg: "black/93", color: "white" }}
                                                     >
-                                                <SelectedApplicantCard
-                                                    applicant={application}
-                                                    error={errors[application.id]}
-                                                    allApplications={allApplications}
-                                                    handleRankChange={(newRank) =>
-                                                        handleRankChange(
-                                                            application.id,
-                                                            newRank
-                                                        )
-                                                    }
-                                                    handleCommentChange={(newComment) =>
-                                                        handleCommentChange(application.id, newComment)
-                                                    }
-                                                />
+                                                    <SelectedApplicantCard
+                                                        applicant={application}
+                                                        error={errors[application.id]}
+                                                        allApplications={allApplications}
+                                                        handleRankChange={(newRank) =>
+                                                            handleRankChange(
+                                                                application.id,
+                                                                newRank
+                                                            )
+                                                        }
+                                                        handleCommentChange={(newComment) =>
+                                                            handleCommentChange(application.id, newComment)
+                                                        }
+                                                    />
                                                     </Box>
                                                 </Box>
                                             </Drawer.Body>

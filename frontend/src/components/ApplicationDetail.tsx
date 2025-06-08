@@ -1,30 +1,18 @@
 "use client";
 
 import React, { useState } from "react";
-import {
-    Box,
-    Heading,
-    Text,
-    Badge,
-    Flex,
-    HStack,
-    Button,
-    Stack,
-} from "@chakra-ui/react";
-//import { ApplicationUI, ApplicationStatus } from "@/types/lecturerTypes";
+import { Box, Heading, Text, Badge, Flex, HStack, Button, Stack } from "@chakra-ui/react";
 import { ApplicationUI, ApplicationStatus } from "@/types/types";
 import { updateApplicationStatusByLecturer } from "@/services/lecturerService";
 import { toaster } from "@/components/ui/toaster";
 import { useAuth } from "@/context/AuthContext";
 import "../styles/drawerStyles.css";
 
-// Props for the ApplicationDetails component
 interface ApplicationDetailsProps {
     application: ApplicationUI;
     onStatusChange: (appId: number, newStatus: ApplicationStatus) => void;
 }
 
-// Main component to display application details
 export const ApplicationDetails: React.FC<ApplicationDetailsProps> = ({
                                                                           application,
                                                                           onStatusChange,
@@ -45,7 +33,6 @@ export const ApplicationDetails: React.FC<ApplicationDetailsProps> = ({
     const onApprove = async () => {
         try {
             setIsUpdating(true);
-           // const payload = { status: "accepted" as const };
             await updateApplicationStatusByLecturer(currentUser!.id, application.id, { status: "accepted" });
 
             // Display notification toaster if approved successfully
@@ -82,7 +69,6 @@ export const ApplicationDetails: React.FC<ApplicationDetailsProps> = ({
     const onReject = async () => {
         try {
             setIsUpdating(true);
-            const payload = { status: "rejected" as const };
             if (!lecturerId) return; // or show toaster
             await updateApplicationStatusByLecturer(currentUser!.id, application.id, { status: "rejected" });
 

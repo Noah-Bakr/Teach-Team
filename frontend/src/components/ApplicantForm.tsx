@@ -6,15 +6,14 @@ import { Button, AbsoluteCenter, Box, ButtonGroup, VStack,
   Tag} from "@chakra-ui/react";
 import { useState, useEffect } from "react";
 import { toaster } from "@/components/ui/toaster"
-import { useAuth } from "../context/AuthContext";
-import "../styles/PopUpForm.css";
-import { UserUI } from "@/types/userTypes";
-import { CourseUI } from "@/types/courseTypes";
-import { ApplicationStatus } from "@/types/applicationTypes";
-import { Availability, SkillUI } from "@/types/types";
+import { useAuth } from "@/context/AuthContext";
+import { Availability, SkillUI, ReviewUI, CourseUI, ApplicationStatus, UserUI } from "@/types/types";
 import { createApplication } from "@/services/applicationService";
 import { createSkill, deleteSkill, fetchAllSkills, fetchSkillById } from "@/services/skillService";
 import { addSkillsToUser, removeSkillFromUser } from "@/services/userService";
+import "../styles/PopUpForm.css";
+
+
 
 interface ApplicantFormProps {
   closeForm: () => void;
@@ -37,12 +36,46 @@ const ApplicantForm: React.FC<ApplicantFormProps> = ({ closeForm, course, positi
     email: currentUser?.email ?? "",
     avatar: currentUser?.avatar ?? "",
     role: currentUser?.role ?? "candidate",
-    skills: currentUser?.skills ?? [],
-    academicCredentials: currentUser?.academicCredentials ?? [],
-    courses: currentUser?.courses ?? [],
-    previousRoles: currentUser?.previousRoles ?? [],
+    skills: (currentUser?.skills ?? []).map((skill) =>
+        typeof skill === "string" ? { id: 0, name: skill } : skill
+    ),
+    academicCredentials: (currentUser?.academicCredentials ?? []).map((cred) =>
+        typeof cred === "string"
+            ? {
+              id: 0,
+              degreeName: cred,
+              institution: "",
+              startDate: "",
+              endDate: null,
+              description: "",
+            }
+            : cred
+    ),
+    courses: (currentUser?.courses ?? []).map((course) =>
+        typeof course === "string"
+            ? {
+              id: 0,
+              code: course,
+              name: "",
+              semester: "1",
+              skills: [],
+            }
+            : course
+    ),
+    previousRoles: (currentUser?.previousRoles ?? []).map((role) =>
+        typeof role === "string"
+            ? {
+              id: 0,
+              role,
+              company: "",
+              startDate: "",
+              endDate: null,
+              description: "",
+            }
+            : role
+    ),
     createdAt: currentUser?.createdAt ?? "",
-    reviews: currentUser?.reviews ?? [],
+    reviews: (currentUser?.reviews ?? []) as ReviewUI[],
   }));
 
   const [availability, setAvailability] = useState<"Not Available" | "Full-Time" | "Part-Time">(
@@ -101,9 +134,9 @@ const ApplicantForm: React.FC<ApplicantFormProps> = ({ closeForm, course, positi
 
       // Add new skills
       const existingSkillNames = allSkills.map((s) => s.name.toLowerCase());
-      const newSkillNames = (formUser.skills ?? []).filter(
-        (skill) => !existingSkillNames.includes(skill.toLowerCase())
-      );
+      const newSkillNames = (formUser.skills ?? [])
+          .map((s) => s.name)
+          .filter((skillName) => !existingSkillNames.includes(skillName.toLowerCase()));
 
       const newSkillIds: number[] = [];
 
@@ -195,12 +228,12 @@ const ApplicantForm: React.FC<ApplicantFormProps> = ({ closeForm, course, positi
                                   if ((e.key === "Enter" || e.key === ",") && e.currentTarget.value.trim()) {
                                   e.preventDefault();
                                   const newSkill = e.currentTarget.value.trim(); // Get the new skill from the input
-                                  if (!(formUser.skills ?? []).includes(newSkill)) {
+                                    if (!(formUser.skills ?? []).some(s => s.name.toLowerCase() === newSkill.toLowerCase())) {
                                       setFormUser((prev) => ({
-                                      ...prev,
-                                      skills: [...(prev.skills || []), newSkill],
+                                        ...prev,
+                                        skills: [...(prev.skills || []), { id: 0, name: newSkill }],
                                       }));
-                                  }
+                                    }
                                   e.currentTarget.value = "";
                                   }
                               }}
@@ -208,19 +241,19 @@ const ApplicantForm: React.FC<ApplicantFormProps> = ({ closeForm, course, positi
                               <HStack padding={2} mt={2} wrap="wrap">
                               {(formUser.skills ?? []).map((skill, index) => (
                                   <Tag.Root key={index} colorScheme="yellow" size="md">
-                                  <Tag.Label>{skill}</Tag.Label>
+                                    <Tag.Label>{skill.name}</Tag.Label>
                                       <Tag.EndElement>
                                       <Tag.CloseTrigger onClick={() => {
-                                      const skillToRemove = skill;
+                                      const skillToRemove = skill.name;
 
                                       // Remove from the visual list
                                       setFormUser(prev => ({
                                           ...prev,
-                                          skills: prev.skills?.filter(s => s !== skillToRemove)
+                                          skills: prev.skills?.filter(s => s.name !== skillToRemove)
                                       }));
 
                                       // Track it for deletion
-                                      setRemovedSkills(prev => [...prev, skillToRemove]);
+                                        setRemovedSkills(prev => [...prev, skillToRemove]);
                                       }} />
                                       </Tag.EndElement>
                                   </Tag.Root>
