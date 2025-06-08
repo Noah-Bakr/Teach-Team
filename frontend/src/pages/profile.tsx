@@ -5,8 +5,8 @@ import { addCredentialsToUser, addSkillsToUser, removeSkillFromUser, updateUser 
 import { Roles } from "@/types/roleTypes";
 import { getCurrentUser } from "@/services/authService";
 import { mapBackendUserToUI } from "@/services/mappers/authMapper"
-import { deletePreviousRole, fetchAllPreviousRoles, updatePreviousRole, createPreviousRole, fetchPreviousRolesByUserId } from "@/services/previousRoleService";
-import { fetchAllApplications, fetchApplicationsByUserId } from "@/services/applicationService";
+import { deletePreviousRole, updatePreviousRole, createPreviousRole, fetchPreviousRolesByUserId } from "@/services/previousRoleService";
+import { fetchApplicationsByUserId } from "@/services/applicationService";
 import { PreviousRoleUI } from "@/types/previousRoleTypes";
 import { ApplicationUI } from "@/types/applicationTypes";
 import { LuPencil, LuPencilOff, LuTrash2 } from "react-icons/lu";
@@ -115,19 +115,8 @@ const ProfilePage: React.FC = () => {
                         description: cred.description ?? "",
                     }))
                 );
-
-                // const allPreviousRoles = await fetchAllPreviousRoles();
-                // setPreviousRoles(allPreviousRoles.filter(role => role.userId === user.id));
-
-                // fetch previous roles from the current user
                 setPreviousRoles(await fetchPreviousRolesByUserId(user.id) || []);
-                console.log("Previous Roles:", previousRoles);
-
-                
                 setUserApplicants(await fetchApplicationsByUserId(user.id) || []);
-
-                
-
             } catch (error) {
                 console.error("Error fetching user data:", error);
             }
@@ -329,8 +318,6 @@ const ProfilePage: React.FC = () => {
                 first_name: updatedUser.firstName,
                 last_name: updatedUser.lastName,
                 avatar: updatedUser.avatar,
-                // role_id: updatedUser.role,
-                // TODO: handle password change
             };
 
             await updateUser(updatedUser.id, payload);
@@ -997,40 +984,7 @@ const ProfilePage: React.FC = () => {
                                                     <Text>Course ID: {app.course.code}</Text>
                                                     <Text>Date Submitted: {new Date(app.appliedAt).toLocaleDateString()}</Text>
                                                     <Text>Availability: {app.availability}</Text>
-                                                    {/* <Text>Skills: {app.skills.join(", ")}</Text> No aplication skills in db */}
-                                                    {/* <Text>
-                                                        Academic Credentials: {
-                                                            Array.isArray(app.user.academicCredentials)
-                                                                ? app.user.academicCredentials.join(", ")
-                                                                : (app.user.academicCredentials || "None")
-                                                        }
-                                                    </Text> */}
                                                     <Text>Status: <strong>{app.status}</strong></Text>
-
-                                                    {/* {app.previousRoles && app.previousRoles.length > 0 && (
-                                                    <>
-                                                    <Text mt={2} fontWeight="bold">Submitted Work Experience:</Text>
-                                                    {app.previousRoles.map((role) => (
-                                                        <Box key={role.id} mt={2} p={2} borderWidth="1px" borderRadius="md">
-                                                            <Collapsible.Root>
-                                                                <Collapsible.Trigger justifyContent="space-between" width={"100%"}>
-                                                                    <HStack width={"100%"} display="flex" flexDirection="row" justifyContent="space-between" alignItems="center">
-                                                                        <Text><strong>{role.company}</strong></Text>
-                                                                        <LuPlus />
-                                                                    </HStack>
-                                                                </Collapsible.Trigger>
-                                                                <Collapsible.Content>
-                                                                    <Separator size="sm" marginBottom={2} marginTop={2}/>
-                                                                    <Text><strong>Role:</strong> {role.role}</Text>
-                                                                    <Text><strong>Company:</strong> {role.company}</Text>
-                                                                    <Text><strong>Period:</strong> {new Date(role.startDate).toLocaleDateString()} - {role.endDate ? new Date(role.endDate).toLocaleDateString() : "Present"}</Text>
-                                                                    <Text><strong>Description:</strong> {role.description}</Text>
-                                                                </Collapsible.Content>
-                                                            </Collapsible.Root>
-                                                        </Box>
-                                                    ))}
-                                                    </>
-                                                )} */}
                                                 </Box>
                                             </Card.Root>
                                         ))
@@ -1042,7 +996,6 @@ const ProfilePage: React.FC = () => {
                             </Card.Footer>
                         </Box>
                     </Card.Root>)}
-
                 </Stack>
             </Stack>
             
