@@ -3,6 +3,7 @@ import { AppDataSource } from '../data-source';
 import { Application } from '../entity/Application';
 import { User } from '../entity/User';
 import { Course } from '../entity/Course';
+import { Review } from '../entity/Review';
 import { CreateApplicationDto, UpdateApplicationDto } from '../dto/application.dto';
 
 export class ApplicationController {
@@ -118,6 +119,22 @@ export class ApplicationController {
                 return res.status(404).json({ message: 'Course not found' });
             }
 
+            // Check for existing application for same course + role
+            const existingApplication = await this.applicationRepository.findOne({
+                where: {
+                    user: { user_id },
+                    course: { course_id },
+                    position_type: position_type,
+                },
+                relations: ["user", "course"],
+            });
+
+            if (existingApplication) {
+                return res.status(409).json({
+                    message: `User has already applied for ${position_type} role in this course.`,
+                });
+            }
+
             // Create new Application
             const newApplication = this.applicationRepository.create({
                 position_type,
@@ -219,4 +236,147 @@ export class ApplicationController {
             return res.status(500).json({ message: 'Error deleting application', error });
         }
     }
+
+    // GET /applications/visual-insights
+    async getVisualInsights(req: Request, res: Response) {
+        try {
+            const appRepo = AppDataSource.getRepository(Application);
+            const reviewRepo = AppDataSource.getRepository(Review);
+
+            // Status breakdown
+            const statusBreakdown = await appRepo
+                .createQueryBuilder("app")
+                .select("app.status", "status")
+                .addSelect("COUNT(*)", "count")
+                .groupBy("app.status")
+                .getRawMany();
+
+            // Average rank per status
+            const avgRankByStatus = await reviewRepo
+                .createQueryBuilder("rev")
+                .innerJoin("rev.application", "app")
+                .select("app.status", "status")
+                .addSelect("AVG(rev.rank)", "avgRank")
+                .groupBy("app.status")
+                .getRawMany();
+
+            // Top 5 skills by frequency (across all users in accepted apps)
+            const topSkills = await AppDataSource.query(`
+                SELECT s.skill_name, COUNT(*) AS count
+                FROM Application a
+                         JOIN User u ON a.user_id = u.user_id
+                         JOIN user_skills_skills uss ON u.user_id = uss.userUserId
+                         JOIN Skills s ON uss.skillsSkillId = s.skill_id
+                WHERE a.status = 'accepted'
+                GROUP BY s.skill_name
+                ORDER BY count DESC
+                LIMIT 5
+            `);
+
+            // Least 5 common skills by frequency (across all users in accepted apps)
+            const leastCommonSkills = await AppDataSource.query(`
+                  SELECT s.skill_name, COUNT(*) AS count
+                  FROM Application a
+                  JOIN User u ON a.user_id = u.user_id
+                  JOIN user_skills_skills uss ON u.user_id = uss.userUserId
+                  JOIN Skills s ON uss.skillsSkillId = s.skill_id
+                  WHERE a.status = 'accepted'
+                  GROUP BY s.skill_name
+                  ORDER BY count ASC
+                  LIMIT 5
+                `);
+
+            const usersWithLeastCommonSkills = await AppDataSource.query(`
+                SELECT s.skill_name, u.first_name, u.last_name, u.user_id
+                FROM User u
+                         JOIN user_skills_skills uss ON u.user_id = uss.userUserId
+                         JOIN Skills s ON uss.skillsSkillId = s.skill_id
+                WHERE s.skill_name IN (${leastCommonSkills.map((s: { skill_name: string }) => `'${s.skill_name}'`).join(',')})
+                ORDER BY s.skill_name
+            `);
+
+            // Top 3 accepted applicants by best avg rank
+            const topAcceptedApplicants = await AppDataSource.query(`
+                SELECT u.user_id, u.first_name, u.last_name, AVG(r.rank) as avgRank
+                FROM Review r
+                         JOIN Application a ON r.application_id = a.application_id
+                         JOIN User u ON a.user_id = u.user_id
+                WHERE a.status = 'accepted'
+                GROUP BY u.user_id
+                ORDER BY avgRank ASC
+                LIMIT 3
+            `);
+
+            // Bottom 3 accepted applicants by worst avg rank
+            const bottomAcceptedApplicants = await AppDataSource.query(`
+                  SELECT u.user_id, u.first_name, u.last_name, AVG(r.rank) as avgRank
+                  FROM Review r
+                  JOIN Application a ON r.application_id = a.application_id
+                  JOIN User u ON a.user_id = u.user_id
+                  WHERE a.status = 'accepted'
+                  GROUP BY u.user_id
+                  ORDER BY avgRank DESC
+                  LIMIT 3
+                `);
+
+            // Most accepted applicant
+            const mostAcceptedApplicant = await AppDataSource.query(`
+                  SELECT u.user_id, u.first_name, u.last_name, COUNT(*) AS acceptedCount
+                  FROM Application a
+                  JOIN User u ON a.user_id = u.user_id
+                  WHERE a.status = 'accepted'
+                  GROUP BY u.user_id
+                  ORDER BY acceptedCount DESC
+                  LIMIT 1
+                `);
+
+            // Breakdown by count
+            const positionBreakdown = await appRepo
+                .createQueryBuilder("app")
+                .select("app.position_type", "position")
+                .addSelect("COUNT(*)", "count")
+                .groupBy("app.position_type")
+                .getRawMany();
+
+            // 6. Unranked applicants
+            const unrankedApplicants = await appRepo
+                .createQueryBuilder("app")
+                .leftJoinAndSelect("app.user", "user")
+                .leftJoin("app.reviews", "rev")
+                .where("rev.review_id IS NULL")
+                .getMany();
+
+            if (!statusBreakdown.length) {
+                return res.status(200).json({
+                    statusBreakdown: [],
+                    averageRankByStatus: [],
+                    mostCommonSkills: [],
+                    leastCommonSkills: [],
+                    usersWithLeastCommonSkills: [],
+                    mostAcceptedApplicant: [],
+                    topApplicants: [],
+                    bottomApplicants: [],
+                    positionBreakdown: [],
+                    unrankedApplicants: [],
+                });
+            }
+
+            return res.json({
+                statusBreakdown,
+                averageRankByStatus: avgRankByStatus,
+                mostCommonSkills: topSkills,
+                leastCommonSkills: leastCommonSkills,
+                usersWithLeastCommonSkills,
+                mostAcceptedApplicant: mostAcceptedApplicant[0],
+                topApplicants: topAcceptedApplicants,
+                bottomApplicants: bottomAcceptedApplicants,
+                positionBreakdown,
+                unrankedApplicants,
+            });
+        } catch (err) {
+            console.error("Error fetching insights:", err);
+            return res.status(500).json({ message: "Internal error" });
+        }
+    }
+
 }
