@@ -6,7 +6,7 @@ import { Roles } from "@/types/roleTypes";
 import { getCurrentUser } from "@/services/authService";
 import { mapBackendUserToUI } from "@/services/mappers/authMapper"
 import { deletePreviousRole, fetchAllPreviousRoles, updatePreviousRole, createPreviousRole } from "@/services/previousRoleService";
-import { fetchAllApplications } from "@/services/applicationService";
+import { fetchAllApplications, fetchApplicationsByUserId } from "@/services/applicationService";
 import { PreviousRoleUI } from "@/types/previousRoleTypes";
 import { ApplicationUI } from "@/types/applicationTypes";
 import { LuPencil, LuPencilOff, LuTrash2 } from "react-icons/lu";
@@ -120,8 +120,7 @@ const ProfilePage: React.FC = () => {
                 const allPreviousRoles = await fetchAllPreviousRoles();
                 setPreviousRoles(allPreviousRoles.filter(role => role.userId === user.id));
                 
-                const allApps = await fetchAllApplications();
-                setUserApplicants(allApps.filter(app => app.user?.id === user.id));
+                setUserApplicants(await fetchApplicationsByUserId(user.id) || []);
 
                 
 
