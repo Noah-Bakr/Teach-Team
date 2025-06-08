@@ -94,15 +94,17 @@ export interface VisualInsightsUI {
         user_id: number;
         first_name: string;
         last_name: string;
+        avatar?: string;
     }[];
     mostAcceptedApplicant: {
         user_id: number;
         first_name: string;
         last_name: string;
         acceptedCount: number;
+        avatar?: string;
     } | null;
-    topApplicants: { user_id: number; first_name: string; last_name: string; avgRank: number }[];
-    bottomApplicants: { user_id: number; first_name: string; last_name: string; avgRank: number }[];
+    topApplicants: { user_id: number; first_name: string; last_name: string; avgRank: number; avatar?: string; }[];
+    bottomApplicants: { user_id: number; first_name: string; last_name: string; avgRank: number; avatar?: string; }[];
     positionBreakdown: { position: string; count: number }[];
     unrankedApplicants: ApplicationUI[];
 }
