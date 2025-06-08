@@ -13,8 +13,6 @@ import { createSkill, deleteSkill, fetchAllSkills, fetchSkillById } from "@/serv
 import { addSkillsToUser, removeSkillFromUser } from "@/services/userService";
 import "../styles/PopUpForm.css";
 
-
-
 interface ApplicantFormProps {
   closeForm: () => void;
   course: CourseUI;
@@ -81,7 +79,6 @@ const ApplicantForm: React.FC<ApplicantFormProps> = ({ closeForm, course, positi
   const [availability, setAvailability] = useState<"Not Available" | "Full-Time" | "Part-Time">(
     "Not Available"
   );
-  const [academicCredentialsError, setAcademicCredentialsError] = useState(false);
   const [skillsError, setSkillsError] = useState(false);
   const [allSkills, setAllSkills] = useState<SkillUI[]>([]);
 
@@ -101,12 +98,6 @@ const ApplicantForm: React.FC<ApplicantFormProps> = ({ closeForm, course, positi
   const handleSubmit = async () => {
     if (!currentUser?.id) {
       return;
-    }
-    if (!formUser.academicCredentials || formUser.academicCredentials.length === 0) {
-      setAcademicCredentialsError(true);
-      return;
-    } else {
-      setAcademicCredentialsError(false);
     }
 
     if (!formUser.skills || formUser.skills.length === 0) {
