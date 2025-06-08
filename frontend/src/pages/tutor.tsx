@@ -26,22 +26,15 @@ const TutorPage: React.FC = () => {
     // Fetch all applications for the current user
     useEffect(() => {
         if (!currentUser?.id) return;
-        const allapps = fetchApplicationsByUserId(currentUser?.id);
         fetchApplicationsByUserId(currentUser.id)
             .then(setApplications)
             .catch(console.error);
-            console.log("Applications fetched for user:", currentUser.id, allapps);
     }, [currentUser?.id]);
 
     const applicationLookup = new Set(
         applications.map(app => `${app.course.id}-${app.positionType}`)
     );
 
-
-    // const handleApplicantClick = (course: CourseUI) => {
-    //     setIsApplicantFormOpen(true);
-    //     setSelectedCourse(course);
-    // };
     const handleApplicantClick = (course: CourseUI, role: "tutor" | "lab_assistant") => {
         setSelectedCourse(course);
         setSelectedRole(role);
@@ -53,25 +46,26 @@ const TutorPage: React.FC = () => {
         setSelectedCourse(null);
     };
 
+    const refreshApplications = async () => {
+        if (!currentUser?.id) return;
+        try {
+            const apps = await fetchApplicationsByUserId(currentUser.id);
+            setApplications(apps);
+        } catch (error) {
+            console.error("Failed to refresh applications:", error);
+        }
+    };
+
     // Check if the user has already applied for the course
-    // const hasApplied = (courseId: string): boolean => {
-    //     const existingApplications = JSON.parse(localStorage.getItem("applicants") || "[]");
-    //     return existingApplications.some(
-    //         (application: any) => application.userId === currentUser?.id && application.courseId === courseId
-    //     );
-    // };
-    // const hasApplied = (courseId: number): boolean => {
-    //     const appliedCourseIds = new Set(applications.map(app => app.course.id));
-    //     return appliedCourseIds.has(courseId);
-    // };
     const hasAppliedForRole = (courseId: number, role: "tutor" | "lab_assistant"): boolean => {
         return applicationLookup.has(`${courseId}-${role}`);
     };
 
-
     return (
         <div>
-            {isApplicantFormOpen && selectedCourse && <ApplicantForm closeForm={closeApplicantForm} course={selectedCourse}/>}
+            {isApplicantFormOpen && selectedCourse && selectedRole && (
+                <ApplicantForm closeForm={closeApplicantForm} course={selectedCourse} positionType={selectedRole} onApplicationSubmitted={refreshApplications}/>
+            )}
             <Stack p={4} m={4} gap={4} direction={['column', 'row']} wrap="wrap" width={"90vw"}>
                 {courses.map((course) => (
                     <Card.Root colorPalette="yellow" flexDirection="row" overflow="hidden" width={"500vw"} maxW="xl" key={course.id} variant="outline" size="sm">
@@ -87,9 +81,6 @@ const TutorPage: React.FC = () => {
                                     </Badge>))}
                                 </HStack>
                             </Card.Body>
-                            {/* <Card.Footer>
-                                <Button disabled={hasApplied(course.id)} onClick={() => handleApplicantClick(course)}>{hasApplied(course.id) ? "Applied" : "Apply"}</Button>
-                            </Card.Footer> */}
                             <Card.Footer>
                                 <HStack p={4}>
                                     <Button
@@ -103,11 +94,10 @@ const TutorPage: React.FC = () => {
                                         onClick={() => handleApplicantClick(course, "lab_assistant")}
                                         disabled={hasAppliedForRole(course.id, "lab_assistant")}
                                     >
-                                    {hasAppliedForRole(course.id, "lab_assistant") ? "Applied as Lab" : "Apply as Lab"}
+                                    {hasAppliedForRole(course.id, "lab_assistant") ? "Applied as Lab Assistant" : "Apply as Lab Assistant"}
                                     </Button>
                                 </HStack>
                             </Card.Footer>
-
                         </Box>
                     </Card.Root>
                 ))}

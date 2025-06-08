@@ -30,6 +30,19 @@ export async function fetchPreviousRoleById(
 }
 
 /**
+ * GET /previous-roles/user/:userId → PreviousRoleUI[]
+ * Fetch all previous roles for a specific user.
+ */
+export async function fetchPreviousRolesByUserId(
+    userId: number
+): Promise<PreviousRoleUI[]> {
+    const resp = await api.get<BackendPrevRole[]>(
+        `/previous-roles/user/${userId}`
+    );
+    return resp.data.map(raw => mapRawPreviousRoleToUI(raw));
+}
+
+/**
  * POST /previous-roles
  * Create a new previous role.
  * The server returns the full BackendPrevRole; map it → PreviousRoleUI.

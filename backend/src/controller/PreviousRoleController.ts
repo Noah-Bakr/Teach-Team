@@ -62,6 +62,43 @@ export class PreviousRoleController {
     }
 
     /**
+     * GET /previous-roles/user/:userId
+     * Fetch all previous roles for a specific user by their ID.
+     * @param req  - Express request object (expects `:userId` in params)
+     * @param res  - Express response object
+     * @returns    HTTP 200 + JSON array of PreviousRole, HTTP 404 if User not found,
+     *             or HTTP 500 + error
+     */
+    async getPreviousRolesByUserId(req: Request, res: Response) {
+        const userId = parseInt(req.params.userId, 10);
+        if (isNaN(userId)) {
+            return res.status(400).json({ message: 'Invalid user_id' });
+        }
+
+        try {
+            // Verify that the User exists
+            const user = await this.userRepository.findOneBy({ user_id: userId });
+            if (!user) {
+                return res.status(404).json({ message: 'User not found' });
+            }
+
+            // Fetch previous roles for this user
+            const roles = await this.previousRoleRepository.find({
+                where: { user: { user_id: userId } },
+                relations: ['user'],
+                order: { start_date: 'DESC' },
+            });
+
+            return res.status(200).json(roles);
+        } catch (error) {
+            console.error(`Error fetching previous roles for user id=${userId}:`, error);
+            return res
+                .status(500)
+                .json({ message: 'Error fetching previous roles', error });
+        }
+    }
+
+    /**
      * POST /previous-roles
      * Create a new previous role for a user.
      * @param req  - Express request object (expects JSON body)

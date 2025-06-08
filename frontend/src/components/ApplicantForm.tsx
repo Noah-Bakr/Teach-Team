@@ -1,85 +1,63 @@
 import { Button, AbsoluteCenter, Box, ButtonGroup, VStack, 
   Input, Field, Heading, Text, CloseButton, Presence, useDisclosure,
   NativeSelect,
-  Checkbox} from "@chakra-ui/react";
+  Checkbox,
+  HStack,
+  Tag} from "@chakra-ui/react";
 import { useState, useEffect } from "react";
-import { useRouter } from 'next/router';
 import { toaster } from "@/components/ui/toaster"
 import { useAuth } from "../context/AuthContext";
 import "../styles/PopUpForm.css";
-import { Course, Availability, User } from "@/types/types";
+import { UserUI } from "@/types/userTypes";
+import { CourseUI } from "@/types/courseTypes";
+import { ApplicationStatus } from "@/types/applicationTypes";
+import { Availability, SkillUI } from "@/types/types";
+import { createApplication } from "@/services/applicationService";
+import { createSkill, deleteSkill, fetchAllSkills, fetchSkillById } from "@/services/skillService";
+import { addSkillsToUser, removeSkillFromUser } from "@/services/userService";
 
 interface ApplicantFormProps {
   closeForm: () => void;
-  course: Course;
+  course: CourseUI;
+  positionType: 'tutor' | 'lab_assistant';
+  onApplicationSubmitted?: () => void;
 }
 
-const ApplicantForm: React.FC<ApplicantFormProps> = ({ closeForm, course }) => {
+const ApplicantForm: React.FC<ApplicantFormProps> = ({ closeForm, course, positionType, onApplicationSubmitted }) => {
   const { currentUser } = useAuth();
-
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [termsChecked, setTermsChecked] = useState(false)
-
-  const router = useRouter();
+  const [termsChecked, setTermsChecked] = useState(false);
+  const [removedSkills, setRemovedSkills] = useState<string[]>([]);
   const { open, onToggle } = useDisclosure();
+  const [formUser, setFormUser] = useState<UserUI>(() => ({
+    id: currentUser?.id ?? 0,
+    username: currentUser?.username ?? "",
+    firstName: currentUser?.firstName ?? "",
+    lastName: currentUser?.lastName ?? "",
+    email: currentUser?.email ?? "",
+    avatar: currentUser?.avatar ?? "",
+    role: currentUser?.role ?? "candidate",
+    skills: currentUser?.skills ?? [],
+    academicCredentials: currentUser?.academicCredentials ?? [],
+    courses: currentUser?.courses ?? [],
+    previousRoles: currentUser?.previousRoles ?? [],
+    createdAt: currentUser?.createdAt ?? "",
+    reviews: currentUser?.reviews ?? [],
+  }));
 
-  const [formData, setFormData] = useState<Omit<User, 'password' | 'username' | 'avatar' | 'role'>>({
-    id: currentUser?.id || "",
-    firstName: currentUser?.firstName || "",
-    lastName: currentUser?.lastName || "",
-    email: currentUser?.email || "",
-    academicCredentials: currentUser?.academicCredentials || "",
-    skills: currentUser?.skills || [],
-    availability: currentUser?.availability || ["Not Available"],
-    previousRoles: currentUser?.previousRoles || [],
-  });
-
-  // Initialize the skills input with the current user's skills
-  // This will be a comma-separated string for the input field
-  const [skillsInput, setSkillsInput] = useState(
-    (currentUser?.skills || []).join(", ")
+  const [availability, setAvailability] = useState<"Not Available" | "Full-Time" | "Part-Time">(
+    "Not Available"
   );
-
   const [academicCredentialsError, setAcademicCredentialsError] = useState(false);
   const [skillsError, setSkillsError] = useState(false);
+  const [allSkills, setAllSkills] = useState<SkillUI[]>([]);
 
-  const [selectedPreviousRoles, setSelectedPreviousRoles] = useState<string[]>([]);
+  useEffect(() => {
+    fetchAllSkills().then(setAllSkills);
+  }, []);
 
-  // Handle the selected previous roles
-  const toggleSelectedRole = (id: string) => {
-    // Check if the role is already selected
-    setSelectedPreviousRoles((prevRole) =>
-      // If it is, remove it from the selected roles
-      prevRole.includes(id) ? prevRole.filter((prev) => prev !== id) : [...prevRole, id] // If it isn't, add it to the selected roles
-    );
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-
-    // Handle the change for the skills input separately
-    if (name === "skills") {
-      setSkillsInput(value); // Update raw string
-      const skillsArray = value.split(',').map(skill => skill.trim()).filter(skill => skill !== "");
-      setFormData((prevData) => ({
-        ...prevData,
-        skills: skillsArray, // Update formData with parsed array
-      }));
-    } else {
-      setFormData((prevData) => ({
-        ...prevData,
-        [name]: value,
-      }));
-    }
-  };
-
-  const handleEventChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target;
-    setFormData((prevData) => ({
-        ...prevData,
-        [name]: value,
-    }));
+  const handleAvailabilityChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setAvailability(e.target.value as "Not Available" | "Full-Time" | "Part-Time");
   };
 
   //Wake on show
@@ -87,47 +65,98 @@ const ApplicantForm: React.FC<ApplicantFormProps> = ({ closeForm, course }) => {
       onToggle();
   }, []);
 
-  // Save the application to local storage
-  const saveApplicationToLocalStorage = () => {
-    const existingApplications = JSON.parse(localStorage.getItem("applicants") || "[]");
-
-    // Filter the selected previous roles based on the current user's previous roles
-    const filteredRoles = (currentUser?.previousRoles || [])
-        .filter(previousRole => selectedPreviousRoles.includes(previousRole.id))
-        .map((role, index) => ({...role, id: (index + 1).toString()})); // Ensure each role has a unique ID, starting from 1
-
-    // Create a new application with previous form data and other data to parse
-    const newApplication = {
-      ...formData,
-      userId: currentUser?.id || "",
-      courseId: course.id,
-      date: new Date().toISOString(), // Add a timestamp for the application
-      previousRoles: filteredRoles,
-    };
-
-    // Append the new application to the existing applications
-    const updatedApplications = [...existingApplications, newApplication];
-    
-    // Save updated applications list back to localStorage
-    localStorage.setItem('applicants', JSON.stringify(updatedApplications));
-  };
-
-  const handleSubmit = () => {
-    if (formData.academicCredentials === '') {
+  const handleSubmit = async () => {
+    if (!currentUser?.id) {
+      return;
+    }
+    if (!formUser.academicCredentials || formUser.academicCredentials.length === 0) {
       setAcademicCredentialsError(true);
       return;
-    } else { setAcademicCredentialsError(false); }
-    if (formData.skills === undefined || formData.skills.length === 0 || formData.skills[0] === '') {
+    } else {
+      setAcademicCredentialsError(false);
+    }
+
+    if (!formUser.skills || formUser.skills.length === 0) {
       setSkillsError(true);
-        return;
-    } else { setSkillsError(false); }
+      return;
+    } else {
+      setSkillsError(false);
+    }
+
+    if (!termsChecked) return;
 
     setLoading(true);
-    saveApplicationToLocalStorage();
-    toaster.create({title: "Application Submitted", description: `You have successfully applied for ${course.name}.`, type: "success", duration: 5000,});
-    closeForm();
-    setLoading(false);
+
+    try {
+      const payload = {
+        position_type: positionType,
+        status: "pending" as ApplicationStatus,
+        selected: false,
+        availability,
+        user_id: currentUser?.id,
+        course_id: course.id,
+      };
+
+      await createApplication(payload);
+
+      // Add new skills
+      const existingSkillNames = allSkills.map((s) => s.name.toLowerCase());
+      const newSkillNames = (formUser.skills ?? []).filter(
+        (skill) => !existingSkillNames.includes(skill.toLowerCase())
+      );
+
+      const newSkillIds: number[] = [];
+
+      if (newSkillNames.length > 0) {
+        for (const skillName of newSkillNames) {
+          const created = await createSkill({ skill_name: skillName });
+          if (created.id) newSkillIds.push(created.id);
+          setAllSkills((prev) => [...prev, created]);
+        }
+
+        await addSkillsToUser(currentUser.id, newSkillIds);
+      }
+
+      // Remove deleted skills
+      if (removedSkills.length > 0) {
+        for (const skillName of removedSkills) {
+          const skillObj = allSkills.find((s) => s.name.toLowerCase() === skillName.toLowerCase());
+          const skillId = skillObj?.id;
+          if (!skillId) continue;
+
+          await removeSkillFromUser(currentUser.id, skillId);
+
+          const res = await fetchSkillById(skillId);
+          if ((!res.users || res.users.length === 0) && (!res.courses || res.courses.length === 0)) {
+            await deleteSkill(skillId);
+          }
+        }
+
+        setRemovedSkills([]);
+      }
+
+      toaster.create({
+        title: "Application Submitted",
+        description: `You have successfully applied for ${course.name} as ${positionType.replace("_", " ")}.`,
+        type: "success",
+        duration: 5000,
+      });
+
+      onApplicationSubmitted?.();
+      closeForm();
+    } catch (error) {
+      console.error("Application error:", error);
+      toaster.create({
+        title: "Error",
+        description: "Failed to submit application.",
+        type: "error",
+        duration: 5000,
+      });
+    } finally {
+      setLoading(false);
+    }
   };
+
 
   return (
     <>  {/* Overlay to block interaction with the rest of the page. Parent required */}
@@ -143,17 +172,11 @@ const ApplicantForm: React.FC<ApplicantFormProps> = ({ closeForm, course }) => {
                       <Heading className="Header" as="h1">Apply for {course.name}</Heading>
                       <Text className="Text" as="p">Please enter your details to apply.</Text>
                       <VStack className="InputStack" colorPalette={"yellow"}>
-                      {/* </Tooltip> */}
-                        <Field.Root className="InputFieldRoot" invalid={academicCredentialsError} required>
-                          <Field.Label>Academic Credentials<Field.RequiredIndicator /></Field.Label>
-                          <Input name="academicCredentials" placeholder="Academic Credential" value={formData.academicCredentials} onChange={handleChange}/>
-                          <Field.ErrorText>This field is required</Field.ErrorText>
-                        </Field.Root>
 
                         <Field.Root className="InputFieldRoot">
                           <Field.Label>Availability</Field.Label>
-                            <NativeSelect.Root onChange={handleEventChange}>
-                                <NativeSelect.Field name="availability" value={formData.availability}>
+                            <NativeSelect.Root >
+                                <NativeSelect.Field name="availability" value={availability} onChange={handleAvailabilityChange}>
                                     {Availability.map((availability) => (
                                         <option key={availability} value={availability}>{availability}</option>
                                     ))}
@@ -162,35 +185,50 @@ const ApplicantForm: React.FC<ApplicantFormProps> = ({ closeForm, course }) => {
                           </NativeSelect.Root>
                         </Field.Root>
 
-                        {currentUser?.previousRoles && currentUser.previousRoles.length > 0 && (
-                          <>
-                            <Field.Root className="InputFieldRoot">
-                              <Field.Label>Select Previous Roles to Include</Field.Label>
-                            </Field.Root>
-                            <VStack gap={2} align="start" className="InputFieldRoot">
-                            {currentUser.previousRoles.map((previousRole) => (
-                              <Checkbox.Root
-                                key={previousRole.id}
-                                checked={selectedPreviousRoles.includes(previousRole.id)}
-                                onCheckedChange={() => toggleSelectedRole(previousRole.id)}
-                                variant="solid"
-                              >
-                                <Checkbox.HiddenInput />
-                                <Checkbox.Control />
-                                <Checkbox.Label>
-                                  <strong>{previousRole.role}</strong> at {previousRole.company}
-                                </Checkbox.Label>
-                              </Checkbox.Root>
-                            ))}
-                            </VStack>
-                          </>
-                        )}
+                        <Field.Root className="InputFieldRoot" disabled={skillsError} required>
+                          <Field.Label>Skills <Field.RequiredIndicator /></Field.Label>
+                          <Box w="100%">
+                              <Input
+                              placeholder="Type a skill and press Enter"
+                              // Add new skill badge on key down (enter or comma)
+                              onKeyDown={(e) => {
+                                  if ((e.key === "Enter" || e.key === ",") && e.currentTarget.value.trim()) {
+                                  e.preventDefault();
+                                  const newSkill = e.currentTarget.value.trim(); // Get the new skill from the input
+                                  if (!(formUser.skills ?? []).includes(newSkill)) {
+                                      setFormUser((prev) => ({
+                                      ...prev,
+                                      skills: [...(prev.skills || []), newSkill],
+                                      }));
+                                  }
+                                  e.currentTarget.value = "";
+                                  }
+                              }}
+                              />
+                              <HStack padding={2} mt={2} wrap="wrap">
+                              {(formUser.skills ?? []).map((skill, index) => (
+                                  <Tag.Root key={index} colorScheme="yellow" size="md">
+                                  <Tag.Label>{skill}</Tag.Label>
+                                      <Tag.EndElement>
+                                      <Tag.CloseTrigger onClick={() => {
+                                      const skillToRemove = skill;
 
-                        <Field.Root className="InputFieldRoot" invalid={skillsError} required>
-                          <Field.Label>Skills</Field.Label>
-                          <Input name="skills" placeholder="Skills (comma-separated)" value={skillsInput} onChange={handleChange}/>
+                                      // Remove from the visual list
+                                      setFormUser(prev => ({
+                                          ...prev,
+                                          skills: prev.skills?.filter(s => s !== skillToRemove)
+                                      }));
+
+                                      // Track it for deletion
+                                      setRemovedSkills(prev => [...prev, skillToRemove]);
+                                      }} />
+                                      </Tag.EndElement>
+                                  </Tag.Root>
+                              ))}
+                              </HStack>
+                          </Box>
                           <Field.ErrorText>This field is required</Field.ErrorText>
-                        </Field.Root>
+                      </Field.Root>
 
                         <Field.Root className="InputFieldRoot" colorPalette={"yellow"}>
                         <Field.Label></Field.Label>
