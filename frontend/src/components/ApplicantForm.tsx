@@ -11,7 +11,7 @@ import { Availability, SkillUI, ReviewUI, CourseUI, ApplicationStatus, UserUI } 
 import { createApplication } from "@/services/applicationService";
 import { createSkill, deleteSkill, fetchAllSkills, fetchSkillById } from "@/services/skillService";
 import { addSkillsToUser, removeSkillFromUser } from "@/services/userService";
-import "../styles/PopUpForm.css";
+import styles from "../styles/PopUpForm.module.css";
 
 interface ApplicantFormProps {
   closeForm: () => void;
@@ -185,23 +185,23 @@ const ApplicantForm: React.FC<ApplicantFormProps> = ({ closeForm, course, positi
 
   return (
     <>  {/* Overlay to block interaction with the rest of the page. Parent required */}
-      {open && <div className="Overlay"></div>}
-      <Presence className="Box"
+      {open && <div className={styles.Overlay}></div>}
+      <Presence className={styles.Box}
       present={open}
       animationStyle={{ _open: "scale-fade-in", _closed: "scale-fade-out" }}
       animationDuration="moderate">
           <AbsoluteCenter colorPalette={"yellow"}>
-              <Box className="Box">
-                  <VStack className="FormStack">
-                      <CloseButton className="CloseButton" variant="ghost" colorPalette="black" onClick={() => { onToggle(); closeForm(); }}/>
-                      <Heading className="Header" as="h1">Apply for {course.name}</Heading>
-                      <Text className="Text" as="p">Please enter your details to apply.</Text>
-                      <VStack className="InputStack" colorPalette={"yellow"}>
+              <Box className={styles.Box}>
+                  <VStack className={styles.FormStack}>
+                      <CloseButton className={styles.CloseButton} variant="ghost" colorPalette="black" onClick={() => { onToggle(); closeForm(); }}/>
+                      <Heading className={styles.Header} as="h1">Apply for {course.name}</Heading>
+                      <Text className={styles.Text} as="p">Please enter your details to apply.</Text>
+                      <VStack className={styles.InputStack} colorPalette={"yellow"}>
 
-                        <Field.Root className="InputFieldRoot">
+                        <Field.Root className={styles.InputFieldRoot}>
                           <Field.Label>Availability</Field.Label>
                             <NativeSelect.Root >
-                                <NativeSelect.Field name="availability" value={availability} onChange={handleAvailabilityChange}>
+                                <NativeSelect.Field name={styles.availability} value={availability} onChange={handleAvailabilityChange}>
                                     {Availability.map((availability) => (
                                         <option key={availability} value={availability}>{availability}</option>
                                     ))}
@@ -210,7 +210,7 @@ const ApplicantForm: React.FC<ApplicantFormProps> = ({ closeForm, course, positi
                           </NativeSelect.Root>
                         </Field.Root>
 
-                        <Field.Root className="InputFieldRoot" disabled={skillsError} required>
+                        <Field.Root className={styles.InputFieldRoot} disabled={skillsError} required>
                           <Field.Label>Skills <Field.RequiredIndicator /></Field.Label>
                           <Box w="100%">
                               <Input
@@ -255,18 +255,18 @@ const ApplicantForm: React.FC<ApplicantFormProps> = ({ closeForm, course, positi
                           <Field.ErrorText>This field is required</Field.ErrorText>
                       </Field.Root>
 
-                        <Field.Root className="InputFieldRoot" colorPalette={"yellow"}>
+                        <Field.Root className={styles.InputFieldRoot} colorPalette={"yellow"}>
                         <Field.Label></Field.Label>
-                          <Checkbox.Root className="InputFieldRoot" variant="solid" checked={termsChecked} onCheckedChange={(e) => setTermsChecked(!!e.checked)}>
+                          <Checkbox.Root className={styles.InputFieldRoot} variant="solid" checked={termsChecked} onCheckedChange={(e) => setTermsChecked(!!e.checked)}>
                             <Checkbox.HiddenInput />
                             <Checkbox.Control />
                             <Checkbox.Label>Accept terms and conditions</Checkbox.Label>
                           </Checkbox.Root>
                         </Field.Root>
 
-                        <ButtonGroup className="ButtonGroup">
-                            <Button className="Button" colorPalette="yellow" variant="surface" onClick={() => { setLoading(false); onToggle(); closeForm(); }} >Cancel</Button>
-                            <Button disabled={!termsChecked} className="Button" colorPalette="yellow" variant="solid" loading={loading} 
+                        <ButtonGroup className={styles.ButtonGroup}>
+                            <Button className={styles.Button} colorPalette="yellow" variant="surface" onClick={() => { setLoading(false); onToggle(); closeForm(); }} >Cancel</Button>
+                            <Button disabled={!termsChecked} className={styles.Button} colorPalette="yellow" variant="solid" loading={loading} 
                               onClick={() => { setLoading(false); handleSubmit(); }}>Submit Application</Button>
                         </ButtonGroup>
                       </VStack>

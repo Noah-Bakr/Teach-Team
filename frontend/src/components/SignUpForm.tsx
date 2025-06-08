@@ -6,7 +6,7 @@ import { useRouter } from 'next/router';
 import { PasswordInput, PasswordStrengthMeter } from "./ui/password-input";
 import { toaster } from "./ui/toaster"
 import { useAuth } from "@/context/AuthContext";
-import "../styles/PopUpForm.css";
+import styles from "../styles/PopUpForm.module.css";
 
 interface SignUpFormProps {
     closeForm: () => void;
@@ -45,9 +45,6 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ closeForm }) => {
     const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
     const hasCorrectLength = password.length >= 8 && password.length <= 100;
 
-    // const validations = [
-    //     hasUpperCase, hasLowerCase, hasNumber, hasSpecialChar, hasCorrectLength
-    // ];
     const validations = useMemo(() => {
         return [
             hasUpperCase, hasLowerCase, hasNumber, hasSpecialChar, hasCorrectLength
@@ -77,12 +74,6 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ closeForm }) => {
 
     // Password strength calculation
     // This function calculates the password strength based on the number of validations passed
-    // const incrementStrength = () => {
-    //     const passedValidations = validations.filter(validation => validation).length;
-
-    //     const strengthPercentage = (passedValidations / totalValidations) * 4;
-    //     setPasswordStrength(Math.round(strengthPercentage));
-    // };
     const incrementStrength = useMemo(() => {
         return () => {
             const passedValidations = validations.filter(validation => validation).length;
@@ -92,9 +83,6 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ closeForm }) => {
     }, [validations, totalValidations]);
 
     //Password validation
-    // useEffect(() => {
-    //     incrementStrength();
-    // }, [password]);
     useEffect(() => {
         incrementStrength();
     }, [password, incrementStrength]);
@@ -152,50 +140,50 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ closeForm }) => {
 
     return (
         <>  {/* Overlay to block interaction with the rest of the page. Parent required */}
-            {open && <div className="Overlay"></div>}
-            <Presence className="Box"
+            {open && <div className={styles.Overlay}></div>}
+            <Presence className={styles.Box}
             present={open}
             animationStyle={{ _open: "scale-fade-in", _closed: "scale-fade-out" }}
             animationDuration="moderate">
                 <AbsoluteCenter colorPalette={"yellow"}>
-                    <Box className="Box" scrollbar="hidden" scrollBehavior="smooth" maxH="700px" overflowY="auto">
-                        <VStack className="FormStack" colorPalette={"yellow"}>
-                            <CloseButton className="CloseButton" variant="ghost" colorPalette="black" onClick={() => { onToggle(); closeForm(); }}/>
-                            <Heading className="Header" as="h1">Sign Up</Heading>
-                            <Text className="Text" as="p">Please enter your details to create an account.</Text>
-                            <VStack className="InputStack">
-                                <Field.Root className="InputFieldRoot" invalid={firstNameError} required>
+                    <Box className={styles.Box} scrollbar="hidden" scrollBehavior="smooth" maxH="700px" overflowY="auto">
+                        <VStack className={styles.FormStack} colorPalette={"yellow"}>
+                            <CloseButton className={styles.CloseButton} variant="ghost" colorPalette="black" onClick={() => { onToggle(); closeForm(); }}/>
+                            <Heading className={styles.Header} as="h1">Sign Up</Heading>
+                            <Text className={styles.Text} as="p">Please enter your details to create an account.</Text>
+                            <VStack className={styles.InputStack}>
+                                <Field.Root className={styles.InputFieldRoot} invalid={firstNameError} required>
                                     <Field.Label>First Name <Field.RequiredIndicator /></Field.Label>
-                                    <Input className="LoginInput" placeholder="John" variant="outline" value={firstName} onChange={(e) => setFirstName(e.target.value)}/>
+                                    <Input className={styles.LoginInput} placeholder="John" variant="outline" value={firstName} onChange={(e) => setFirstName(e.target.value)}/>
                                     <Field.ErrorText>This field is required</Field.ErrorText>
                                 </Field.Root>
 
-                                <Field.Root className="InputFieldRoot" invalid={lastNameError} required>
+                                <Field.Root className={styles.InputFieldRoot} invalid={lastNameError} required>
                                     <Field.Label>Last Name <Field.RequiredIndicator /></Field.Label>
-                                    <Input className="LoginInput" placeholder="Doe" variant="outline" value={lastName} onChange={(e) => setLastName(e.target.value)}/>
+                                    <Input className={styles.LoginInput} placeholder="Doe" variant="outline" value={lastName} onChange={(e) => setLastName(e.target.value)}/>
                                     <Field.ErrorText>This field is required</Field.ErrorText>
                                 </Field.Root>
 
-                                <Field.Root className="InputFieldRoot" invalid={usernameError} required>
+                                <Field.Root className={styles.InputFieldRoot} invalid={usernameError} required>
                                     <Field.Label>Username <Field.RequiredIndicator /></Field.Label>
-                                    <Input className="LoginInput" placeholder="johndoe" variant="outline" value={username} onChange={(e) => setUsername(e.target.value)}/>
+                                    <Input className={styles.LoginInput} placeholder="johndoe" variant="outline" value={username} onChange={(e) => setUsername(e.target.value)}/>
                                     <Field.ErrorText>This field is required</Field.ErrorText>
                                 </Field.Root>
 
-                                <Field.Root className="InputFieldRoot" invalid={emailError} required>
+                                <Field.Root className={styles.InputFieldRoot} invalid={emailError} required>
                                     <Field.Label>Email <Field.RequiredIndicator /></Field.Label>
-                                    <Input className="LoginInput" placeholder="name@example.com" variant="outline" value={email} onChange={(e) => setEmail(e.target.value)}/>
+                                    <Input className={styles.LoginInput} placeholder="name@example.com" variant="outline" value={email} onChange={(e) => setEmail(e.target.value)}/>
                                     <Field.ErrorText>This field is required</Field.ErrorText>
                                 </Field.Root>
 
-                                <Field.Root className="InputFieldRoot" invalid={passwordError} required>
+                                <Field.Root className={styles.InputFieldRoot} invalid={passwordError} required>
                                     <Field.Label>Password <Field.RequiredIndicator /></Field.Label>
-                                    <PasswordInput className="Input" placeholder="Password" variant={"outline"} value={password} onChange={(e) => setPassword(e.target.value)}/>
+                                    <PasswordInput className={styles.Input} placeholder="Password" variant={"outline"} value={password} onChange={(e) => setPassword(e.target.value)}/>
                                     <Field.ErrorText>This field is required</Field.ErrorText>
                                 </Field.Root>
-                                <PasswordStrengthMeter className="PasswordStrengthMeter" value={passwordStrength} />
+                                <PasswordStrengthMeter className={styles.PasswordStrengthMeter} value={passwordStrength} />
 
-                                <VStack className="CheckboxStack">
+                                <VStack className={styles.CheckboxStack}>
                                 {[
                                     { label: "Contains an uppercase letter", passed: hasUpperCase },
                                     { label: "Contains a lowercase letter", passed: hasLowerCase },
@@ -203,7 +191,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ closeForm }) => {
                                     { label: "Contains a special character", passed: hasSpecialChar },
                                     { label: "Has a length between 8 and 100 characters", passed: hasCorrectLength }
                                 ].map((validation, index) => (
-                                    <Checkbox.Root className="CheckboxStack" key={index} value={validation.label} checked={validation.passed} readOnly>
+                                    <Checkbox.Root className={styles.CheckboxStack} key={index} value={validation.label} checked={validation.passed} readOnly>
                                         <Checkbox.HiddenInput />
                                         <Checkbox.Control />
                                         <Checkbox.Label>{validation.label}</Checkbox.Label>
@@ -211,15 +199,15 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ closeForm }) => {
                                 ))}
                                 </VStack>
 
-                                <Field.Root className="InputFieldRoot" invalid={confirmPasswordError} required>
+                                <Field.Root className={styles.InputFieldRoot} invalid={confirmPasswordError} required>
                                     <Field.Label>Confirm Password <Field.RequiredIndicator /></Field.Label>
-                                    <PasswordInput className="Input" placeholder="Password" variant={"outline"} value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)}/>
+                                    <PasswordInput className={styles.Input} placeholder="Password" variant={"outline"} value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)}/>
                                     <Field.ErrorText>This field is required</Field.ErrorText>
                                 </Field.Root>
                                 
-                                <ButtonGroup className="ButtonGroup">
-                                    <Button className="Button" colorPalette="yellow" variant="surface" onClick={() => { onToggle(); closeForm(); }} >Cancel</Button>
-                                    <Button className="Button" colorPalette="yellow" variant="solid" loading={loading} onClick={() => { handleSignUp(); }} >Sign Up</Button>
+                                <ButtonGroup className={styles.ButtonGroup}>
+                                    <Button className={styles.Button} colorPalette="yellow" variant="surface" onClick={() => { onToggle(); closeForm(); }} >Cancel</Button>
+                                    <Button className={styles.Button} colorPalette="yellow" variant="solid" loading={loading} onClick={() => { handleSignUp(); }} >Sign Up</Button>
                                 </ButtonGroup>
                             </VStack>
                         </VStack>
