@@ -26,11 +26,9 @@ const TutorPage: React.FC = () => {
     // Fetch all applications for the current user
     useEffect(() => {
         if (!currentUser?.id) return;
-        const allapps = fetchApplicationsByUserId(currentUser?.id);
         fetchApplicationsByUserId(currentUser.id)
             .then(setApplications)
             .catch(console.error);
-            console.log("Applications fetched for user:", currentUser.id, allapps);
     }, [currentUser?.id]);
 
     const applicationLookup = new Set(
@@ -53,6 +51,16 @@ const TutorPage: React.FC = () => {
         setSelectedCourse(null);
     };
 
+    const refreshApplications = async () => {
+        if (!currentUser?.id) return;
+        try {
+            const apps = await fetchApplicationsByUserId(currentUser.id);
+            setApplications(apps);
+        } catch (error) {
+            console.error("Failed to refresh applications:", error);
+        }
+    };
+
     // Check if the user has already applied for the course
     // const hasApplied = (courseId: string): boolean => {
     //     const existingApplications = JSON.parse(localStorage.getItem("applicants") || "[]");
@@ -68,10 +76,11 @@ const TutorPage: React.FC = () => {
         return applicationLookup.has(`${courseId}-${role}`);
     };
 
-
     return (
         <div>
-            {isApplicantFormOpen && selectedCourse && <ApplicantForm closeForm={closeApplicantForm} course={selectedCourse}/>}
+            {isApplicantFormOpen && selectedCourse && selectedRole && (
+                <ApplicantForm closeForm={closeApplicantForm} course={selectedCourse} positionType={selectedRole} onApplicationSubmitted={refreshApplications}/>
+            )}
             <Stack p={4} m={4} gap={4} direction={['column', 'row']} wrap="wrap" width={"90vw"}>
                 {courses.map((course) => (
                     <Card.Root colorPalette="yellow" flexDirection="row" overflow="hidden" width={"500vw"} maxW="xl" key={course.id} variant="outline" size="sm">
@@ -103,7 +112,7 @@ const TutorPage: React.FC = () => {
                                         onClick={() => handleApplicantClick(course, "lab_assistant")}
                                         disabled={hasAppliedForRole(course.id, "lab_assistant")}
                                     >
-                                    {hasAppliedForRole(course.id, "lab_assistant") ? "Applied as Lab" : "Apply as Lab"}
+                                    {hasAppliedForRole(course.id, "lab_assistant") ? "Applied as Lab Assistant" : "Apply as Lab Assistant"}
                                     </Button>
                                 </HStack>
                             </Card.Footer>
