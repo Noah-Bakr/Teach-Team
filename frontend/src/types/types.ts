@@ -73,9 +73,9 @@ export interface UserUI {
     email: string;
     firstName: string;
     lastName: string;
-    avatar: string;
+    avatar?: string | null;
     role?: 'admin' | 'lecturer' | 'candidate';
-    skills?: SkillUI[];
+    skills?: (SkillUI | string)[];
     academicCredentials?: AcademicCredentialsUI[];
     courses?: CourseUI[];
     //courses?: string[];         // courses the user is enrolled in
@@ -84,8 +84,28 @@ export interface UserUI {
     reviews?: ReviewUI[];
 }
 
-
-
+export interface VisualInsightsUI {
+    statusBreakdown: { status: string; count: number }[];
+    averageRankByStatus: { status: string; avgRank: number }[];
+    mostCommonSkills: { skill_name: string; count: number }[];
+    leastCommonSkills: { skill_name: string; count: number }[];
+    usersWithLeastCommonSkills: {
+        skill_name: string;
+        user_id: number;
+        first_name: string;
+        last_name: string;
+    }[];
+    mostAcceptedApplicant: {
+        user_id: number;
+        first_name: string;
+        last_name: string;
+        acceptedCount: number;
+    } | null;
+    topApplicants: { user_id: number; first_name: string; last_name: string; avgRank: number }[];
+    bottomApplicants: { user_id: number; first_name: string; last_name: string; avgRank: number }[];
+    positionBreakdown: { position: string; count: number }[];
+    unrankedApplicants: ApplicationUI[];
+}
 
 
 
