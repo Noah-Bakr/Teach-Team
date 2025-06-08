@@ -86,14 +86,15 @@ const ApplicantForm: React.FC<ApplicantFormProps> = ({ closeForm, course, positi
     fetchAllSkills().then(setAllSkills);
   }, []);
 
+  useEffect(() => {
+    if (!open) {
+        onToggle();
+    }
+  }, [onToggle, open]);
+
   const handleAvailabilityChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setAvailability(e.target.value as "Not Available" | "Full-Time" | "Part-Time");
   };
-
-  //Wake on show
-  useEffect(() => {
-      onToggle();
-  }, []);
 
   const handleSubmit = async () => {
     if (!currentUser?.id) {

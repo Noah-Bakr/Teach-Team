@@ -1,7 +1,7 @@
 import { Button, AbsoluteCenter, Box, ButtonGroup, VStack, Input, 
     Field, Heading, Text, CloseButton, Presence, useDisclosure, Checkbox,
     } from "@chakra-ui/react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useRouter } from 'next/router';
 import { PasswordInput, PasswordStrengthMeter } from "./ui/password-input";
 import { toaster } from "./ui/toaster"
@@ -45,16 +45,22 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ closeForm }) => {
     const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
     const hasCorrectLength = password.length >= 8 && password.length <= 100;
 
-    const validations = [
-        hasUpperCase, hasLowerCase, hasNumber, hasSpecialChar, hasCorrectLength
-    ];
+    // const validations = [
+    //     hasUpperCase, hasLowerCase, hasNumber, hasSpecialChar, hasCorrectLength
+    // ];
+    const validations = useMemo(() => {
+        return [
+            hasUpperCase, hasLowerCase, hasNumber, hasSpecialChar, hasCorrectLength
+        ];
+    }, [hasUpperCase, hasLowerCase, hasNumber, hasSpecialChar, hasCorrectLength]);
+
+    useEffect(() => {
+        if (!open) {
+            onToggle();
+        }
+    }, [onToggle, open]);
 
     const totalValidations = validations.length;
-
-    //Wake on show
-    useEffect(() => {
-        onToggle();
-    }, []);
 
     // Show error message if there is an error (frontend - SignUp)
     useEffect(() => {
@@ -71,17 +77,27 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ closeForm }) => {
 
     // Password strength calculation
     // This function calculates the password strength based on the number of validations passed
-    const incrementStrength = () => {
-        const passedValidations = validations.filter(validation => validation).length;
+    // const incrementStrength = () => {
+    //     const passedValidations = validations.filter(validation => validation).length;
 
-        const strengthPercentage = (passedValidations / totalValidations) * 4;
-        setPasswordStrength(Math.round(strengthPercentage));
-    };
+    //     const strengthPercentage = (passedValidations / totalValidations) * 4;
+    //     setPasswordStrength(Math.round(strengthPercentage));
+    // };
+    const incrementStrength = useMemo(() => {
+        return () => {
+            const passedValidations = validations.filter(validation => validation).length;
+            const strengthPercentage = (passedValidations / totalValidations) * 4;
+            setPasswordStrength(Math.round(strengthPercentage));
+        };
+    }, [validations, totalValidations]);
 
     //Password validation
+    // useEffect(() => {
+    //     incrementStrength();
+    // }, [password]);
     useEffect(() => {
         incrementStrength();
-    }, [password]);
+    }, [password, incrementStrength]);
 
     const handleSignUp = async () => {
         // Check if email and password are empty. "return" prevents the rest of the function from executing

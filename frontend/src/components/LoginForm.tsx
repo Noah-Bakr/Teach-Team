@@ -22,10 +22,11 @@ const LoginForm: React.FC<LoginFormProps> = ({ closeForm, openSignUpForm }) => {
     const { login, loading } = useAuth();
     const { open, onToggle } = useDisclosure();
 
-    //Wake on show
     useEffect(() => {
-        onToggle();
-    }, []);
+        if (!open) {
+            onToggle();
+        }
+    }, [onToggle, open]);
 
     const handleLogin = async () => {
         // Check if email and password are empty. "return" prevents the rest of the function from executing
