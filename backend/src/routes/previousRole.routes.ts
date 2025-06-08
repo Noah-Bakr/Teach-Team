@@ -14,6 +14,10 @@ router.get("/:id", async (req, res) => {
     await previousRolesController.getPreviousRoleById(req, res);
 });
 
+router.get("/user/:userId", async (req, res) => {
+    await previousRolesController.getPreviousRolesByUserId(req, res);
+});
+
 router.post("/", validateDto(CreatePreviousRoleDto, 'body'), async (req, res) => {
     await previousRolesController.createPreviousRole(req, res);
 });
