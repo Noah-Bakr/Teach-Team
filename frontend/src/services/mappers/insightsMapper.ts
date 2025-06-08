@@ -1,6 +1,21 @@
 import { VisualInsightsUI } from "@/types/types";
 import { RawVisualInsights } from "../api/visualInsightApi";
 
+export type CoursePlaceholder = {
+    id: number;
+    name: string;
+    code: string;
+    semester: '1' | '2';
+};
+
+// Create an actual object/value with the same name
+export const CoursePlaceholder: CoursePlaceholder = {
+    id: 0,
+    name: "Placeholder Course",
+    code: "COSC",
+    semester: '1',
+};
+
 export function mapRawInsights(raw: RawVisualInsights): VisualInsightsUI {
     return {
         statusBreakdown: raw.statusBreakdown.map((s) => ({
@@ -69,7 +84,7 @@ export function mapRawInsights(raw: RawVisualInsights): VisualInsightsUI {
                 lastName: app.user.last_name,
                 avatar: app.user.avatar ?? null,
             },
-            course: undefined,
+            course: CoursePlaceholder,
         })),
     };
 }
