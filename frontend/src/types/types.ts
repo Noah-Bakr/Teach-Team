@@ -22,7 +22,7 @@ export interface ApplicationUI {
     selected: boolean;
     availability: 'Full-Time' | 'Part-Time' | 'Not Available';
     user: UserUI;
-    course?: CourseUI;
+    course: CourseUI;
     reviews?: ReviewUI[];
     skills?: SkillUI[];
     positionType: "tutor" | "lab_assistant";
