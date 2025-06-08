@@ -7,8 +7,6 @@ import {
     UpdateSkillDto,
 } from './api/skillApi';
 
-const API_BASE = 'http://localhost:3001/api';
-
 //
 // GET /skills → SkillUI[]
 //
