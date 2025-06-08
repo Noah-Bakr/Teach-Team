@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { Box, Heading, Text, Badge, Flex, HStack, Button, Stack } from "@chakra-ui/react";
 import { ApplicationUI, ApplicationStatus } from "@/types/types";
 import { updateApplicationStatusByLecturer } from "@/services/lecturerService";
@@ -13,14 +13,13 @@ interface ApplicationDetailsProps {
     onStatusChange: (appId: number, newStatus: ApplicationStatus) => void;
 }
 
-export const ApplicationDetails: React.FC<ApplicationDetailsProps> = ({
+export const ApplicationDetail: React.FC<ApplicationDetailsProps> = ({
                                                                           application,
                                                                           onStatusChange,
                                                                       }) => {
     const { user, course, positionType, status, appliedAt, availability } = application;
     const { currentUser } = useAuth();
     const lecturerId = currentUser?.id;
-    const [isUpdating, setIsUpdating] = useState(false);
 
     // Format "Applied on" date as “Apr 2, 2025”
     const formattedDate = new Date(appliedAt).toLocaleDateString(undefined, {
@@ -32,7 +31,6 @@ export const ApplicationDetails: React.FC<ApplicationDetailsProps> = ({
     // Handler to set status = 'accepted'
     const onApprove = async () => {
         try {
-            setIsUpdating(true);
             await updateApplicationStatusByLecturer(currentUser!.id, application.id, { status: "accepted" });
 
             // Display notification toaster if approved successfully
@@ -46,7 +44,6 @@ export const ApplicationDetails: React.FC<ApplicationDetailsProps> = ({
 
             // Call the onStatusChange callback to update the parent component
             onStatusChange(application.id, "accepted");
-            setIsUpdating(false);
 
         } catch (err) {
             console.error("Error approving application:", err);
@@ -59,16 +56,12 @@ export const ApplicationDetails: React.FC<ApplicationDetailsProps> = ({
                 duration: 4000,
                 meta: { closable: true },
             });
-
-            // Reset updating state
-            setIsUpdating(false);
         }
     };
 
     // Handler to set status = 'rejected'
     const onReject = async () => {
         try {
-            setIsUpdating(true);
             if (!lecturerId) return; // or show toaster
             await updateApplicationStatusByLecturer(currentUser!.id, application.id, { status: "rejected" });
 
@@ -83,7 +76,6 @@ export const ApplicationDetails: React.FC<ApplicationDetailsProps> = ({
 
             // Call the onStatusChange callback to update the parent component
             onStatusChange(application.id, "rejected");
-            setIsUpdating(false);
 
         } catch (err) {
             console.error("Error rejecting application:", err);
@@ -96,7 +88,6 @@ export const ApplicationDetails: React.FC<ApplicationDetailsProps> = ({
                 duration: 4000,
                 meta: { closable: true },
             });
-            setIsUpdating(false);
         }
     };
 
@@ -451,5 +442,3 @@ export const ApplicationDetails: React.FC<ApplicationDetailsProps> = ({
         </Box>
     );
 };
-
-export default ApplicationDetails;
