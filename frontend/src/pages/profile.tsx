@@ -8,13 +8,15 @@ import { mapBackendUserToUI } from "@/services/mappers/authMapper"
 import { deletePreviousRole, updatePreviousRole, createPreviousRole, fetchPreviousRolesByUserId } from "@/services/previousRoleService";
 import { fetchApplicationsByUserId } from "@/services/applicationService";
 import { PreviousRoleUI } from "@/types/previousRoleTypes";
-import { ApplicationUI } from "@/types/applicationTypes";
+
 import { LuPencil, LuPencilOff, LuTrash2 } from "react-icons/lu";
 import { toaster } from "@/components/ui/toaster";
 import { fetchAllSkills, createSkill, fetchSkillById, deleteSkill } from "@/services/skillService";
 import { SkillUI } from "@/types/skillTypes";
 import { AcademicCredentialUI } from "@/types/academicCredentialTypes";
 import { createAcademicCredential, deleteAcademicCredential, updateAcademicCredential } from "@/services/academicCredentialService";
+
+import { ApplicationUI } from "@/types/types";
 
 const ProfilePage: React.FC = () => {
     const [currentUser, setCurrentUser] = useState<UserUI | null>(null);
@@ -115,7 +117,7 @@ const ProfilePage: React.FC = () => {
                         description: cred.description ?? "",
                     }))
                 );
-                setPreviousRoles(await fetchPreviousRolesByUserId(user.id) || []);
+                setPreviousRoles(await fetchPreviousRolesByUserId(user.id) ?? []);
                 setUserApplicants(await fetchApplicationsByUserId(user.id) || []);
             } catch (error) {
                 console.error("Error fetching user data:", error);
@@ -186,7 +188,7 @@ const ProfilePage: React.FC = () => {
                 previous_role: newPreviousRole.role,
                 company: newPreviousRole.company,
                 start_date: newPreviousRole.startDate,
-                end_date: newPreviousRole.endDate || null,
+                end_date: newPreviousRole.endDate ?? null,
                 description: newPreviousRole.description,
                 user_id: updatedUser.id,
             };
@@ -227,8 +229,6 @@ const ProfilePage: React.FC = () => {
             if (role) {
                 setEditPreviousRole(role);
                 setEditingPreviousRoleId(id);
-                // setIsEditing(true);
-                // setIsDisabled(false);
             }
         }
     };
@@ -260,7 +260,7 @@ const ProfilePage: React.FC = () => {
                 previous_role: editPreviousRole.role,
                 company: editPreviousRole.company,
                 start_date: editPreviousRole.startDate,
-                end_date: editPreviousRole.endDate || null,
+                end_date: editPreviousRole.endDate ?? null,
                 description: editPreviousRole.description,
             };
             const updatedRole = await updatePreviousRole(editingPreviousRoleId, payload);
@@ -282,12 +282,13 @@ const ProfilePage: React.FC = () => {
             });
         } catch (error) {
             setIsExperienceLoading(false);
-            toaster.create({
-                title: "Error",
-                description: "Failed to update previous experience.",
-                type: "error",
-                duration: 5000,
-            });
+                console.error("Failed to update previous experience", error);
+                toaster.create({
+                    title: "Error",
+                    description: "Failed to add previous experience.",
+                    type: "error",
+                    duration: 5000,
+                });
         }
     };
 
@@ -433,6 +434,7 @@ const ProfilePage: React.FC = () => {
                 duration: 4000,
             });
         } catch (error) {
+            console.error("Failed to delete previous role", error);
             toaster.create({
                 title: "Error",
                 description: "Failed to delete previous role.",
@@ -483,12 +485,12 @@ const ProfilePage: React.FC = () => {
                 degree_name: newAcademicCredential.degreeName,
                 institution: newAcademicCredential.institution,
                 start_date: newAcademicCredential.startDate,
-                end_date: newAcademicCredential.endDate || null,
+                end_date: newAcademicCredential.endDate ?? null,
                 description: newAcademicCredential.description,
             };
             const created = await createAcademicCredential(payload);
 
-            addCredentialsToUser(updatedUser.id, [created.id]);
+            await addCredentialsToUser(updatedUser.id, [created.id]);
 
             setAcademicCredentials((prev) => [...prev, created]);
             setNewAcademicCredential({
@@ -508,6 +510,7 @@ const ProfilePage: React.FC = () => {
             });
         } catch (error) {
             setIsAcademicLoading(false);
+            console.error("Failed to add academic credential", error);
             toaster.create({
                 title: "Error",
                 description: "Failed to add academic credential.",
@@ -555,7 +558,7 @@ const ProfilePage: React.FC = () => {
                 degree_name: editAcademicCredential.degreeName,
                 institution: editAcademicCredential.institution,
                 start_date: editAcademicCredential.startDate,
-                end_date: editAcademicCredential.endDate || null,
+                end_date: editAcademicCredential.endDate ?? null,
                 description: editAcademicCredential.description,
             };
 
@@ -578,6 +581,7 @@ const ProfilePage: React.FC = () => {
             });
         } catch (error) {
             setIsAcademicLoading(false);
+            console.error("Failed to update academic credential", error);
             toaster.create({
                 title: "Error",
                 description: "Failed to update academic credential.",
@@ -598,11 +602,12 @@ const ProfilePage: React.FC = () => {
                 duration: 4000,
             });
         } catch (error) {
+            console.error("Failed to delete academic credential:", error);
             toaster.create({
                 title: "Error",
                 description: "Failed to delete academic credential.",
                 type: "error",
-                duration: 4000,
+                duration: 5000,
             });
         }
     };
@@ -640,7 +645,7 @@ const ProfilePage: React.FC = () => {
 
                                         <Field.Root disabled={isDisabled}>
                                             <Field.Label>Avatar</Field.Label>
-                                            <Input name="avatar" placeholder="Avatar URL" value={updatedUser.avatar || ""} onChange={handleChange} />
+                                            <Input name="avatar" placeholder="Avatar URL" value={updatedUser.avatar ?? ""} onChange={handleChange} />
                                         </Field.Root>
                                     </Stack>
                                 </Stack>
@@ -663,11 +668,6 @@ const ProfilePage: React.FC = () => {
                                             <Input name="email" placeholder="Email" value={updatedUser.email} onChange={handleChange}/>
                                             <Field.ErrorText>This field is required</Field.ErrorText>
                                         </Field.Root>
-
-                                        {/* <Field.Root orientation="horizontal" disabled={isDisabled}>
-                                            <Field.Label>Password</Field.Label>
-                                            <PasswordInput disabled={isDisabled} name="password" placeholder="Password" value={updatedUser.password} onChange={handleChange}/>
-                                        </Field.Root> */}
 
                                         <Field.Root disabled>
                                             <Field.Label>Role</Field.Label>
@@ -781,13 +781,13 @@ const ProfilePage: React.FC = () => {
 
                                                 <Field.Root invalid={academicCredentialEndDateError} required>
                                                     <Field.Label>End Date <Field.RequiredIndicator /></Field.Label>
-                                                    <Input type="date" name="endDate" value={newAcademicCredential.endDate || ""} onChange={handleAcademicCredentialChange} />
+                                                    <Input type="date" name="endDate" value={newAcademicCredential.endDate ?? ""} onChange={handleAcademicCredentialChange} />
                                                     <Field.ErrorText>This field is required</Field.ErrorText>
                                                 </Field.Root>
 
                                                 <Field.Root>
                                                     <Field.Label>Description</Field.Label>
-                                                    <Textarea name="description" placeholder="Description" value={newAcademicCredential.description || ""} onChange={handleAcademicCredentialChange} />
+                                                    <Textarea name="description" placeholder="Description" value={newAcademicCredential.description ?? ""} onChange={handleAcademicCredentialChange} />
                                                 </Field.Root>
 
                                                 <Button onClick={handleAddAcademicCredential} colorScheme="yellow" loading={isAcademicLoading}>
@@ -830,13 +830,13 @@ const ProfilePage: React.FC = () => {
 
                                                                     <Field.Root invalid={editAcademicCredentialEndDateError} required>
                                                                         <Field.Label>End Date <Field.RequiredIndicator /></Field.Label>
-                                                                        <Input type="date" name="endDate" value={editAcademicCredential.endDate || ""} onChange={handleEditAcademicCredentialChange}/>
+                                                                        <Input type="date" name="endDate" value={editAcademicCredential.endDate ?? ""} onChange={handleEditAcademicCredentialChange}/>
                                                                         <Field.ErrorText>This field is required</Field.ErrorText>
                                                                     </Field.Root>
 
                                                                     <Field.Root>
                                                                         <Field.Label>Description</Field.Label>
-                                                                        <Textarea name="description" placeholder="Description" value={editAcademicCredential.description || ""} onChange={handleEditAcademicCredentialChange}/>
+                                                                        <Textarea name="description" placeholder="Description" value={editAcademicCredential.description ?? ""} onChange={handleEditAcademicCredentialChange}/>
                                                                     </Field.Root>
                                                                 </Stack>
                                                             ) : (
@@ -889,12 +889,12 @@ const ProfilePage: React.FC = () => {
 
                                             <Field.Root>
                                                 <Field.Label>End Date</Field.Label>
-                                                <Input type="date" name="endDate" value={newPreviousRole.endDate || ""} onChange={handlePreviousRoleChange}/>
+                                                <Input type="date" name="endDate" value={newPreviousRole.endDate ?? ""} onChange={handlePreviousRoleChange}/>
                                             </Field.Root>
 
                                             <Field.Root>
                                                 <Field.Label>Description</Field.Label>
-                                                <Textarea name="description" placeholder="Description" value={newPreviousRole.description || ""} onChange={handlePreviousRoleChange}/>
+                                                <Textarea name="description" placeholder="Description" value={newPreviousRole.description ?? ""} onChange={handlePreviousRoleChange}/>
                                             </Field.Root>
 
                                             <Button onClick={handleAddExperience} colorScheme="yellow" loading={isExperienceLoading}>
@@ -937,12 +937,12 @@ const ProfilePage: React.FC = () => {
 
                                                             <Field.Root>
                                                                 <Field.Label>End Date</Field.Label>
-                                                                <Input type="date" name="endDate" value={editPreviousRole.endDate || ""} onChange={handleEditPreviousRoleChange}/>
+                                                                <Input type="date" name="endDate" value={editPreviousRole.endDate ?? ""} onChange={handleEditPreviousRoleChange}/>
                                                             </Field.Root>
 
                                                             <Field.Root>
                                                                 <Field.Label>Description</Field.Label>
-                                                                <Textarea name="description" placeholder="Description" value={editPreviousRole.description || ""} onChange={handleEditPreviousRoleChange}/>
+                                                                <Textarea name="description" placeholder="Description" value={editPreviousRole.description ?? ""} onChange={handleEditPreviousRoleChange}/>
                                                             </Field.Root>
                                                         </Stack>
                                                     ) : (

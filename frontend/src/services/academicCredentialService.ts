@@ -6,7 +6,7 @@ import {
 } from './api/academicCredentialApi';
 
 import { mapRawAcademicCredToUI } from './mappers/academicCredentialMapper';
-import { AcademicCredentialUI } from '../types/academicCredentialTypes';
+import { AcademicCredentialUI } from '@/types/academicCredentialTypes';
 
 /**
  * GET /academic-credentials → AcademicCredentialUI[]
