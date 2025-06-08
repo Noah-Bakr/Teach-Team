@@ -1,4 +1,4 @@
-import { api } from "./api"; // your Axios wrapper
+import { api } from "./api";
 import { ApplicationUI, CourseUI, ReviewUI } from "@/types/types";
 
 
@@ -62,31 +62,13 @@ export async function fetchApplicationsByLecturer(
 }
 
 //
-// //
-// // Optionally, a duplicate with different naming — not strictly needed
-// //
-// export async function fetchApplicationsByLecturerAndCourse(
-//     lecturerId: number,
-//     courseId: number
-// ): Promise<ApplicationUI[]> {
-//     return fetchApplicationsByCourse(lecturerId, courseId); // optional alias
-// }
-
-//
 // Fetch review details for a specific application (if already reviewed)
 //
-export async function fetchReviewByApplication(
-    applicationId: number
-): Promise<ReviewUI | null> {
-    try {
+export async function fetchReviewByApplication(applicationId: number): Promise<ReviewUI | null> {
         const resp = await api.get<BackendReview>(
             `/applications/${applicationId}/review`
         );
         return mapRawReview(resp.data);
-    } catch (err: any) {
-        if (err.response?.status === 404) return null;
-        throw err;
-    }
 }
 
 //

@@ -1,5 +1,13 @@
 import { ApplicationUI, AcademicCredentialsUI, CourseUI, SkillUI, ReviewUI, PreviousRoleUI, UserUI  } from "@/types/types";
-import { BackendApplication, BackendReview, BackendSkill, BackendCourse, BackendAcademicCredential, BackendUser  } from "@/services/api/lecturerApi";
+import {
+    BackendApplication,
+    BackendReview,
+    BackendSkill,
+    BackendCourse,
+    BackendAcademicCredential,
+    BackendUser,
+    BackendPreviousRole
+} from "@/services/api/lecturerApi";
 
 export function mapRawSkill(raw: BackendSkill): SkillUI {
     return {
@@ -63,7 +71,7 @@ export function mapRawReview(review: BackendReview): ReviewUI {
     };
 }
 
-function mapRawPreviousRole(role: any): PreviousRoleUI {
+function mapRawPreviousRole(role: BackendPreviousRole): PreviousRoleUI {
     return {
         id: role.previous_role_id,
         role: role.previous_role,
