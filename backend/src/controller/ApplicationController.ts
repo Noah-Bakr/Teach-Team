@@ -156,6 +156,7 @@ export class ApplicationController {
         } catch (error) {
             console.error('Error creating application:', error);
             return res.status(500).json({ message: 'Error creating application', error });
+
         }
     }
 
@@ -279,14 +280,25 @@ export class ApplicationController {
                 LIMIT 2
             `);
 
-            const usersWithMostPopularSkills = await AppDataSource.query(`
-                SELECT s.skill_name, u.first_name, u.last_name, u.user_id, u.avatar
-                FROM User u
-                         JOIN user_skills_skills uss ON u.user_id = uss.userUserId
-                         JOIN Skills s ON uss.skillsSkillId = s.skill_id
-                WHERE s.skill_name IN (${topSkills.map((s: { skill_name: string }) => `'${s.skill_name}'`).join(',')})
-                ORDER BY s.skill_name
-            `);
+            // const usersWithMostPopularSkills = await AppDataSource.query(`
+            //     SELECT s.skill_name, u.first_name, u.last_name, u.user_id, u.avatar
+            //     FROM User u
+            //              JOIN user_skills_skills uss ON u.user_id = uss.userUserId
+            //              JOIN Skills s ON uss.skillsSkillId = s.skill_id
+            //     WHERE s.skill_name IN (${topSkills.map((s: { skill_name: string }) => `'${s.skill_name}'`).join(',')})
+            //     ORDER BY s.skill_name
+            // `);
+            let usersWithMostPopularSkills = [];
+            if (topSkills && topSkills.length > 0) {
+                usersWithMostPopularSkills = await AppDataSource.query(`
+                    SELECT s.skill_name, u.first_name, u.last_name, u.user_id, u.avatar
+                    FROM User u
+                            JOIN user_skills_skills uss ON u.user_id = uss.userUserId
+                            JOIN Skills s ON uss.skillsSkillId = s.skill_id
+                    WHERE s.skill_name IN (${topSkills.map((s: { skill_name: string }) => `'${s.skill_name}'`).join(',')})
+                    ORDER BY s.skill_name
+                `);
+            }
 
             // Least 2 common skills by frequency (across all users in accepted apps)
             const leastCommonSkills = await AppDataSource.query(`
@@ -301,14 +313,25 @@ export class ApplicationController {
                   LIMIT 2
                 `);
 
-            const usersWithLeastCommonSkills = await AppDataSource.query(`
-                SELECT s.skill_name, u.first_name, u.last_name, u.user_id, u.avatar
-                FROM User u
-                         JOIN user_skills_skills uss ON u.user_id = uss.userUserId
-                         JOIN Skills s ON uss.skillsSkillId = s.skill_id
-                WHERE s.skill_name IN (${leastCommonSkills.map((s: { skill_name: string }) => `'${s.skill_name}'`).join(',')})
-                ORDER BY s.skill_name
-            `);
+            // const usersWithLeastCommonSkills = await AppDataSource.query(`
+            //     SELECT s.skill_name, u.first_name, u.last_name, u.user_id, u.avatar
+            //     FROM User u
+            //              JOIN user_skills_skills uss ON u.user_id = uss.userUserId
+            //              JOIN Skills s ON uss.skillsSkillId = s.skill_id
+            //     WHERE s.skill_name IN (${leastCommonSkills.map((s: { skill_name: string }) => `'${s.skill_name}'`).join(',')})
+            //     ORDER BY s.skill_name
+            // `);
+            let usersWithLeastCommonSkills = [];
+            if (leastCommonSkills && leastCommonSkills.length > 0) {
+                usersWithLeastCommonSkills = await AppDataSource.query(`
+                    SELECT s.skill_name, u.first_name, u.last_name, u.user_id, u.avatar
+                    FROM User u
+                            JOIN user_skills_skills uss ON u.user_id = uss.userUserId
+                            JOIN Skills s ON uss.skillsSkillId = s.skill_id
+                    WHERE s.skill_name IN (${leastCommonSkills.map((s: { skill_name: string }) => `'${s.skill_name}'`).join(',')})
+                    ORDER BY s.skill_name
+                `);
+            }
 
             // Top 3 accepted applicants by best avg rank
             const topAcceptedApplicants = await AppDataSource.query(`
