@@ -6,6 +6,7 @@ import { PieChart, Pie, Cell, Tooltip, Legend, BarChart, Bar, XAxis, YAxis, Resp
 import { useColorModeValue } from "@/components/ui/color-mode";
 import { fetchVisualInsights } from "@/services/visualInsightsService";
 import {CreamCard} from "@/components/CreamCard";
+import { VisualInsightsUI } from "@/types/types";
 
 const STATUS_COLORS: Record<string, string> = {
     accepted: "#38A169",
@@ -27,8 +28,9 @@ type SkillUser = {
 };
 
 const VisualInsightsPage: React.FC = () => {
-    const [insights, setInsights] = useState<any>(null);
+    const [insights, setInsights] = useState<VisualInsightsUI | null>(null);
     const [loading, setLoading] = useState(true);
+
 
     const cardBg = useColorModeValue("white", "gray.700");
     const borderColor = useColorModeValue("gray.200", "gray.600");
@@ -43,12 +45,16 @@ const VisualInsightsPage: React.FC = () => {
                 console.error("Failed to load insights", err);
                 setLoading(false);
             });
-    }, []);
+    }, [])
+    const skillBg2 = useColorModeValue("gray.700", "gray.700");
+    const skillBg = useColorModeValue("gray.100", "gray.700");
+    const skillBc = useColorModeValue("gray.300", "gray.600");
 
-    if (loading) return <Spinner size="xl" color="blue.500" />;
+
+    if (loading || !insights) return <Spinner size="xl" color="blue.500" />;
 
     const { statusBreakdown, averageRankByStatus, mostCommonSkills } = insights;
-    const totalApplications = statusBreakdown.reduce((acc: number, s: any) => acc + Number(s.count), 0);
+    const totalApplications = statusBreakdown.reduce((acc: number, s) => acc + Number(s.count), 0);
     const mostPopularSkill = mostCommonSkills?.[0]?.skill_name ?? "N/A";
 
     return (
@@ -57,7 +63,7 @@ const VisualInsightsPage: React.FC = () => {
 
             {/* Summary Section */}
             <SimpleGrid columns={[1, 2, 3]} margin={6} mb={10}>
-                {statusBreakdown.map((item: any) => (
+                {statusBreakdown.map((item) => (
                     <Stat.Root
                         key={item.status}
                         bg={cardBg}
@@ -126,7 +132,7 @@ const VisualInsightsPage: React.FC = () => {
                         {insights.topApplicants.length === 0 ? (
                             <Text>No top applicants yet.</Text>
                         ) : (
-                            insights.topApplicants.map((applicant: any) => (
+                            insights.topApplicants.map((applicant) => (
                                 <Box key={applicant.user_id} mb={3}>
                                     <HStack margin={3}>
                                         <Avatar.Root>
@@ -137,7 +143,7 @@ const VisualInsightsPage: React.FC = () => {
                                             <Text fontWeight="bold">
                                                 {applicant.first_name} {applicant.last_name}
                                             </Text>
-                                            <Text fontSize="sm">Avg Rank: {parseFloat(applicant.avgRank).toFixed(2)}</Text>
+                                            <Text fontSize="sm">Avg Rank: {applicant.avgRank.toFixed(2)}</Text>
                                         </Box>
                                     </HStack>
                                 </Box>
@@ -151,7 +157,7 @@ const VisualInsightsPage: React.FC = () => {
                         {insights.bottomApplicants.length === 0 ? (
                             <Text>No bottom applicants yet.</Text>
                         ) : (
-                            insights.bottomApplicants.map((applicant: any) => (
+                            insights.bottomApplicants.map((applicant) => (
                                 <Box key={applicant.user_id} mb={3}>
                                     <HStack margin={3}>
                                         <Avatar.Root>
@@ -162,7 +168,7 @@ const VisualInsightsPage: React.FC = () => {
                                             <Text fontWeight="bold">
                                                 {applicant.first_name} {applicant.last_name}
                                             </Text>
-                                            <Text fontSize="sm">Avg Rank: {parseFloat(applicant.avgRank).toFixed(2)}</Text>
+                                            <Text fontSize="sm">Avg Rank: {applicant.avgRank.toFixed(2)}</Text>
                                         </Box>
                                     </HStack>
                                 </Box>
@@ -189,11 +195,11 @@ const VisualInsightsPage: React.FC = () => {
                                 outerRadius={100}
                                 label
                             >
-                                {statusBreakdown.map((entry: any, index: number) => (
+                                {statusBreakdown.map((entry, index: number) => (
                                     <Cell key={`cell-${index}`} fill={STATUS_COLORS[entry.status] || "#8884d8"} />
                                 ))}
                             </Pie>
-                            <Tooltip formatter={(value: any) => [`${value} applications`, "Count"]} />
+                            <Tooltip formatter={(value) => [`${value} applications`, "Count"]} />
                             <Legend />
                         </PieChart>
                     </ResponsiveContainer>
@@ -204,9 +210,9 @@ const VisualInsightsPage: React.FC = () => {
                     <Heading size="sm" mb={4}>Avg Ranking by Status</Heading>
                     <ResponsiveContainer>
                         <BarChart
-                            data={averageRankByStatus.map((item: any) => ({
+                            data={averageRankByStatus.map((item) => ({
                                 ...item,
-                                avgRank: parseFloat(item.avgRank),
+                                avgRank: item.avgRank,
                             }))}
                             margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
                         >
@@ -231,7 +237,7 @@ const VisualInsightsPage: React.FC = () => {
                     <Heading size="sm" mb={4}>Position Type Breakdown</Heading>
                     <ResponsiveContainer>
                         <BarChart
-                            data={insights.positionBreakdown.map((item: any) => ({
+                            data={insights.positionBreakdown.map((item) => ({
                                 ...item,
                                 count: Number(item.count),
                             }))}
@@ -288,8 +294,8 @@ const VisualInsightsPage: React.FC = () => {
                                                     borderRadius="md"
                                                     px={3}
                                                     py={1}
-                                                    bg={useColorModeValue("gray.700", "gray.700")}
-                                                    borderColor={useColorModeValue("gray.300", "gray.600")}
+                                                    bg={skillBg2}
+                                                    borderColor={skillBc}
                                                 >
                                                     <Avatar.Root>
                                                         <Avatar.Fallback name={`${u.first_name} ${u.last_name}`} />
@@ -344,8 +350,8 @@ const VisualInsightsPage: React.FC = () => {
                                                     borderRadius="md"
                                                     px={3}
                                                     py={1}
-                                                    bg={useColorModeValue("gray.100", "gray.700")}
-                                                    borderColor={useColorModeValue("gray.300", "gray.600")}
+                                                    bg={skillBg}
+                                                    borderColor={skillBc}
                                                 >
                                                     <Avatar.Root>
                                                         <Avatar.Fallback name={`${u.first_name} ${u.last_name}`} />
@@ -382,19 +388,19 @@ const VisualInsightsPage: React.FC = () => {
                             </tr>
                             </thead>
                             <tbody>
-                            {insights.unrankedApplicants.map((app: any) => (
-                                <tr key={app.application_id}>
+                            {insights.unrankedApplicants.map((app) => (
+                                <tr key={app.id}>
                                     <td style={{ padding: "12px" }}>
                                         <img
-                                            src={app.user.avatar}
-                                            alt={`${app.user.first_name} avatar`}
+                                            src={app.user.avatar ?? "/placeholder-avatar.png"}
+                                            alt={`${app.user.firstName} avatar`}
                                             style={{ width: "40px", height: "40px", borderRadius: "50%" }}
                                         />
                                     </td>
                                     <td style={{ padding: "12px" }}>
-                                        {app.user.first_name} {app.user.last_name}
+                                        {app.user.firstName} {app.user.lastName}
                                     </td>
-                                    <td style={{ padding: "12px" }}>{app.position_type}</td>
+                                    <td style={{ padding: "12px" }}>{app.positionType}</td>
                                     <td style={{ padding: "12px" }}>{app.availability}</td>
                                     <td style={{ padding: "12px" }}>
                                         <span
