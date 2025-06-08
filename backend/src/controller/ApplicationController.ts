@@ -291,10 +291,19 @@ export class ApplicationController {
                 WHERE a.status = 'accepted'
                 GROUP BY s.skill_name
                 ORDER BY count DESC
-                LIMIT 5
+                LIMIT 2
             `);
 
-            // Least 5 common skills by frequency (across all users in accepted apps)
+            const usersWithMostPopularSkills = await AppDataSource.query(`
+                SELECT s.skill_name, u.first_name, u.last_name, u.user_id, u.avatar
+                FROM User u
+                         JOIN user_skills_skills uss ON u.user_id = uss.userUserId
+                         JOIN Skills s ON uss.skillsSkillId = s.skill_id
+                WHERE s.skill_name IN (${topSkills.map((s: { skill_name: string }) => `'${s.skill_name}'`).join(',')})
+                ORDER BY s.skill_name
+            `);
+
+            // Least 2 common skills by frequency (across all users in accepted apps)
             const leastCommonSkills = await AppDataSource.query(`
                   SELECT s.skill_name, COUNT(*) AS count
                   FROM Application a
@@ -304,7 +313,7 @@ export class ApplicationController {
                   WHERE a.status = 'accepted'
                   GROUP BY s.skill_name
                   ORDER BY count ASC
-                  LIMIT 5
+                  LIMIT 2
                 `);
 
             const usersWithLeastCommonSkills = await AppDataSource.query(`
@@ -372,6 +381,7 @@ export class ApplicationController {
                     statusBreakdown: [],
                     averageRankByStatus: [],
                     mostCommonSkills: [],
+                    usersWithMostPopularSkills: [],
                     leastCommonSkills: [],
                     usersWithLeastCommonSkills: [],
                     mostAcceptedApplicant: [],
@@ -386,6 +396,7 @@ export class ApplicationController {
                 statusBreakdown,
                 averageRankByStatus: avgRankByStatus,
                 mostCommonSkills: topSkills,
+                usersWithMostPopularSkills,
                 leastCommonSkills: leastCommonSkills,
                 usersWithLeastCommonSkills,
                 mostAcceptedApplicant: mostAcceptedApplicant[0],
