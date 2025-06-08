@@ -67,16 +67,6 @@ export class RoleController {
     async createRole(req: Request, res: Response) {
         const { role_name } = req.body as CreateRoleDto;
 
-        // // Basic validation
-        // const validRoles = ['admin', 'lecturer', 'candidate'] as const;
-        // if (!role_name || !validRoles.includes(role_name)) {
-        //     return res.status(400).json({
-        //         message: `role_name is required and must be one of: ${validRoles.join(
-        //             ', '
-        //         )}`,
-        //     });
-        // }
-
         try {
             // Check for existing role_name (optional: enforce unique constraint)
             const existing = await this.roleRepository.findOneBy({ role_name });
@@ -121,13 +111,7 @@ export class RoleController {
             }
 
             const { role_name } = req.body as UpdateRoleDto;
-            // const validRoles = ['admin', 'lecturer', 'candidate'] as const;
             if (role_name !== undefined) {
-                // if (!validRoles.includes(role_name)) {
-                //     return res.status(400).json({
-                //         message: `role_name must be one of: ${validRoles.join(', ')}`,
-                //     });
-                // }
                 existing.role_name = role_name;
             }
 
@@ -161,7 +145,7 @@ export class RoleController {
                 return res.status(404).json({ message: 'Role not found' });
             }
 
-            // Optional: Prevent deletion if users are assigned to this role
+            // Prevent deletion if users are assigned to this role
             if (existing.users && existing.users.length > 0) {
                 return res.status(400).json({
                     message:

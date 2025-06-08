@@ -17,10 +17,6 @@ router.get("/:id/applications/all", isLecturer, async (req, res) => {
     await lecturerController.getAllApplicationsByLecturer(req, res);
 });
 
-// router.post("/applications/:id/review", isLecturer, async (req, res) => {
-//     await lecturerController.saveReview(req, res);
-// });
-
 router.post(
     '/:lecturerId/applications/:applicationId/review',  async (req, res) => {
         await lecturerController.saveReview(req, res);

@@ -1,7 +1,5 @@
-// src/seeds/testData.ts
-
 // ────────────────────────────────────────────────────────────────────────────
-// 1) SeedUser interface
+// SeedUser interface
 // ────────────────────────────────────────────────────────────────────────────
 
 export interface SeedUser {
@@ -35,13 +33,11 @@ export interface SeedUser {
     }>;
 
     // If this user is a lecturer (role_id = 2),
-    //  you can attach them to existing courses by code:
     course_codes?:      string[];
-    // e.g. [ "COSC2625", "COSC2758" ]
 }
 
 // ────────────────────────────────────────────────────────────────────────────
-// 2) SEED_USERS array
+// SEED_USERS array
 // ────────────────────────────────────────────────────────────────────────────
 
 export const SEED_USERS: SeedUser[] = [
@@ -231,8 +227,6 @@ export const SEED_USERS: SeedUser[] = [
     },
 ];
 
-
-
 // ────────────────────────────────────────────────────────────────────────────
 // 3) SeedCourse interface
 // ────────────────────────────────────────────────────────────────────────────
@@ -286,7 +280,7 @@ export const SEED_COURSES: SeedCourse[] = [
 
 
 // ────────────────────────────────────────────────────────────────────────────
-// 4) SeedApplication interface
+// SeedApplication interface
 // ────────────────────────────────────────────────────────────────────────────
 
 export interface SeedApplication {

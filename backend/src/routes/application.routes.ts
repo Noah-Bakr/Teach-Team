@@ -34,6 +34,4 @@ router.delete("/:id", async (req, res) => {
     await applicationController.deleteApplication(req, res);
 });
 
-
-
 export default router;

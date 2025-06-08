@@ -337,7 +337,7 @@ export class AuthController {
         const { first_name, last_name, username, email, password } =
             req.body as CreateUserDto;
 
-        // 1) Check if email or username already exists
+        // Check if email or username already exists
         const existingEmail = await this.userRepository.findOne({
             where: { email },
         });
@@ -350,10 +350,10 @@ export class AuthController {
                 .json({ message: "Email or username already in use" });
         }
 
-        // 2) Hash the password
+        // Hash the password
         const hashedPassword = await argon2.hash(password);
 
-        // 3) Create & save new user
+        // Create & save new user
         const newUser = this.userRepository.create({
             first_name,
             last_name,
@@ -364,14 +364,14 @@ export class AuthController {
         });
         await this.userRepository.save(newUser);
 
-        // 4) Sign JWT
+        // Sign JWT
         const token = jwt.sign(
             { userId: newUser.user_id, role: newUser.role.role_name },
             process.env.JWT_SECRET!,
             { expiresIn: "1h" }
         );
 
-        // 5) Set cookie on response
+        // Set cookie on response
         res.cookie("token", token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
@@ -380,7 +380,7 @@ export class AuthController {
             path: "/",
         });
 
-        // 6) Remove password before returning
+        // Remove password before returning
         const { password: _, ...userWithoutPassword } = newUser;
 
         return res.status(201).json({

@@ -1,8 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToOne, JoinColumn, CreateDateColumn } from 'typeorm';
 import { User } from './User';
 import { Course } from './Course';
-// import { Comment} from "./Comment";
-// import { ApplicationRanking} from "./ApplicationRanking";
 import { Review } from './Review';
 
 @Entity('Application')
@@ -25,9 +23,6 @@ export class Application {
     @Column({ type: 'enum', enum: ['Full-Time', 'Part-Time', 'Not Available']})
     availability: 'Full-Time' | 'Part-Time' | 'Not Available';
 
-    // @Column('int', { nullable: true })
-    // rank: number;
-
     // Many applications can be made by a user, but each application belongs to one user (Many-to-One relationship)
     @ManyToOne(() => User, user => user.applications, { eager: true })
     @JoinColumn({ name: 'user_id' })
@@ -40,11 +35,4 @@ export class Application {
 
     @OneToMany(() => Review, (review) => review.application)
     reviews: Review[];
-
-    // // One application can have many comments (One-to-Many relationship)
-    // @OneToMany(() => Comment, (comment) => comment.application, { eager: true })
-    // comments: Comment[];
-    //
-    // @OneToMany(() => ApplicationRanking, (ranking) => ranking.application, { eager: true })
-    // rankings: ApplicationRanking[];
 }

@@ -124,19 +124,6 @@ export class PreviousRoleController {
             user_id,
         } = req.body as CreatePreviousRoleDto;
 
-        // // Basic validation of required fields
-        // if (
-        //     typeof previous_role !== 'string' ||
-        //     typeof company !== 'string' ||
-        //     !start_date ||
-        //     typeof user_id !== 'number'
-        // ) {
-        //     return res.status(400).json({
-        //         message:
-        //             'previous_role (string), company (string), start_date (YYYY-MM-DD), and user_id (number) are required',
-        //     });
-        // }
-
         try {
             // Verify that the referenced User exists
             const user = await this.userRepository.findOneBy({ user_id });

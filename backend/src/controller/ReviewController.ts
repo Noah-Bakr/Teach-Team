@@ -197,7 +197,7 @@ export class ReviewController {
     }
 
     /**
-     * (Optional) GET /applications/:appId/reviews
+     * GET /applications/:appId/reviews
      * Fetch all reviews for a specific application.
      */
     async getReviewsByApplication(req: Request, res: Response) {
@@ -222,7 +222,7 @@ export class ReviewController {
     }
 
     /**
-     * (Optional) GET /users/:lecturerId/reviews
+     * GET /users/:lecturerId/reviews
      * Fetch all reviews written by a specific lecturer.
      */
     async getReviewsByLecturer(req: Request, res: Response) {

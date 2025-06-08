@@ -67,7 +67,6 @@ export class UserController {
             if (!user) {
                 return res.status(404).json({ message: 'User not found' });
             }
-            // return res.status(200).json(user);
             const { password, ...userWithoutPassword } = user;
 
             return res.status(200).json(userWithoutPassword);
@@ -107,48 +106,6 @@ export class UserController {
             avatar,
             role_id,
         } = req.body as CreateUserDto;
-
-        // // Basic validation of required fields
-        // if (
-        //     typeof username !== 'string' ||
-        //     typeof email !== 'string' ||
-        //     typeof password !== 'string' ||
-        //     typeof first_name !== 'string' ||
-        //     typeof last_name !== 'string' ||
-        //     typeof role_id !== 'number'
-        // ) {
-        //     return res.status(400).json({
-        //         message:
-        //             'username (string), email (string), password (string), first_name (string), last_name (string), and role_id (number) are required',
-        //     });
-        // }
-
-        // // Length checks
-        // if (username.length > 100) {
-        //     return res
-        //         .status(400)
-        //         .json({ message: 'username must not exceed 100 characters' });
-        // }
-        // if (email.length > 150) {
-        //     return res
-        //         .status(400)
-        //         .json({ message: 'email must not exceed 150 characters' });
-        // }
-        // if (password.length > 255) {
-        //     return res
-        //         .status(400)
-        //         .json({ message: 'password must not exceed 255 characters' });
-        // }
-        // if (first_name.length > 100 || last_name.length > 100) {
-        //     return res
-        //         .status(400)
-        //         .json({ message: 'first_name and last_name must not exceed 100 characters' });
-        // }
-        // if (avatar !== undefined && avatar !== null && avatar.length > 150) {
-        //     return res
-        //         .status(400)
-        //         .json({ message: 'avatar URL must not exceed 150 characters' });
-        // }
 
         try {
             // Check if username or email already exists
@@ -225,35 +182,6 @@ export class UserController {
                 return res.status(404).json({ message: 'User not found' });
             }
 
-            // const {
-            //     username: newUsername,
-            //     email: newEmail,
-            //     password: newPassword,
-            //     first_name: newFirstName,
-            //     last_name: newLastName,
-            //     avatar: newAvatar,
-            //     role_id: newRoleId,
-            // } = req.body;
-
-            // // If updating username, check length and uniqueness
-            // if (newUsername !== undefined) {
-            //     if (typeof newUsername !== 'string' || newUsername.trim() === '') {
-            //         return res.status(400).json({ message: 'username must be a non-empty string' });
-            //     }
-            //     if (newUsername.length > 100) {
-            //         return res
-            //             .status(400)
-            //             .json({ message: 'username must not exceed 100 characters' });
-            //     }
-            //     const duplicate = await this.userRepository.findOne({
-            //         where: { username: newUsername },
-            //     });
-            //     if (duplicate && duplicate.user_id !== userId) {
-            //         return res.status(409).json({ message: 'Username already in use' });
-            //     }
-            //     existing.username = newUsername;
-            // }
-
             if (username) {
                 const duplicate = await this.userRepository.findOneBy({ username: username });
                 if (duplicate && duplicate.user_id !== userId) {
@@ -261,25 +189,6 @@ export class UserController {
                 }
                 existing.username = username;
             }
-
-            // // If updating email, check length and uniqueness
-            // if (newEmail !== undefined) {
-            //     if (typeof newEmail !== 'string' || newEmail.trim() === '') {
-            //         return res.status(400).json({ message: 'email must be a non-empty string' });
-            //     }
-            //     if (newEmail.length > 150) {
-            //         return res
-            //             .status(400)
-            //             .json({ message: 'email must not exceed 150 characters' });
-            //     }
-            //     const duplicate = await this.userRepository.findOne({
-            //         where: { email: newEmail },
-            //     });
-            //     if (duplicate && duplicate.user_id !== userId) {
-            //         return res.status(409).json({ message: 'Email already in use' });
-            //     }
-            //     existing.email = newEmail;
-            // }
 
             if (email) {
                 const duplicate = await this.userRepository.findOneBy({ email: email });
@@ -289,46 +198,9 @@ export class UserController {
                 existing.email = email;
             }
 
-            // // If updating password, check length
-            // if (newPassword !== undefined) {
-            //     if (typeof newPassword !== 'string' || newPassword.trim() === '') {
-            //         return res.status(400).json({ message: 'password must be a non-empty string' });
-            //     }
-            //     if (newPassword.length > 255) {
-            //         return res
-            //             .status(400)
-            //             .json({ message: 'password must not exceed 255 characters' });
-            //     }
-            //     existing.password = newPassword; // Hash in production!
-            // }
-
             if (password) {
                 existing.password = password;
             }
-
-            // // If updating first_name or last_name
-            // if (newFirstName !== undefined) {
-            //     if (typeof newFirstName !== 'string' || newFirstName.trim() === '') {
-            //         return res.status(400).json({ message: 'first_name must be a non-empty string' });
-            //     }
-            //     if (newFirstName.length > 100) {
-            //         return res
-            //             .status(400)
-            //             .json({ message: 'first_name must not exceed 100 characters' });
-            //     }
-            //     existing.first_name = newFirstName;
-            // }
-            // if (newLastName !== undefined) {
-            //     if (typeof newLastName !== 'string' || newLastName.trim() === '') {
-            //         return res.status(400).json({ message: 'last_name must be a non-empty string' });
-            //     }
-            //     if (newLastName.length > 100) {
-            //         return res
-            //             .status(400)
-            //             .json({ message: 'last_name must not exceed 100 characters' });
-            //     }
-            //     existing.last_name = newLastName;
-            // }
 
             if (first_name) {
                 existing.first_name = first_name;
@@ -338,34 +210,9 @@ export class UserController {
                 existing.last_name = last_name;
             }
 
-            // // If updating avatar
-            // if (newAvatar !== undefined) {
-            //     if (newAvatar !== null && typeof newAvatar !== 'string') {
-            //         return res.status(400).json({ message: 'avatar must be a string or null' });
-            //     }
-            //     if (newAvatar !== null && newAvatar.length > 150) {
-            //         return res
-            //             .status(400)
-            //             .json({ message: 'avatar URL must not exceed 150 characters' });
-            //     }
-            //     existing.avatar = newAvatar;
-            // }
-
             if (avatar !== undefined && avatar !== null) {
                 existing.avatar = avatar;
             }
-
-            // // If updating role_id, verify new Role exists
-            // if (newRoleId !== undefined) {
-            //     if (typeof newRoleId !== 'number') {
-            //         return res.status(400).json({ message: 'role_id must be a number' });
-            //     }
-            //     const newRole = await this.roleRepository.findOneBy({ role_id: newRoleId });
-            //     if (!newRole) {
-            //         return res.status(404).json({ message: 'Role not found' });
-            //     }
-            //     existing.role = newRole;
-            // }
 
             if (role_id !== undefined) {
                 const newRole = await this.roleRepository.findOneBy({ role_id: role_id });
@@ -415,9 +262,6 @@ export class UserController {
             if (!existing) {
                 return res.status(404).json({ message: 'User not found' });
             }
-
-            // Optionally, ensure no related data would violate constraints.
-            // e.g., if cascade delete is not configured, you might need to unlink first.
 
             await this.userRepository.remove(existing);
             return res.status(200).json({ message: 'User deleted successfully' });

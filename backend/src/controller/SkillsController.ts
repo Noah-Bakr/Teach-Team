@@ -69,20 +69,8 @@ export class SkillsController {
     async createSkill(req: Request, res: Response) {
         const { skill_name } = req.body as CreateSkillDto;
 
-        // // Validate skill_name
-        // if (typeof skill_name !== 'string' || skill_name.trim().length === 0) {
-        //     return res
-        //         .status(400)
-        //         .json({ message: 'skill_name (string) is required' });
-        // }
-        // if (skill_name.length > 100) {
-        //     return res
-        //         .status(400)
-        //         .json({ message: 'skill_name must not exceed 100 characters' });
-        // }
-
         try {
-            // Check for existing skill_name (optional: enforce unique constraint)
+            // Check for existing skill_name
             const existing = await this.skillsRepository.findOneBy({ skill_name });
             if (existing) {
                 return res
@@ -128,16 +116,6 @@ export class SkillsController {
 
             const { skill_name: newName } = req.body as UpdateSkillDto;
             if (newName !== undefined) {
-                // if (typeof newName !== 'string' || newName.trim().length === 0) {
-                //     return res
-                //         .status(400)
-                //         .json({ message: 'skill_name must be a non-empty string' });
-                // }
-                // if (newName.length > 100) {
-                //     return res
-                //         .status(400)
-                //         .json({ message: 'skill_name must not exceed 100 characters' });
-                // }
                 existing.skill_name = newName;
             }
 
@@ -218,5 +196,4 @@ export class SkillsController {
             return res.status(500).json({ message: 'Error unlinking skill from user', error });
         }
     }
-
 }

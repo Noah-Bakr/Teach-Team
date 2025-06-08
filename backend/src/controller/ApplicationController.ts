@@ -112,21 +112,6 @@ export class ApplicationController {
             course_id,
         } = req.body as CreateApplicationDto;
 
-        // // Basic validation of required fields
-        // if (
-        //     !position_type ||
-        //     !status ||
-        //     typeof selected !== 'boolean' ||
-        //     !availability ||
-        //     typeof user_id !== 'number' ||
-        //     typeof course_id !== 'number'
-        // ) {
-        //     return res.status(400).json({
-        //         message:
-        //             'position_type, status, selected (boolean), availability, user_id (number), and course_id (number) are required',
-        //     });
-        // }
-
         try {
             // Verify that the referenced user exists
             const user = await this.userRepository.findOneBy({ user_id });

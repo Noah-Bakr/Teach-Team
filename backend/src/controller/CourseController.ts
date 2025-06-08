@@ -124,7 +124,7 @@ export class CourseController {
         const { course_code, course_name, semester, skillIds } = req.body as UpdateCourseDto;
 
         try {
-            // 1) Find existing course
+            // Find existing course
             const course = await this.courseRepository.findOne({
                 where: { course_id: courseId },
                 relations: ['skills', 'lecturers'],
@@ -133,15 +133,15 @@ export class CourseController {
                 return res.status(404).json({ message: 'Course not found' });
             }
 
-            // 2) Update basic fields if provided
+            // Update basic fields if provided
             if (course_code !== undefined) course.course_code = course_code;
             if (course_name !== undefined) course.course_name = course_name;
             if (semester !== undefined) course.semester = semester as "1" | "2";
 
-            // 3) Save base changes
+            // Save base changes
             await this.courseRepository.save(course);
 
-            // 4) If skillIds provided, overwrite the relation
+            // If skillIds provided, overwrite the relation
             if (Array.isArray(skillIds)) {
                 // Validate each skillId
                 for (const sid of skillIds) {
