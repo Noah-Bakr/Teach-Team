@@ -20,11 +20,6 @@ cd s3575564-s4095646-a2
 Open two terminals and navigate one to the `backend` directory, and the other to the `frontend` directory.
 Make sure you have **Node.js (v18+)** and npm installed. Then for each directory, run:
 
-<!-- ```bash
-npm install react react-dom next
-npm i --save-dev @types/node
-``` -->
-
 ```bash
 npm install
 ```
@@ -97,6 +92,8 @@ You can use the following test account to log in as a lecturer:
 | Avatar | Email | Password |
 | --- | --- | --- |
 | <img src="https://mighty.tools/mockmind-api/content/human/80.jpg" alt="avatar" width="50"/> | `john@example.com` | `Cart@21-c0ding` |
+| <img src="https://mighty.tools/mockmind-api/content/human/86.jpg" alt="avatar" width="50"/> | `roo@example.com` | `Cart@21-c0ding` |
+| <img src="https://mighty.tools/mockmind-api/content/human/90.jpg" alt="avatar" width="50"/> | `barry@example.com` | `Cart@21-c0ding` |
 
 You can use the following test account to log in as an admin:
 
@@ -215,6 +212,7 @@ s3575564-s4095646-a2/
 | `cors`                    | Middleware for enabling CORS                                       |
 | `nodemon`                 | Utility that automatically restarts the server on file changes     |
 | `eslint`                  | Linter for JavaScript/TypeScript                                   |
+| `recharts`                | Charting library for React                                         |
 
 ---
 
