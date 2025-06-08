@@ -42,12 +42,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 		const status = err.response?.status;
 		if (status === 401) {
 		  setCurrentUser(null);
-		  toaster.create({
-			title: "Session Expired",
-			description: "You have been logged out due to inactivity.",
-			type: "info",
-			duration: 5000,
-		  });
 		  router.push("/");
 		} else if (status !== 401) {
 		  console.error("Unexpected error fetching session user:", err);
