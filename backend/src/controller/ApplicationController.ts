@@ -64,7 +64,28 @@ export class ApplicationController {
         }
     }
 
-    /**
+    // GET /applications/user/:userId
+    async getApplicationsByUserId(req: Request, res: Response) {
+        const userId = parseInt(req.params.userId);
+        if (isNaN(userId)) {
+            return res.status(400).json({ message: "Invalid user ID" });
+        }
+
+        try {
+            const applications = await AppDataSource.getRepository(Application).find({
+                where: { user: { user_id: userId } },
+                relations: ["course", "user"],
+            });
+
+            return res.status(200).json(applications);
+        } catch (error) {
+            console.error("Error fetching applications:", error);
+            return res.status(500).json({ message: "Failed to fetch applications", error });
+        }
+    }
+
+
+        /**
      * POST /applications
      * Create a new application.
      * @param req  - Express request object (expects JSON body)
@@ -287,7 +308,7 @@ export class ApplicationController {
                 `);
 
             const usersWithLeastCommonSkills = await AppDataSource.query(`
-                SELECT s.skill_name, u.first_name, u.last_name, u.user_id
+                SELECT s.skill_name, u.first_name, u.last_name, u.user_id, u.avatar
                 FROM User u
                          JOIN user_skills_skills uss ON u.user_id = uss.userUserId
                          JOIN Skills s ON uss.skillsSkillId = s.skill_id
@@ -297,7 +318,7 @@ export class ApplicationController {
 
             // Top 3 accepted applicants by best avg rank
             const topAcceptedApplicants = await AppDataSource.query(`
-                SELECT u.user_id, u.first_name, u.last_name, AVG(r.rank) as avgRank
+                SELECT u.user_id, u.first_name, u.last_name, u.avatar, AVG(r.rank) as avgRank
                 FROM Review r
                          JOIN Application a ON r.application_id = a.application_id
                          JOIN User u ON a.user_id = u.user_id
@@ -309,7 +330,7 @@ export class ApplicationController {
 
             // Bottom 3 accepted applicants by worst avg rank
             const bottomAcceptedApplicants = await AppDataSource.query(`
-                  SELECT u.user_id, u.first_name, u.last_name, AVG(r.rank) as avgRank
+                  SELECT u.user_id, u.first_name, u.last_name, u.avatar, AVG(r.rank) as avgRank
                   FROM Review r
                   JOIN Application a ON r.application_id = a.application_id
                   JOIN User u ON a.user_id = u.user_id
@@ -321,7 +342,7 @@ export class ApplicationController {
 
             // Most accepted applicant
             const mostAcceptedApplicant = await AppDataSource.query(`
-                  SELECT u.user_id, u.first_name, u.last_name, COUNT(*) AS acceptedCount
+                  SELECT u.user_id, u.first_name, u.last_name, u.avatar, COUNT(*) AS acceptedCount
                   FROM Application a
                   JOIN User u ON a.user_id = u.user_id
                   WHERE a.status = 'accepted'

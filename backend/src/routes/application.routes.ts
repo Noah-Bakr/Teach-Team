@@ -10,6 +10,10 @@ router.get("/", async (req, res) => {
     await applicationController.getAllApplications(req, res);
 });
 
+router.get("/user/:userId", async (req, res) => {
+    await applicationController.getApplicationsByUserId(req, res);
+});
+
 router.get("/visual-insights", async (req, res) => {
     await applicationController.getVisualInsights(req, res);
 });
