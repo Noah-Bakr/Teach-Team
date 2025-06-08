@@ -1,13 +1,6 @@
 import React from "react";
-import {
-    Flex,
-    Input,
-    NativeSelect,
-    Text,
-    Box,
-} from "@chakra-ui/react";
+import { Flex, Input, NativeSelect, Text, Box } from "@chakra-ui/react";
 import NativeSortSelect from "./NativeSortSelect";
-//import { CourseUI } from "@/types/lecturerTypes";
 import { CourseUI } from "@/types/types";
 
 interface SearchAndSortBarProps {
@@ -31,6 +24,7 @@ const SearchAndSortBar: React.FC<SearchAndSortBarProps> = ({
                                                                courses,
                                                            }) => (
     <Flex direction="row" gap={4} wrap="wrap" mb={6} align="flex-end">
+
         {/* Course Dropdown */}
         <Box>
             <Text fontSize="sm" fontWeight="medium" mb={1} color="gray.300">
@@ -43,7 +37,7 @@ const SearchAndSortBar: React.FC<SearchAndSortBarProps> = ({
                     style={{
                         width: "240px",
                         height: "48px",
-                        backgroundColor: "#1A202C", // same as course dropdown
+                        backgroundColor: "#1A202C",
                         borderColor: "#4A5568",
                         borderRadius: "0.5rem",
                         paddingLeft: "0.75rem",
