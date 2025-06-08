@@ -980,8 +980,8 @@ const ProfilePage: React.FC = () => {
                                         (userApplicants.map((app) => (
                                             <Card.Root colorPalette="yellow" flexDirection="row" overflow="hidden" maxW="xl" variant="outline" size="sm">
                                                 <Box key={app.id} p="4" >
-                                                    <Text fontWeight="bold">{app.course.name}</Text>
-                                                    <Text>Course ID: {app.course.code}</Text>
+                                                    <Text fontWeight="bold">{app.course?.name}</Text>
+                                                    <Text>Course ID: {app.course?.code}</Text>
                                                     <Text>Date Submitted: {new Date(app.appliedAt).toLocaleDateString()}</Text>
                                                     <Text>Availability: {app.availability}</Text>
                                                     <Text>Status: <strong>{app.status}</strong></Text>

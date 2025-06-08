@@ -4,7 +4,7 @@ import ApplicantForm from '../components/ApplicantForm';
 import { useAuth } from "@/context/AuthContext";
 import { fetchAllCourses } from "@/services/courseService";
 import { CourseUI } from "@/types/courseTypes";
-import { ApplicationUI } from "@/types/applicationTypes";
+import { ApplicationUI } from "@/types/types";
 import { fetchApplicationsByUserId } from "@/services/applicationService";
 
 const TutorPage: React.FC = () => {
