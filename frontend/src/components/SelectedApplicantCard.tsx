@@ -16,6 +16,7 @@ import {
     saveReviewForApplication as createReview
 } from "@/services/lecturerService";
 import { toaster } from "@/components/ui/toaster";
+import { AxiosError } from "axios";
 import { useAuth } from "@/context/AuthContext";
 
 // Define the props for the SelectedApplicantCard component
@@ -148,12 +149,15 @@ const SelectedApplicantCard: React.FC<SelectedApplicantCardProps> = ({
                 duration: 3000,
                 meta: { closable: true },
             });
-        } catch (err: any) {
-            console.error("Failed to save review:", err);
+        } catch (err) {
+            const error = err as AxiosError<{ message: string }>;
+
+            console.error("Failed to save review:", error);
+
             toaster.create({
                 title: "Failed to save review",
                 description:
-                    err?.response?.data?.message ??
+                    error.response?.data?.message ??
                     "There was an error saving your review. Please try again.",
                 type: "error",
                 duration: 4000,
