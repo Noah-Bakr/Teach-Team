@@ -1,5 +1,3 @@
-import { SkillUI } from "./skillTypes";
-
 export type ApplicationStatus = "pending" | "accepted" | "rejected";
 
 export type CourseUI = {
