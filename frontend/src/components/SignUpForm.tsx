@@ -44,15 +44,9 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ closeForm }) => {
     const hasNumber = /\d/.test(password);
     const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
     const hasCorrectLength = password.length >= 8 && password.length <= 100;
-    //   const hasNoCommonWords = !/(password|123456|qwerty|abc123|letmein|welcome|iloveyou)/i.test(password); //Will change to check to database
-    //   const hasNoEmail = !email || !password.includes(email.split("@")[0]);
-    //   const hasNoUsername = !password.includes(currentUser?.username || "");
-    //   const hasNoFirstName = !password.includes(currentUser?.firstName || "");
-    //   const hasNoLastName = !password.includes(currentUser?.lastName || "");
 
     const validations = [
-        hasUpperCase, hasLowerCase, hasNumber, hasSpecialChar, hasCorrectLength 
-        //, hasNoCommonWords, hasNoEmail, hasNoUsername, hasNoFirstName, hasNoLastName
+        hasUpperCase, hasLowerCase, hasNumber, hasSpecialChar, hasCorrectLength
     ];
 
     const totalValidations = validations.length;
@@ -95,22 +89,27 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ closeForm }) => {
             setFirstNameError(true);
             return;
         } else { setFirstNameError(false); }
+
         if (lastName === '') {
             setLastNameError(true);
             return;
         } else { setLastNameError(false); }
+
         if (username === '') {
             setUsernameError(true);
             return;
         } else { setUsernameError(false); }
+
         if (email === '') {
             setEmailError(true);
             return;
         } else { setEmailError(false); }
+
         if (password === '') {
             setPasswordError(true);
             return;
         } else { setPasswordError(false); }
+
         if (confirmPassword === '') {
             setConfirmPasswordError(true);
             return;
@@ -120,7 +119,6 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ closeForm }) => {
             setSignUpError("Passwords do not match");
             return;
         } else { setSignUpError(""); }
-
 
         if (passwordStrength !== 4) {
             toaster.create({ title: "Password Strength", description: "Password is weak. Please use a stronger password.", type: "warning", duration: 5000 });
