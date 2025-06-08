@@ -1,7 +1,7 @@
 export interface Role {
     role_id: number;
     role_name: 'admin' | 'lecturer' | 'candidate';
-    users: any[]; // ignored by mapper
+    users: unknown[]; // ignored by mapper
 }
 
 export interface Skill {
@@ -67,12 +67,12 @@ export interface User {
 
     role: Role;
     skills: Skill[];
-    applications: any[]; // ignored by mapper
+    applications: unknown[]; // ignored by mapper
     academicCredentials: AcademicCredential[];
     courses: Course[];
     previousRoles: PreviousRole[];
     comments: Comment[];
-    rankings: any[]; // ignored by mapper
+    rankings: unknown[]; // ignored by mapper
     reviews: Review[];
 }
 
