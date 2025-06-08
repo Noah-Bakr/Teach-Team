@@ -12,6 +12,11 @@ const compat = new FlatCompat({
 const eslintConfig = [
   ...compat.extends("next/core-web-vitals", "next/typescript", "plugin:testing-library/react",
   "plugin:jest-dom/recommended"),
+
+  // Ignore components/ui folder
+  {
+    ignores: ["src/components/ui/**/*"]
+  }
 ];
 
 export default eslintConfig;
