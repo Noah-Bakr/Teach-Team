@@ -1,22 +1,67 @@
-// import {
-//     ApplicationUI,
-//     UserUI,
-//     SkillUI,
-//     AcademicCredentialsUI,
-//     CourseUI,
-//     ReviewUI,
-//     PreviousRoleUI,
-// } from "@/types/lecturerTypes";
-import {
-    ApplicationUI,
-    UserUI,
-    SkillUI,
-    AcademicCredentialsUI,
-    CourseUI,
-    ReviewUI,
-    PreviousRoleUI,
-} from "@/types/types";
+import { ApplicationUI, AcademicCredentialsUI, CourseUI, SkillUI, ReviewUI, PreviousRoleUI, UserUI  } from "@/types/types";
+import { BackendApplication, BackendReview, BackendSkill, BackendCourse, BackendAcademicCredential, BackendUser  } from "@/services/api/lecturerApi";
 
+export function mapRawSkill(raw: BackendSkill): SkillUI {
+    return {
+        id: raw.skill_id,
+        name: raw.skill_name,
+    };
+}
+
+export function mapRawAcademicCredential(raw: BackendAcademicCredential): AcademicCredentialsUI {
+    return {
+        id: raw.academic_id,
+        degreeName: raw.degree_name,
+        institution: raw.institution,
+        startDate: raw.start_date,
+        endDate: raw.end_date,
+        description: raw.description,
+    };
+}
+
+export function mapRawUser(raw: BackendUser): UserUI {
+    return {
+        id: raw.user_id,
+        username: raw.username,
+        email: raw.email,
+        firstName: raw.first_name,
+        lastName: raw.last_name,
+        avatar: raw.avatar,
+        role: raw.role as UserUI["role"],
+        createdAt: raw.created_at,
+        skills: Array.isArray(raw.skills) ? raw.skills.map(mapRawSkill) : [],
+        academicCredentials: Array.isArray(raw.academicCredentials)
+            ? raw.academicCredentials.map(mapRawAcademicCredential)
+            : [],
+        previousRoles: raw.previousRoles?.map(mapRawPreviousRole) || [],
+    };
+}
+
+
+
+export function mapRawCourse(raw: BackendCourse): CourseUI {
+    return {
+        id: raw.course_id,
+        code: raw.course_code,
+        name: raw.course_name,
+        semester: raw.semester,
+        skills: raw.skills?.map((s: BackendSkill) => s.skill_name) || [],
+    };
+}
+
+// --- Review ---
+export function mapRawReview(review: BackendReview): ReviewUI {
+    return {
+        id: review.review_id,
+        rank: review.rank,
+        comment: review.comment,
+        reviewedAt: review.reviewed_at,
+        updatedAt: review.updated_at,
+        lecturerId: review.lecturer_id,
+        applicationId: review.application_id,
+        // Optional: applicationCandidate & applicationCourse
+    };
+}
 
 function mapRawPreviousRole(role: any): PreviousRoleUI {
     return {
@@ -29,78 +74,17 @@ function mapRawPreviousRole(role: any): PreviousRoleUI {
     };
 }
 
-// --- Skills ---
-export function mapRawSkill(skill: any): SkillUI {
-    return {
-        id: skill.skill_id,
-        name: skill.skill_name,
-    };
-}
-
-// --- Academic Credentials ---
-export function mapRawAcademic(cred: any): AcademicCredentialsUI {
-    return {
-        id: cred.academic_id,
-        degreeName: cred.degree_name,
-        institution: cred.institution,
-        startDate: cred.start_date,
-        endDate: cred.end_date,
-        description: cred.description ?? "",
-    };
-}
-
-// --- User (Applicant) ---
-export function mapRawUser(user: any): UserUI {
-    return {
-        id: user.user_id,
-        username: user.username,
-        email: user.email,
-        firstName: user.first_name,
-        lastName: user.last_name,
-        avatar: user.avatar,
-        skills: Array.isArray(user.skills) ? user.skills.map(mapRawSkill) : [],
-        academicCredentials: Array.isArray(user.academicCredentials)
-            ? user.academicCredentials.map(mapRawAcademic)
-            : [],
-        previousRoles: user.previousRoles?.map(mapRawPreviousRole) || [],
-    };
-}
-
-// --- Course ---
-export function mapRawCourse(course: any): CourseUI {
-    return {
-        id: course.course_id,
-        name: course.course_name,
-        code: course.course_code,
-        semester: course.semester,
-        skills: course.skills?.map((s: any) => s.skill_name) || [],
-    };
-}
-
-// --- Review ---
-export function mapRawReview(review: any): ReviewUI {
-    return {
-        id: review.review_id,
-        lecturerId: review.lecturer_id,
-        applicationId: review.application_id,
-        rank: review.rank,
-        comment: review.comment,
-        reviewedAt: review.reviewed_at,
-        updatedAt: review.updated_at,
-    };
-}
-
-// --- Application ---
-export function mapRawApplication(app: any): ApplicationUI {
+export function mapRawApplication(app: BackendApplication): ApplicationUI {
     return {
         id: app.application_id,
         positionType: app.position_type,
         status: app.status ?? "pending",
         appliedAt: app.applied_at,
-        selected: app.selected,
-        availability: app.availability,
+        selected: false,
+        availability: app.availability ?? "Not Available",
         user: mapRawUser(app.user),
         course: mapRawCourse(app.course),
         reviews: Array.isArray(app.reviews) ? app.reviews.map(mapRawReview) : [],
+        skills: Array.isArray(app.skills) ? app.skills.map(mapRawSkill) : [],
     };
 }
