@@ -4,7 +4,6 @@ import LoginForm from './LoginForm';
 import { useRouter } from 'next/router';
 import SignUpForm from './SignUpForm';
 import { useAuth } from "@/context/AuthContext";
-import "../styles/Navbar.css";
 
 const Navbar: React.FC = () => {
     const { currentUser, logout } = useAuth();

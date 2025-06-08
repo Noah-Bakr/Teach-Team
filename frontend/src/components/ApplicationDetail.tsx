@@ -6,7 +6,6 @@ import { ApplicationUI, ApplicationStatus } from "@/types/types";
 import { updateApplicationStatusByLecturer } from "@/services/lecturerService";
 import { toaster } from "@/components/ui/toaster";
 import { useAuth } from "@/context/AuthContext";
-import "../styles/drawerStyles.css";
 
 interface ApplicationDetailsProps {
     application: ApplicationUI;

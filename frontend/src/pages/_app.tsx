@@ -7,6 +7,11 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { AuthProvider } from "@/context/AuthContext";
 import "@/styles/globals.css";
+import '../styles/Header.css';
+import '../styles/Footer.css';
+import '../styles/Lecturer.css';
+import '../styles/Navbar.css';
+import '../styles/drawerStyles.css';
 
 export default function App({ Component, pageProps }: AppProps) {
     return(
