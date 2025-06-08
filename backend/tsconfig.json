@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "types": ["jest", "node"],
     "target": "es6",
     "module": "commonjs",
     "lib": [
@@ -9,7 +10,7 @@
     "sourceMap": true,
     "typeRoots": ["./src/types", "./node_modules/@types"],
     "outDir": "./dist",
-    "rootDir": "./src",
+    // "rootDir": "./src",
     "strict": true,
     "moduleResolution": "node",
     "baseUrl": ".",
@@ -24,8 +25,10 @@
     }
   },
   "include": [
-    "src/**/*.ts"
-  ],
+    "src/**/*.ts",
+    "**/*.tsx",
+    "src/**/*.test.ts"
+, "__tests__/ApplicationController.test.ts"  ],
   "exclude": [
     "node_modules"
   ]
