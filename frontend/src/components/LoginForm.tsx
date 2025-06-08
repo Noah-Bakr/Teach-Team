@@ -19,7 +19,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ closeForm, openSignUpForm }) => {
     const [passwordError, setPasswordError] = useState(false);
 
     const router = useRouter();
-    const { login, loading, error } = useAuth();
+    const { login, loading } = useAuth();
     const { open, onToggle } = useDisclosure();
 
     //Wake on show
