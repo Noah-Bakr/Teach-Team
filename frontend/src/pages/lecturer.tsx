@@ -1,18 +1,18 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Box, Heading } from "@chakra-ui/react";
-//import { ApplicationStatus, ApplicationUI, ReviewUI, CourseUI } from "@/types/lecturerTypes";
+import { Box, Heading, Flex, Button } from "@chakra-ui/react";
 import { ApplicationStatus, ApplicationUI, ReviewUI, CourseUI } from "@/types/types";
 import { fetchApplicationsByLecturer, fetchApplicationsByCourse, fetchCoursesByLecturer } from "@/services/lecturerService";
 import SearchAndSortBar from "@/components/SearchAndSortBar";
 import ApplicantsTable from "@/components/ApplicantsTable";
-import VisualRepresentation from "@/components/VisualRepresentation";
 import { CreamCard } from "@/components/CreamCard";
 import { useAuth } from "@/context/AuthContext";
 import "@/styles/Lecturer.css";
+import { useRouter } from "next/router";
 
 export const LecturerPage: React.FC = () => {
+    const router = useRouter();
     const [applications, setApplications] = useState<ApplicationUI[]>([]);
     const [errors, setErrors] = useState<{
         [appId: number]: { rank?: string; comment?: string };
@@ -48,6 +48,11 @@ export const LecturerPage: React.FC = () => {
                 }
 
                 setApplications(apps);
+                if (apps.length > 0) {
+                    console.log("First fetched application:", apps[0]);
+                    console.log("Reviews for first application:", apps[0].reviews);
+                    console.log("First review in app:", apps[0].reviews?.[0]);
+                }
             } catch (err) {
                 console.error("Error fetching applications:", err);
             }
@@ -162,11 +167,6 @@ export const LecturerPage: React.FC = () => {
         const matchesSkills =
             app.user.skills?.map((s) => s.name).join(" ").toLowerCase().includes(lower) ?? false;
 
-        // const matchesSkills = app.user.skills
-        //     .map((s) => s.name.toLowerCase())
-        //     .join(" ")
-        //     .includes(lower);
-
         return matchesName || matchesCourse || matchesAvailability || matchesSkills;
     });
 
@@ -184,7 +184,15 @@ export const LecturerPage: React.FC = () => {
     return (
         <Box p={4}>
             <CreamCard>
-                <Heading mb={4}>Lecturer Dashboard</Heading>
+                <Flex justify="space-between" align="center" mb={4}>
+                    <Heading>Lecturer Dashboard</Heading>
+                    <Button
+                        bg = "#fcdd45"
+                        onClick={() => router.push("/visual-insights")}
+                    >
+                        View Lecturers Application Insights
+                    </Button>
+                </Flex>
 
                 <SearchAndSortBar
                     search={search}
