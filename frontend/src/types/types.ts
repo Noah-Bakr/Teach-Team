@@ -75,7 +75,7 @@ export interface UserUI {
     lastName: string;
     avatar?: string | null;
     role?: 'admin' | 'lecturer' | 'candidate';
-    skills?: (SkillUI | string)[];
+    skills?: SkillUI[];
     academicCredentials?: AcademicCredentialsUI[];
     courses?: CourseUI[];
     //courses?: string[];         // courses the user is enrolled in
@@ -88,6 +88,13 @@ export interface VisualInsightsUI {
     statusBreakdown: { status: string; count: number }[];
     averageRankByStatus: { status: string; avgRank: number }[];
     mostCommonSkills: { skill_name: string; count: number }[];
+    usersWithMostPopularSkills: {
+        skill_name: string;
+        user_id: number;
+        first_name: string;
+        last_name: string;
+        avatar?: string;
+    };
     leastCommonSkills: { skill_name: string; count: number }[];
     usersWithLeastCommonSkills: {
         skill_name: string;
