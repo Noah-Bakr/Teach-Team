@@ -14,7 +14,7 @@ import { useRouter } from "next/router";
 export const LecturerPage: React.FC = () => {
     const router = useRouter();
     const [applications, setApplications] = useState<ApplicationUI[]>([]);
-    const [errors, setErrors] = useState<{
+    const [errors] = useState<{
         [appId: number]: { rank?: string; comment?: string };
     }>({});
     const [search, setSearch] = useState<string>("");
@@ -157,8 +157,8 @@ export const LecturerPage: React.FC = () => {
         const matchesName = fullName.includes(lower);
 
         const matchesCourse =
-            app.course.name.toLowerCase().includes(lower) ||
-            app.course.code.toLowerCase().includes(lower);
+            app.course?.name.toLowerCase().includes(lower) ||
+            app.course?.code.toLowerCase().includes(lower);
 
         const matchesAvailability = app.availability
             .toLowerCase()
@@ -173,7 +173,9 @@ export const LecturerPage: React.FC = () => {
     const sortedApps = sortBy
         ? [...filteredApps].sort((a, b) => {
             if (sortBy === "course") {
-                return a.course.name.localeCompare(b.course.name);
+                const aCourseName = a.course?.name ?? "";
+                const bCourseName = b.course?.name ?? "";
+                return aCourseName.localeCompare(bCourseName);
             } else if (sortBy === "availability") {
                 return a.availability.localeCompare(b.availability);
             }
