@@ -13,6 +13,8 @@ const TutorPage: React.FC = () => {
     const { currentUser } = useAuth();
     const [isApplicantFormOpen, setIsApplicantFormOpen] = useState(false);
     const [selectedCourse, setSelectedCourse] = useState<CourseUI | null>(null);
+    const [selectedRole, setSelectedRole] = useState<"tutor" | "lab_assistant" | null>(null);
+
     
     // Fetch all courses from the database on mount
     useEffect(() => {
@@ -24,14 +26,26 @@ const TutorPage: React.FC = () => {
     // Fetch all applications for the current user
     useEffect(() => {
         if (!currentUser?.id) return;
+        const allapps = fetchApplicationsByUserId(currentUser?.id);
         fetchApplicationsByUserId(currentUser.id)
             .then(setApplications)
             .catch(console.error);
+            console.log("Applications fetched for user:", currentUser.id, allapps);
     }, [currentUser?.id]);
 
-    const handleApplicantClick = (course: CourseUI) => {
-        setIsApplicantFormOpen(true);
+    const applicationLookup = new Set(
+        applications.map(app => `${app.course.id}-${app.positionType}`)
+    );
+
+
+    // const handleApplicantClick = (course: CourseUI) => {
+    //     setIsApplicantFormOpen(true);
+    //     setSelectedCourse(course);
+    // };
+    const handleApplicantClick = (course: CourseUI, role: "tutor" | "lab_assistant") => {
         setSelectedCourse(course);
+        setSelectedRole(role);
+        setIsApplicantFormOpen(true);
     };
 
     const closeApplicantForm = () => {
@@ -46,10 +60,14 @@ const TutorPage: React.FC = () => {
     //         (application: any) => application.userId === currentUser?.id && application.courseId === courseId
     //     );
     // };
-    const hasApplied = (courseId: number): boolean => {
-        const appliedCourseIds = new Set(applications.map(app => app.course.id));
-        return appliedCourseIds.has(courseId);
+    // const hasApplied = (courseId: number): boolean => {
+    //     const appliedCourseIds = new Set(applications.map(app => app.course.id));
+    //     return appliedCourseIds.has(courseId);
+    // };
+    const hasAppliedForRole = (courseId: number, role: "tutor" | "lab_assistant"): boolean => {
+        return applicationLookup.has(`${courseId}-${role}`);
     };
+
 
     return (
         <div>
@@ -69,9 +87,27 @@ const TutorPage: React.FC = () => {
                                     </Badge>))}
                                 </HStack>
                             </Card.Body>
-                            <Card.Footer>
+                            {/* <Card.Footer>
                                 <Button disabled={hasApplied(course.id)} onClick={() => handleApplicantClick(course)}>{hasApplied(course.id) ? "Applied" : "Apply"}</Button>
+                            </Card.Footer> */}
+                            <Card.Footer>
+                                <HStack p={4}>
+                                    <Button
+                                        onClick={() => handleApplicantClick(course, "tutor")}
+                                        disabled={hasAppliedForRole(course.id, "tutor")}
+                                    >
+                                    {hasAppliedForRole(course.id, "tutor") ? "Applied as Tutor" : "Apply as Tutor"}
+                                    </Button>
+
+                                    <Button
+                                        onClick={() => handleApplicantClick(course, "lab_assistant")}
+                                        disabled={hasAppliedForRole(course.id, "lab_assistant")}
+                                    >
+                                    {hasAppliedForRole(course.id, "lab_assistant") ? "Applied as Lab" : "Apply as Lab"}
+                                    </Button>
+                                </HStack>
                             </Card.Footer>
+
                         </Box>
                     </Card.Root>
                 ))}
