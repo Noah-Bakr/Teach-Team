@@ -73,7 +73,7 @@ export interface Application {
 export interface CreateApplicationDto {
     position_type: 'tutor' | 'lab_assistant';
     status?: ApplicationStatus;
-    applied_at: string;
+    // applied_at: string;
     selected: boolean;
     availability: 'Full-Time' | 'Part-Time' | 'Not Available';
     user_id: number;
@@ -83,7 +83,7 @@ export interface CreateApplicationDto {
 export interface UpdateApplicationDto {
     position_type?: 'tutor' | 'lab_assistant';
     status?: ApplicationStatus;
-    applied_at?: string;
+    // applied_at?: string;
     selected?: boolean;
     availability?: 'Full-Time' | 'Part-Time' | 'Not Available';
 }
