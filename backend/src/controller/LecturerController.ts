@@ -5,9 +5,14 @@ import { Application } from "../entity/Application";
 import { Review } from "../entity/Review";
 import {User} from "../entity/User";
 
+
+interface LecturerRequest extends Request {
+    lecturer?: User;
+}
+
 export class LecturerController {
     // GET /lecturer/:id/courses Lecturer can see all courses they are assigned to
-    async getCourses(req: Request, res: Response) {
+    async getCourses(req: LecturerRequest, res: Response) {
         try {
             const lecturer = req.lecturer;
 
@@ -23,7 +28,7 @@ export class LecturerController {
     }
 
     // GET /lecturer/:id/applications/all Lecturer can see all applications for all courses they are assigned to
-    async getAllApplicationsByLecturer(req: Request, res: Response) {
+    async getAllApplicationsByLecturer(req: LecturerRequest, res: Response) {
         const lecturer = req.lecturer;
 
         if (!lecturer) {
@@ -78,7 +83,7 @@ export class LecturerController {
 
 
     // GET /lecturer/:id/applications?courseId=X Lecturer can see applications for a specific course they are assigned to
-    async getApplications(req: Request, res: Response) {
+    async getApplications(req: LecturerRequest, res: Response) {
         const lecturer = req.lecturer;
         if (!lecturer) {
             return res.status(403).json({ message: "Lecturer not attached to request" });
@@ -305,7 +310,7 @@ export class LecturerController {
 
 
     // GET /applications/:id/review?lecturerId=3 Lecturer can see their review for a specific application
-    async getReviewByApplication(req: Request, res: Response) {
+    async getReviewByApplication(req: LecturerRequest, res: Response) {
         const applicationId = parseInt(req.params.id, 10);
         const lecturer = req.lecturer;
         if (!lecturer) {
