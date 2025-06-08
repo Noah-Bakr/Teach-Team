@@ -1,5 +1,4 @@
 import React from 'react';
-import '../styles/Header.css';
 import Navbar from "./Navbar";
 import Link from 'next/link';
 
