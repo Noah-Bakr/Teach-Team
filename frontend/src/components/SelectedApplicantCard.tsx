@@ -10,7 +10,6 @@ import {
     Textarea,
     Button,
 } from "@chakra-ui/react";
-//import { ApplicationUI, ReviewUI } from "@/types/lecturerTypes";
 import { ApplicationUI, ReviewUI } from "@/types/types";
 import CustomFormControl from "./CustomFormControl";
 import {
@@ -154,7 +153,7 @@ const SelectedApplicantCard: React.FC<SelectedApplicantCardProps> = ({
             toaster.create({
                 title: "Failed to save review",
                 description:
-                    err?.response?.data?.message ||
+                    err?.response?.data?.message ??
                     "There was an error saving your review. Please try again.",
                 type: "error",
                 duration: 4000,
