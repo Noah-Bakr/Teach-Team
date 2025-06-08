@@ -35,11 +35,6 @@ const TutorPage: React.FC = () => {
         applications.map(app => `${app.course.id}-${app.positionType}`)
     );
 
-
-    // const handleApplicantClick = (course: CourseUI) => {
-    //     setIsApplicantFormOpen(true);
-    //     setSelectedCourse(course);
-    // };
     const handleApplicantClick = (course: CourseUI, role: "tutor" | "lab_assistant") => {
         setSelectedCourse(course);
         setSelectedRole(role);
@@ -62,16 +57,6 @@ const TutorPage: React.FC = () => {
     };
 
     // Check if the user has already applied for the course
-    // const hasApplied = (courseId: string): boolean => {
-    //     const existingApplications = JSON.parse(localStorage.getItem("applicants") || "[]");
-    //     return existingApplications.some(
-    //         (application: any) => application.userId === currentUser?.id && application.courseId === courseId
-    //     );
-    // };
-    // const hasApplied = (courseId: number): boolean => {
-    //     const appliedCourseIds = new Set(applications.map(app => app.course.id));
-    //     return appliedCourseIds.has(courseId);
-    // };
     const hasAppliedForRole = (courseId: number, role: "tutor" | "lab_assistant"): boolean => {
         return applicationLookup.has(`${courseId}-${role}`);
     };
@@ -96,9 +81,6 @@ const TutorPage: React.FC = () => {
                                     </Badge>))}
                                 </HStack>
                             </Card.Body>
-                            {/* <Card.Footer>
-                                <Button disabled={hasApplied(course.id)} onClick={() => handleApplicantClick(course)}>{hasApplied(course.id) ? "Applied" : "Apply"}</Button>
-                            </Card.Footer> */}
                             <Card.Footer>
                                 <HStack p={4}>
                                     <Button
@@ -116,7 +98,6 @@ const TutorPage: React.FC = () => {
                                     </Button>
                                 </HStack>
                             </Card.Footer>
-
                         </Box>
                     </Card.Root>
                 ))}
