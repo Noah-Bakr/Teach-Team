@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState, ReactNode,} from "react";
+import React, { createContext, useContext, useEffect, useState, ReactNode} from "react";
 import { useRouter } from "next/router";
 import { toaster } from "@/components/ui/toaster";
 import { UserUI } from "@/types/userTypes";
@@ -38,8 +38,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 		const rawUser = await getCurrentUser();
 		const uiUser: UserUI = mapBackendUserToUI(rawUser);
 		setCurrentUser(uiUser);
-	  } catch (err: any) {
-		const status = err.response?.status;
+	  } catch (err: unknown) {
+		const error = err as { response?: { status?: number } };
+		const status = error.response?.status;
 		if (status === 401) {
 		  setCurrentUser(null);
 		  router.push("/");
@@ -52,6 +53,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 	};
 
 	fetchSessionUser();
+	// eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const login = async ( email: string, password: string ): Promise<boolean> => {
@@ -70,12 +72,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 		duration: 5000,
 	  });
 	  return true;
-	} catch (err: any) {
+	} catch (err: unknown) {
 	  let errorMessage = "Login failed. Please try again.";
-	  if (err.response?.data?.message) {
-		errorMessage = err.response.data.message;
-	  } else if (err.message) {
-		errorMessage = err.message;
+	  const error = err as { response?: { data?: { message?: string } }; message?: string };
+	  if (error.response?.data?.message) {
+		errorMessage = error.response.data.message;
+	  } else if (error.message) {
+		errorMessage = error.message;
 	  }
 	  setError(errorMessage);
 	  toaster.create({
@@ -118,12 +121,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 		duration: 5000,
 	  });
 	  return true;
-	} catch (err: any) {
+	} catch (err: unknown) {
 	  let errorMessage = "Sign up failed. Please try again.";
-	  if (err.response?.data?.message) {
-		errorMessage = err.response.data.message;
-	  } else if (err.message) {
-		errorMessage = err.message;
+	  const error = err as { response?: { data?: { message?: string } }; message?: string };
+	  if (error.response?.data?.message) {
+		errorMessage = error.response.data.message;
+	  } else if (error.message) {
+		errorMessage = error.message;
 	  }
 	  setError(errorMessage);
 	  toaster.create({
@@ -192,12 +196,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 		type: "success",
 		duration: 5000,
 	  });
-	} catch (err: any) {
+	} catch (err: unknown) {
 	  let msg = "Failed to update user.";
-	  if (err.response?.data?.message) {
-		msg = err.response.data.message;
-	  } else if (err.message) {
-		msg = err.message;
+	  const error = err as { response?: { data?: { message?: string } }; message?: string };
+	  if (error.response?.data?.message) {
+		msg = error.response.data.message;
+	  } else if (error.message) {
+		msg = error.message;
 	  }
 	  setError(msg);
 	  toaster.create({
