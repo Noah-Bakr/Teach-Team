@@ -3,7 +3,7 @@ import React from "react";
 import { Button, Box, Table, Drawer, Portal, CloseButton, } from "@chakra-ui/react";
 import { ApplicationUI, ReviewUI, ApplicationStatus } from "@/types/types";
 import SelectedApplicantCard from "./SelectedApplicantCard";
-import ApplicationDetail from "./ApplicationDetail";
+import {ApplicationDetail} from "./ApplicationDetail";
 import { useAuth } from "@/context/AuthContext";
 
 interface ApplicantsTableProps {
