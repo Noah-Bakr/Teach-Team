@@ -5,7 +5,7 @@
 
 TeachTeam (TT) is a web application that streamlines the tutor recruitment process at a university. It offers multi-role access (Candidates, Lecturers, Admin).
 
-
+![Home](Website-Images/Home.png)
 
 ## Features
 
@@ -27,8 +27,11 @@ TeachTeam (TT) is a web application that streamlines the tutor recruitment proce
 * **Validation Coverage:** Ensures DTO schemas guard against invalid requests.
 
 ---
+### How to Run the Project
 
-## How to Run the Project
+<details>
+
+<summary>View Instructions</summary>
 
 ### 1. Clone the Repository
 
@@ -86,6 +89,7 @@ npm start
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+</details>
 
 ---
 
@@ -94,6 +98,10 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 ### Homepage Navigation
 
 Click the avatar in the top-right of the screen and choose `Sign In` to progress in the website.
+
+<details>
+
+<summary>View Sign-In Credentials</summary>
 
 ### Dummy Sign-In Credentials
 
@@ -126,20 +134,33 @@ You can use the following test account to log in as an admin:
 | --- | --- |
 | `admin@example.com` | `Cart@21-c0ding` |
 
+</details>
+
 ### Navigation Overview
 
 Once logged in, you'll be redirected to the appropriate dashboard based on your user type.
 
-#### Tutor Dashboard
+#### Tutor/Candidate Dashboard
 
-- **Apply** for available courses
+![Home](Website-Images/Tutor.png)
+
+- **Apply** for available courses as a Tutor or Lab Assistant
 - Submit your:
-  - Availability
-    - Part-Time / Full-Time / Not Available
+  - Availability: Part-Time / Full-Time / Not Available
   - Skills and Academic Credentials
   - Previous Work Experience
 
+<details>
+
+<summary>View Application Form</summary>
+
+![Home](Website-Images/Application.png)
+
+</details>
+
 #### Lecturer Dashboard
+
+![Home](Website-Images/Lecturer.png)
 
 - **View all applicants** filtered by course
 - **Search & sort** applicants by:
@@ -151,20 +172,33 @@ Once logged in, you'll be redirected to the appropriate dashboard based on your 
 - **Select**, **rank**, and **comment** on tutor candidates
 - **View** selection insights
   - Most/least chosen
+  - Common skills
+- **Visual Diagrams** that display such as:
+  - Each application status and their percentage (25% of applications are rejected)
+  - Number of applications for each role/position (breakdown)
+
+
+<details>
+
+<summary>View Application Statistic Visulisations</summary>
+
+![Home](Website-Images/Visuals.png)
+
+</details>
 
 ### Profile Page
 
+![Home](Website-Images/Profile.png)
+
 - **View and edit** all acount details
   - Profile Information
-    - First name, Last name, Avatar
+    - First name, Last name, Avatar (public link)
   - Account Information
     - Username
-    - Email, Password
+    - Email
     - Role
-  - Academic Information
-    - Academic Credentials
-    - Skills
-    - Availability
+- **Add and remove** skils via the input and tag combo
+- **Add and edit** all academic credentials
 - **Add and edit** all previous work experience
 - **View** all submitted applications
 
@@ -251,4 +285,4 @@ All images, icons, and avatars used in the project are sourced from royalty-free
 
 ## Team Info
 
-Bodene Downie | s3575564<br>Noah Bakr | s4095646
+Noah Bakr | s4095646<br>Bodene Downie | s3575564
