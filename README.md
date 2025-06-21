@@ -207,7 +207,7 @@ Once logged in, you'll be redirected to the appropriate dashboard based on your 
 ## Project Structure
 
 ```bash
-s3575564-s4095646-a2/
+Teach-Team/
 │
 ├── backend/                        # Backend API and database logic
 │   ├── src/
